@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GEngine-R", "GEngine-R.csproj", "{5E1EBF23-C56D-4E5F-BBBA-8819DA86EAA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GEngine-R", "GEngine-R.csproj", "{5E1EBF23-C56D-4E5F-BBBA-8819DA86EAA2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDL2-CS.Core", "..\..\GitClones\SDL2-CS\SDL2-CS.Core.csproj", "{249DB018-DE85-4E3B-A254-F38CAC190158}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GEngine-ExampleGame", "..\GEngine-ExampleGame\GEngine-ExampleGame.csproj", "{F072DF97-545D-47D3-95F2-CD19F7E6ABA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GEngine-ExampleGame", "..\GEngine-ExampleGame\GEngine-ExampleGame.csproj", "{F072DF97-545D-47D3-95F2-CD19F7E6ABA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,8 +34,8 @@ Global
 		{249DB018-DE85-4E3B-A254-F38CAC190158}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{249DB018-DE85-4E3B-A254-F38CAC190158}.Debug|x64.ActiveCfg = Debug|x64
 		{249DB018-DE85-4E3B-A254-F38CAC190158}.Debug|x64.Build.0 = Debug|x64
-		{249DB018-DE85-4E3B-A254-F38CAC190158}.Debug|x86.ActiveCfg = Debug|x86
-		{249DB018-DE85-4E3B-A254-F38CAC190158}.Debug|x86.Build.0 = Debug|x86
+		{249DB018-DE85-4E3B-A254-F38CAC190158}.Debug|x86.ActiveCfg = Debug|x64
+		{249DB018-DE85-4E3B-A254-F38CAC190158}.Debug|x86.Build.0 = Debug|x64
 		{249DB018-DE85-4E3B-A254-F38CAC190158}.Release|Any CPU.ActiveCfg = Release|x64
 		{249DB018-DE85-4E3B-A254-F38CAC190158}.Release|x64.ActiveCfg = Release|x64
 		{249DB018-DE85-4E3B-A254-F38CAC190158}.Release|x64.Build.0 = Release|x64
