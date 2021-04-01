@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using static SDL2.SDL;
 
+using GEngine.Game;
+
 namespace GEngine.Engine
 {
     public class EngineProperties
@@ -14,9 +16,26 @@ namespace GEngine.Engine
         public int TargetFPS { get; set; }
         public bool EnableFramelimiter { get; set; }
         public string Title { get; set; }
+
+        public bool FloorValues { get; set; }
+
+        public int TargetFrametime
+        {
+            get
+            {
+                if (FloorValues)
+                {
+                    return (int)Math.Floor((double)1000/(double)TargetFPS);
+                } else
+                {
+                    return (int)Math.Ceiling((double)1000 / (double)TargetFPS);
+                }
+            }
+        }
         
         public EngineProperties()
         {
+            FloorValues = true;
             TargetTPS = 64;
             TargetFPS = 60;
             EnableFramelimiter = true;
@@ -35,10 +54,10 @@ namespace GEngine.Engine
         private bool _Aborted_S = false, _Aborted_AL = false, _Aborted_AG = false;
 
         //Sub-Modules
-        private Scene CurrentScene { get; set; }
         private AudioEngine _audio;
         private GraphicsEngine _graphics;
         private InputManager _input;
+        private SceneManager _scenes;
 
         public AudioEngine AudioEngine
         {
@@ -59,6 +78,13 @@ namespace GEngine.Engine
             get
             {
                 return _input;
+            }
+        }
+        public SceneManager SceneManager
+        {
+            get
+            {
+                return _scenes;
             }
         }
 
@@ -149,7 +175,7 @@ namespace GEngine.Engine
             InitLogic();
             do
             {
-
+                LogicStep();
             } while (!_StopThread);
         }
         private void Async_DrawLoop()
@@ -158,7 +184,7 @@ namespace GEngine.Engine
             InitGraphics();
             do
             {
-
+                DrawStep();
             } while (!_StopThread);
         }
     }

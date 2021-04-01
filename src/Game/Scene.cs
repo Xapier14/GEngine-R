@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 using GEngine;
 using GEngine.Game;
 
-namespace GEngine.Engine
+namespace GEngine.Game
 {
     public class SceneProperties
     {
         public OriginType OriginType { get; set; }
     }
-    public class Scene
+    public abstract class Scene
     {
-
+        public SceneProperties Properties { get; set; }
+        public GameObjectCollection GameObjects { get; set; }
     }
 }

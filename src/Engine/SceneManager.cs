@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GEngine.Game;
 
 namespace GEngine.Engine
 {
-    public static class SceneManager
+    public  class SceneManager
     {
-        private static Dictionary<string, Scene> _Scenes = new Dictionary<string, Scene>();
-        public static void AddScene(string name, Scene scene)
+        private Dictionary<string, Scene> _Scenes;
+
+        public SceneManager()
+        {
+            _Scenes = new Dictionary<string, Scene>();
+        }
+
+        public void AddScene(string name, Scene scene)
         {
             if (!_Scenes.ContainsKey(name))
             {
@@ -20,7 +27,7 @@ namespace GEngine.Engine
                                           "SceneManager.AddScene(string, Scene)");
             }
         }
-        public static Scene GetScene(string name)
+        public Scene GetScene(string name)
         {
             if (_Scenes.ContainsKey(name))
             {
@@ -31,7 +38,7 @@ namespace GEngine.Engine
                                           "SceneManager.GetScene(string)");
             }
         }
-        public static void RemoveScene(string name)
+        public void RemoveScene(string name)
         {
             if (_Scenes.ContainsKey(name))
             {
@@ -42,7 +49,7 @@ namespace GEngine.Engine
                                           "SceneManager.RemoveScene(string)");
             }
         }
-        public static bool HasScene(string name)
+        public bool HasScene(string name)
         {
             return _Scenes.ContainsKey(name);
         }
