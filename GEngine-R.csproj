@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>GEngine</RootNamespace>
+    <AssemblyName>GEngine</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GitClones\SDL2-CS\SDL2-CS.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Game\" />
+    <Folder Include="src\Net\" />
+  </ItemGroup>
+
+</Project>
