@@ -5,6 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>GEngine</RootNamespace>
     <AssemblyName>GEngine</AssemblyName>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\Game\" />
     <Folder Include="src\Net\" />
   </ItemGroup>
 

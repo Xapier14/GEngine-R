@@ -10,12 +10,12 @@ namespace GEngine
 }
 namespace GEngine.Engine
 {
-    enum EngineMode
+    public enum EngineMode
     {
         Synchronous,
         Asynchronous
     }
-    enum VideoBackend
+    public enum VideoBackend
     {
         Direct3D,
         OpenGL,
@@ -24,7 +24,7 @@ namespace GEngine.Engine
         Metal,
         Software
     }
-    enum AudioType
+    public enum AudioType
     {
         Music,
         Effect
@@ -33,7 +33,7 @@ namespace GEngine.Engine
 }
 namespace GEngine.Game
 {
-    enum OriginType
+    public enum OriginType
     {
         CenterOrigin,
         ManualOrigin

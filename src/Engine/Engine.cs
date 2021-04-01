@@ -7,11 +7,45 @@ using static SDL2.SDL;
 
 namespace GEngine.Engine
 {
+    public class EngineProperties
+    {
+        public int TargetTPS { get; set; }
+        public int TargetFPS { get; set; }
+        public bool EnableFramelimiter { get; set; }
+        public string Title { get; set; }
+        
+        public EngineProperties()
+        {
+            TargetTPS = 64;
+            TargetFPS = 60;
+            EnableFramelimiter = true;
+            Title = "GEngine | Re:";
+        }
+    }
     public class GameEngine
     {
-        public GameEngine()
-        {
+        //Engine Props
+        public EngineMode Mode { get; set; }
+        public EngineProperties Properties { get; set; }
 
+        //Sub-Modules
+        private Scene CurrentScene { get; set; }
+        private AudioEngine _audio;
+        public AudioEngine AudioEngine
+        {
+            get
+            {
+                return _audio;
+            }
+        }
+
+        //SDL Stuff
+        private IntPtr _SDL_Renderer;
+        private IntPtr _SDL_Window;
+
+        public GameEngine(EngineMode mode = EngineMode.Synchronous)
+        {
+            Properties = new EngineProperties();
         }
         public void Init()
         {
@@ -27,15 +61,31 @@ namespace GEngine.Engine
                 Debug.Log("Init()", "Initialized SDL.");
             }
         }
+        public void Start()
+        {
+
+        }
         public void Stop()
         {
             SDL_Quit();
         }
-        public void LogicLoop()
+        private void LogicStep()
         {
 
         }
-        public void DrawLoop()
+        private void DrawStep()
+        {
+
+        }
+        private void Sync_Loop()
+        {
+
+        }
+        private void Async_LogicLoop()
+        {
+
+        }
+        private void Async_DrawLoop()
         {
 
         }
