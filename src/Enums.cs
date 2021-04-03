@@ -29,6 +29,11 @@ namespace GEngine.Engine
         Music,
         Effect
     }
+    public enum ResourceType
+    {
+        Audio,
+        Texture
+    }
 
 }
 namespace GEngine.Game

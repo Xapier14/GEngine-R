@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using static SDL2.SDL;
 
+using GEngine.Game;
+
 namespace GEngine.Engine
 {
     public class GraphicsEngine

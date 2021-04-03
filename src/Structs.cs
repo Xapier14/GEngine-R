@@ -27,4 +27,20 @@ namespace GEngine
             Alpha = a;
         }
     }
+    public struct Coord
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+    }
+    public struct Size
+    {
+        public int W { get; set; }
+        public int H { get; set; }
+
+        public Size(int w, int h)
+        {
+            W = w;
+            H = h;
+        }
+    }
 }
