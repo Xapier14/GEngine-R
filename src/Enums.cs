@@ -34,7 +34,14 @@ namespace GEngine.Engine
         Audio,
         Texture
     }
-
+    public enum GameEngineEventType
+    {
+        WindowClose
+    }
+    public enum InputCallbackType
+    {
+        WindowClose
+    }
 }
 namespace GEngine.Game
 {

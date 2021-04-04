@@ -18,9 +18,7 @@ namespace GEngine.Engine
         public double FPSOffset { get; set; }
         public bool EnableFramelimiter { get; set; }
         public string Title { get; set; }
-
         public bool FloorValues { get; set; }
-
         public uint TargetFrametime
         {
             get
@@ -34,7 +32,6 @@ namespace GEngine.Engine
                 }
             }
         }
-
         public uint TargetLogictime
         {
             get
@@ -61,6 +58,12 @@ namespace GEngine.Engine
             Title = "GEngine | Re:";
         }
     }
+
+    public class GameEngineEventArgs : EventArgs
+    {
+        public GameEngineEventType EventType { get; set; }
+    }
+
     public class GameEngine
     {
         //Engine Props
@@ -69,7 +72,7 @@ namespace GEngine.Engine
 
         //Threads
         private Thread _SyncThread, _AsyncThread_L, _AsyncThread_D;
-        private bool _StopThread = false;
+        private bool _StopThread = false, _ForcedThread = false;
         private bool _Aborted_S = false, _Aborted_AL = false, _Aborted_AG = false;
 
         //Sub-Modules
@@ -123,6 +126,7 @@ namespace GEngine.Engine
         private bool _initLogic = false, _initGraphics = false;
 
         //Window Stuff
+        private bool _allowClose = true, _handleClose = false;
         public Size WindowSize
         {
             get
@@ -130,6 +134,28 @@ namespace GEngine.Engine
                 int w, h;
                 SDL_GetWindowSize(_SDL_Window, out w, out h);
                 return new Size(w, h);
+            }
+        }
+        public bool AllowClose
+        {
+            get
+            {
+                return _allowClose;
+            }
+            set
+            {
+                _allowClose = value;
+            }
+        }
+        public bool HandleClose
+        {
+            get
+            {
+                return _handleClose;
+            }
+            set
+            {
+                _handleClose = value;
             }
         }
 
@@ -187,6 +213,10 @@ namespace GEngine.Engine
             }
         }
 
+        //Events
+        public delegate void GameEngineEventHandler(GameEngineEventArgs eventArgs);
+        public event GameEngineEventHandler OnWindowClose;
+
         public GameEngine(EngineMode mode = EngineMode.Synchronous)
         {
             Properties = new EngineProperties();
@@ -195,7 +225,31 @@ namespace GEngine.Engine
             _graphics = new GraphicsEngine();
             _input = new InputManager();
             _scenes = new SceneManager();
+
+            _input.WindowEvent += InputHandler_WindowEvent;
         }
+
+        private void InputHandler_WindowEvent(InputCallbackEventArg eventArg)
+        {
+            switch (eventArg.CallbackType)
+            {
+                case InputCallbackType.WindowClose:
+                    if (_allowClose)
+                        if (_handleClose)
+                        {
+                            ForceStop();
+                        }
+                        else
+                        {
+                            OnWindowClose?.Invoke(new GameEngineEventArgs()
+                            {
+                                EventType = GameEngineEventType.WindowClose
+                            });
+                        }
+                    break;
+            }
+        }
+
         public void Start()
         {
             switch (Mode)
@@ -216,19 +270,29 @@ namespace GEngine.Engine
         {
             _StopThread = true;
             Thread.Sleep(10);
-            switch (Mode)
-            {
-                case EngineMode.Synchronous:
-                    while (!_Aborted_S) Thread.Sleep(10);
-                    break;
-                case EngineMode.Asynchronous:
-                    while (!_Aborted_AL || !_Aborted_AG) Thread.Sleep(10);
-                    break;
-                default:
-                    //unknown mode
-                    throw new EngineException("Unknown engine mode.", "GameEngine.Stop()");
-            }
+            if (!_ForcedThread)
+                switch (Mode)
+                {
+                    case EngineMode.Synchronous:
+                        while (!_Aborted_S) Thread.Sleep(10);
+                        break;
+                    case EngineMode.Asynchronous:
+                        while (!_Aborted_AL || !_Aborted_AG) Thread.Sleep(10);
+                        break;
+                    default:
+                        //unknown mode
+                        throw new EngineException("Unknown engine mode.", "GameEngine.Stop()");
+                }
             SDL_Quit();
+            Debug.Log("GameEngine.Stop()", "Engine stopped.");
+        }
+        private void ForceStop()
+        {
+            _StopThread = true;
+            _ForcedThread = true;
+            Thread.Sleep(10);
+            SDL_Quit();
+            Debug.Log("GameEngine.ForceStop()", "Engine forcibly stopped.");
         }
         private void InitLogic()
         {
@@ -257,7 +321,7 @@ namespace GEngine.Engine
             _input.PollEvent();
             SDL_Delay(1);
             string s = SDL_GetError();
-            if (s != "")
+            if (s != "" && !_StopThread)
             {
                 Stop();
                 throw new EngineException("Unexpected SDL Error occured, engine halted.", "GameEngine.LogicStep()");
@@ -319,7 +383,7 @@ namespace GEngine.Engine
                 tpsAvg.AddPoint(1000.00 / (double)l_time);
                 _fps = fpsAvg.GetAverage();
                 _tps = tpsAvg.GetAverage();
-                Console.WriteLine("[Debug] F: {0}ms, L: {1}ms, T: {2}ms - FPS: {3}, TPS: {4}", d_time, l_time, loop_elapsed, Math.Round(fpsAvg.GetAverage(), 2), Math.Round(tpsAvg.GetAverage(), 2));
+                //Console.WriteLine("[Debug] F: {0}ms, L: {1}ms, T: {2}ms - FPS: {3}, TPS: {4}", d_time, l_time, loop_elapsed, Math.Round(fpsAvg.GetAverage(), 2), Math.Round(tpsAvg.GetAverage(), 2));
             } while (!_StopThread);
             _Aborted_S = true;
         }

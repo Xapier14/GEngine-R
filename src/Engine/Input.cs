@@ -7,9 +7,16 @@ using static SDL2.SDL;
 
 namespace GEngine.Engine
 {
+    public class InputCallbackEventArg : EventArgs
+    {
+        public InputCallbackType CallbackType { get; set; }
+    }
     public class InputManager
     {
         private Dictionary<SDL_Keycode, bool> _keys;
+        public delegate void InputManagerEventHandler(InputCallbackEventArg eventArg);
+        public event InputManagerEventHandler WindowEvent;
+
         public InputManager()
         {
             _keys = new Dictionary<SDL_Keycode, bool>();
@@ -24,6 +31,17 @@ namespace GEngine.Engine
             {
                 switch (e.type)
                 {
+                    case SDL_EventType.SDL_WINDOWEVENT:
+                        switch (e.window.windowEvent)
+                        {
+                            case SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE:
+                                WindowEvent?.Invoke(new InputCallbackEventArg()
+                                {
+                                    CallbackType = InputCallbackType.WindowClose
+                                });
+                                break;
+                        }
+                        break;
                     case SDL_EventType.SDL_KEYDOWN:
                         if (_keys.ContainsKey(e.key.keysym.sym))
                         {
