@@ -55,6 +55,15 @@ namespace GEngine.Engine
         {
             return _data.GetEnumerator();
         }
+
+        public GameObject Get(string name)
+        {
+            foreach (GameObject go in _data)
+            {
+                if (go.ObjectName == name) return go;
+            }
+            throw new EngineException($"GameObject with name '{name}' not found in collection.", "GameObjectCollection.Get()");
+        }
     }
     public class ResourceCollection : ICollection<ResourceBase>
     {
@@ -114,6 +123,15 @@ namespace GEngine.Engine
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _data.GetEnumerator();
+        }
+
+        public ResourceBase Get(string name)
+        {
+            foreach (ResourceBase res in _data)
+            {
+                if (res.ResourceName == name) return res;
+            }
+            throw new EngineException($"Resource with name '{name}' not found in collection.", "ResourceCollection.Get()");
         }
     }
 }

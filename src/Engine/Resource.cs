@@ -164,6 +164,15 @@ namespace GEngine.Engine
                 throw new ResourceException("Error in loading audio.", "ResourceManager.LoadAsAudio()");
             }
         }
+
+        public AudioResource GetAudioResource(string resourceName)
+        {
+            return (AudioResource)_Audio.Get(resourceName);
+        }
+        public TextureResource GetTextureResource(string resourceName)
+        {
+            return (TextureResource)_Textures.Get(resourceName);
+        }
     }
     public class ResourceBase
     {

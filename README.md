@@ -4,13 +4,16 @@ A Rewrite of an old project of mine.
 
 *This is a __work-in-progress__ project, expect no support.*
 
+## Important Notes:
+Frametiming is still inaccurate, might switch to nano-second based timing.
+
 ## To-Do:
 - [x] Base Engine Loop
 - [x] Frame/Logic Timing
 - [x] Input Handler
 - [ ] Object/Scene based rendering
 - [ ] Object/Instances
-- [ ] Audio Module
+- [x] Audio Module
 - [x] Resources/Texture loading
 - [x] Resources/Audio loading
-- [ ] Resource Manager
+- [x] Resource Manager
