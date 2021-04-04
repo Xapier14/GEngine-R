@@ -29,6 +29,7 @@ namespace GEngine.Engine
         }
         public void LoadAsTexture(string fileLocation, string resourceName)
         {
+            if (_SDL_Renderer == IntPtr.Zero) throw new ResourceException($"SDL Renderer not yet initialized, try calling GameEngine.InitGraphics() first", fileLocation);
             if (_Textures.Contains(resourceName)) throw new ResourceException($"A resource with the same name '{resourceName}' already exists.", fileLocation);
             if (!File.Exists(fileLocation)) throw new ResourceException($"Error loading resource '{resourceName}'. File not found.", fileLocation);
             ZipArchive archive;

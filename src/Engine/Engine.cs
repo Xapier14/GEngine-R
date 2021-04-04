@@ -77,6 +77,7 @@ namespace GEngine.Engine
         private GraphicsEngine _graphics;
         private InputManager _input;
         private SceneManager _scenes;
+        private ResourceManager _resource;
 
         public AudioEngine AudioEngine
         {
@@ -106,10 +107,20 @@ namespace GEngine.Engine
                 return _scenes;
             }
         }
+        public ResourceManager ResourceManager
+        {
+            get
+            {
+                return _resource;
+            }
+        }
 
         //SDL Stuff
         private IntPtr _SDL_Renderer;
         private IntPtr _SDL_Window;
+
+        //init stuff
+        private bool _initLogic = false, _initGraphics = false;
 
         //Window Stuff
         public Size WindowSize
@@ -179,7 +190,8 @@ namespace GEngine.Engine
         public GameEngine(EngineMode mode = EngineMode.Synchronous)
         {
             Properties = new EngineProperties();
-            _audio = new AudioEngine();
+            _resource = new ResourceManager(_SDL_Renderer); //I don't know if this would work.
+            _audio = new AudioEngine(_resource);
             _graphics = new GraphicsEngine();
             _input = new InputManager();
             _scenes = new SceneManager();
@@ -220,17 +232,25 @@ namespace GEngine.Engine
         }
         private void InitLogic()
         {
-            _audio.Init();
-            _input.Init();
+            if (!_initLogic)
+            {
+                _audio.Init();
+                _input.Init();
+                _initLogic = true;
+            }
         }
         private void InitGraphics()
         {
-            _graphics.Init();
-            _graphics.CreateWindow(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
-            _graphics.CreateRenderer();
-            _SDL_Renderer = _graphics.Renderer;
-            _SDL_Window = _graphics.Window;
-            _graphics.RenderClearColor = new ColorRGBA(120, 180, 230);
+            if (!_initGraphics)
+            {
+                _graphics.Init();
+                _graphics.CreateWindow(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
+                _graphics.CreateRenderer();
+                _SDL_Renderer = _graphics.Renderer;
+                _SDL_Window = _graphics.Window;
+                _graphics.RenderClearColor = new ColorRGBA(120, 180, 230);
+                _initGraphics = true;
+            }
         }
         private void LogicStep()
         {
