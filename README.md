@@ -5,9 +5,12 @@ A Rewrite of an old project of mine.
 *This is a __work-in-progress__ project, expect no support.*
 
 ## To-Do:
-* Object/Scene based rendering
-* Object/Instances
-* Audio Module
-* Resources/Texture loading
-* Resources/Audio
-* Resource Manager
+- [x] Base Engine Loop
+- [x] Frame/Logic Timing
+- [x] Input Handler
+- [ ] Object/Scene based rendering
+- [ ] Object/Instances
+- [ ] Audio Module
+- [x] Resources/Texture loading
+- [ ] Resources/Audio loading
+- [ ] Resource Manager
