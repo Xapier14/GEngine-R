@@ -23,14 +23,14 @@ namespace GEngine.Engine
         {
             get
             {
-                return 1000.00 / TargetFPS;
+                return (1000.00 / TargetFPS) + FPSOffset;
             }
         }
         public double TargetLogictime
         {
             get
             {
-                return 1000.00 / TargetTPS;
+                return (1000.00 / TargetTPS) + TPSOffset;
             }
         }
 
@@ -38,8 +38,8 @@ namespace GEngine.Engine
         {
             TargetTPS = 64;
             TargetFPS = 60;
-            TPSOffset = 0;
-            FPSOffset = 0;
+            TPSOffset = -0.12; //Play around with this to time the game speed.
+            FPSOffset = -0.12; //Play around with this to time the fps.
             EnableFramelimiter = true;
             Title = "GEngine | Re:";
         }
@@ -352,9 +352,14 @@ namespace GEngine.Engine
         {
             if (!DrawPause)
             {
-                //_graphics.RenderClear();
-
-                //SDL_RenderPresent(_SDL_Renderer);
+                _graphics.RenderClear();
+                SDL_FRect rectangle = new SDL_FRect();
+                rectangle.x = 16;
+                rectangle.y = 16;
+                rectangle.w = 300;
+                rectangle.h = 200;
+                _graphics.SetRenderDrawColor(new ColorRGBA(test, test, test));
+                SDL_RenderPresent(_SDL_Renderer);
             }
         }
         private void Sync_Loop()
@@ -362,65 +367,38 @@ namespace GEngine.Engine
             //Init
             InitLogic();
             InitGraphics();
-            double c_tick = 0, cl_tick = 0;
-            double l_elapsed = Properties.TargetLogictime + 1;
-            double d_elapsed = Properties.TargetFrametime + 1;
-            double l_time = 0;
-            double d_time = 0;
-            double loop_elapsed = 0;
-            const double delay_time = 1;
+            Stopwatch logicTimer = new Stopwatch();
+            Stopwatch drawTimer = new Stopwatch();
             Sampler fpsAvg = new Sampler(5000);
             Sampler tpsAvg = new Sampler(5000);
-            SDL_FRect rectangle = new SDL_FRect();
-            rectangle.x = 16;
-            rectangle.y = 16;
-            rectangle.w = 300;
-            rectangle.h = 200;
-            _graphics.SetRenderDrawColor(new ColorRGBA(test, test, test));
+            logicTimer.Start();
+            drawTimer.Start();
+            double total = 0;
+            bool flip = false;
             do
             {
-                loop_elapsed = GetPreciseMs();
-                c_tick = GetPreciseMs();
-                cl_tick = GetPreciseMs();
-                if (l_elapsed >= (Properties.TargetLogictime - Properties.TPSOffset))
+                total = GetPreciseMs();
+                if (ETtoMS(logicTimer.ElapsedTicks) >= Properties.TargetLogictime)
                 {
-                    l_time = l_elapsed;
-                    //while (LogicPause) SDL_Delay(10);
-                    l_elapsed = GetPreciseMs();
+                    _cur_logictime = ETtoMS(logicTimer.ElapsedTicks);
+                    tpsAvg.AddPoint(1000.00/_cur_logictime);
+                    logicTimer.Restart();
                     LogicStep();
-                    l_elapsed = GetPreciseMs() - l_elapsed;
-                } else
-                {
-                    //PreciseWait(delay_time);
-                    SDL_Delay(1);
-                    l_elapsed += GetPreciseMs() - c_tick;
+
                 }
-                if (d_elapsed >= (Properties.TargetFrametime - Properties.FPSOffset) || !Properties.EnableFramelimiter)
+                if (ETtoMS(drawTimer.ElapsedTicks) >= Properties.TargetFrametime || !Properties.EnableFramelimiter)
                 {
-                    d_time = d_elapsed;
-                    d_elapsed = GetPreciseMs();
-                    //DrawStep();
-                    SDL_RenderClear(_SDL_Renderer);
-
-                    _graphics.SetRenderDrawColor(new ColorRGBA(test, test, test));
-                    SDL_RenderDrawRectF(_SDL_Renderer, ref rectangle);
-
-                    SDL_RenderPresent(_SDL_Renderer);
-
-                    d_elapsed = GetPreciseMs() - d_elapsed;
-                } else
-                {
-                    //PreciseWait(delay_time);
-                    SDL_Delay(1);
-                    d_elapsed += GetPreciseMs() - cl_tick;
+                    if (!flip)
+                    {
+                        _cur_frametime = ETtoMS(drawTimer.ElapsedTicks);
+                        fpsAvg.AddPoint(1000.00 / _cur_frametime);
+                        drawTimer.Restart();
+                        DrawStep();
+                    }
+                    if (!Properties.EnableFramelimiter) flip = !flip;
                 }
-                //Console.WriteLine("[Debug] F: {0}ms({5}ms), L: {1}ms({6}ms), T: {2}ms - FPS: {3}, TPS: {4}", Math.Round(d_time, 2), Math.Round(l_time, 2), Math.Round(loop_elapsed, 2), Math.Round(fpsAvg.GetAverage(), 2), Math.Round(tpsAvg.GetAverage(), 2), Math.Round(Properties.TargetFrametime, 2), Math.Round(Properties.TargetLogictime, 2));
-                loop_elapsed = GetPreciseMs() - loop_elapsed;
-                _cur_logictime = l_time;
-                _cur_frametime = d_time;
-                _cur_totaltime = loop_elapsed;
-                fpsAvg.AddPoint(1000.00 / (double)d_time);
-                tpsAvg.AddPoint(1000.00 / (double)l_time);
+                total = GetPreciseMs() - total;
+                _cur_totaltime = total;
                 _fps = fpsAvg.GetAverage();
                 _tps = tpsAvg.GetAverage();
             } while (!_StopThread);
@@ -457,6 +435,10 @@ namespace GEngine.Engine
             Stopwatch sw = Stopwatch.StartNew();
             var match = Math.Round((ms/1000) * Stopwatch.Frequency);
             while (sw.ElapsedTicks < match) { }
+        }
+        private static double ETtoMS(long timerTick)
+        {
+            return ((double)timerTick / (double)Stopwatch.Frequency) * 1000.00;
         }
     }
 }
