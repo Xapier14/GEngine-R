@@ -26,8 +26,29 @@ namespace GEngine.Engine
         }
         public IntPtr Window { get; set; }
         public IntPtr Renderer { get; set; }
-        public GraphicsEngine()
+        public GraphicsEngine(VideoBackend backend)
         {
+            switch (backend)
+            {
+                case VideoBackend.Direct3D:
+                    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d");
+                    break;
+                case VideoBackend.OpenGL:
+                    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+                    break;
+                case VideoBackend.OpenGL_ES:
+                    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles");
+                    break;
+                case VideoBackend.OpenGL_ES2:
+                    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
+                    break;
+                case VideoBackend.Metal:
+                    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
+                    break;
+                case VideoBackend.Software:
+                    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
+                    break;
+            }
             RenderClearColor = new ColorRGBA(140, 180, 200);
         }
         public void Init()
@@ -80,11 +101,17 @@ namespace GEngine.Engine
         {
             if (Renderer == IntPtr.Zero)
                 throw new EngineException("Renderer is NULL.", "Graphics.RenderClear()");
-            if (SDL_RenderClear(Renderer) != 0)
+            try
             {
-                Debug.Log("Graphics.RenderClear()", "Error in SDL_RenderClear().");
-                Debug.Log("SDL_GetError()", SDL_GetError());
-                throw new EngineException("Error in SDL_RenderClear().", "Graphics.RenderClear()");
+                if (SDL_RenderClear(Renderer) != 0)
+                {
+                    Debug.Log("Graphics.RenderClear()", "Error in SDL_RenderClear().");
+                    Debug.Log("SDL_GetError()", SDL_GetError());
+                    throw new EngineException("Error in SDL_RenderClear().", "Graphics.RenderClear()");
+                }
+            } catch
+            {
+                Debug.Log("Graphics.RenderClear()", "General error in SDL_RenderClear().");
             }
         }
         public void DrawScene()

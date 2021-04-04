@@ -22,7 +22,8 @@ namespace GEngine.Engine
         OpenGL_ES,
         OpenGL_ES2,
         Metal,
-        Software
+        Software,
+        Auto
     }
     public enum AudioType
     {

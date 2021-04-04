@@ -72,6 +72,7 @@ namespace GEngine.Engine
 
         //Threads
         private Thread _SyncThread, _AsyncThread_L, _AsyncThread_D;
+        private bool _Started = false;
         private bool _StopThread = false, _ForcedThread = false;
         private bool _Aborted_S = false, _Aborted_AL = false, _Aborted_AG = false;
 
@@ -212,17 +213,28 @@ namespace GEngine.Engine
                 return _tps;
             }
         }
+        public bool Running
+        {
+            get
+            {
+                return !(!_Started || _StopThread);
+            }
+        }
+
+        //Special Props
+        public bool LogicPause { get; set; }
+        public bool DrawPause { get; set; }
 
         //Events
         public delegate void GameEngineEventHandler(GameEngineEventArgs eventArgs);
         public event GameEngineEventHandler OnWindowClose;
 
-        public GameEngine(EngineMode mode = EngineMode.Synchronous)
+        public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto)
         {
             Properties = new EngineProperties();
             _resource = new ResourceManager(_SDL_Renderer); //I don't know if this would work.
             _audio = new AudioEngine(_resource);
-            _graphics = new GraphicsEngine();
+            _graphics = new GraphicsEngine(backend);
             _input = new InputManager();
             _scenes = new SceneManager();
 
@@ -255,10 +267,12 @@ namespace GEngine.Engine
             switch (Mode)
             {
                 case EngineMode.Synchronous:
+                    _Started = true;
                     _SyncThread = new Thread(new ThreadStart(Sync_Loop));
                     _SyncThread.Start();
                     break;
                 case EngineMode.Asynchronous:
+                    _Started = true;
 
                     break;
                 default:
@@ -320,18 +334,25 @@ namespace GEngine.Engine
         {
             _input.PollEvent();
             SDL_Delay(1);
-            string s = SDL_GetError();
-            if (s != "" && !_StopThread)
+            if (!LogicPause)
             {
-                Stop();
-                throw new EngineException("Unexpected SDL Error occured, engine halted.", "GameEngine.LogicStep()");
+                //Do stuff here
+                string s = SDL_GetError();
+                if (s != "" && !_StopThread)
+                {
+                    Stop();
+                    throw new EngineException("Unexpected SDL Error occured, engine halted.", "GameEngine.LogicStep()");
+                }
             }
         }
         private void DrawStep()
         {
-            _graphics.RenderClear();
             SDL_Delay(1);
-            SDL_RenderPresent(_SDL_Renderer);
+            if (!DrawPause)
+            {
+                _graphics.RenderClear();
+                SDL_RenderPresent(_SDL_Renderer);
+            }
         }
         private void Sync_Loop()
         {
@@ -354,6 +375,7 @@ namespace GEngine.Engine
                 if (l_elapsed > (Properties.TargetLogictime - Properties.TPSOffset - delay_time))
                 {
                     l_time = l_elapsed;
+                    //while (LogicPause) SDL_Delay(10);
                     l_elapsed = SDL_GetTicks();
                     LogicStep();
                     l_elapsed = SDL_GetTicks() - l_elapsed;
