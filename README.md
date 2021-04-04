@@ -5,11 +5,12 @@ A Rewrite of an old project of mine.
 *This is a __work-in-progress__ project, expect no support.*
 
 ## Important Notes:
-Frametiming is still inaccurate, might switch to nano-second based timing.
+Switched to nano-second based timing, needs rework on timing system as it is heavily inaccurate.
+Might switch to using stopwatchs/perf counters instead.
 
 ## To-Do:
 - [x] Base Engine Loop
-- [x] Frame/Logic Timing
+- [x] Frame/Logic Timing (Brocken)
 - [x] Input Handler
 - [ ] Object/Scene based rendering
 - [ ] Object/Instances

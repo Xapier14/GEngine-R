@@ -114,6 +114,10 @@ namespace GEngine.Engine
                 Debug.Log("Graphics.RenderClear()", "General error in SDL_RenderClear().");
             }
         }
+        public void SetRenderDrawColor(ColorRGBA color)
+        {
+            SDL_SetRenderDrawColor(Renderer, color.Red, color.Green, color.Blue, color.Alpha);
+        }
         public void DrawScene()
         {
 

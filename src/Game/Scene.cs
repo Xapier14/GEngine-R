@@ -13,7 +13,7 @@ namespace GEngine.Game
         public Coord Position { get; set; }
         public Size Size { get; set; }
         public OriginType OriginType { get; set; }
-        
+
         public View()
         {
             Position = new Coord() { X = 0, Y = 0 };
@@ -43,7 +43,6 @@ namespace GEngine.Game
     {
         public SceneProperties Properties { get; set; }
         public GameObjectCollection GameObjects { get; set; }
-        public Size SceneSize { get; set; }
 
         public Scene(Size sceneSize, Size viewSize)
         {
@@ -51,5 +50,15 @@ namespace GEngine.Game
             Properties.View = new View(viewSize);
             Properties.View.OriginType = OriginType.CenterOrigin;
         }
+
+        public static SceneInstance CreateInstance()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class SceneInstance
+    {
+        public Scene Reference { get; set; }
+        public Size SceneSize { get; set; }
     }
 }
