@@ -9,7 +9,7 @@ Nothing worth noting yet.
 
 ## To-Do:
 - [x] Base Engine Loop
-- [x] Frame/Logic Timing (Brocken)
+- [x] Frame/Logic Timing
 - [x] Input Handler
 - [ ] Object/Scene based rendering
 - [ ] Object/Instances
