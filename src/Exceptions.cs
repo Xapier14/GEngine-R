@@ -22,4 +22,20 @@ namespace GEngine
             SourceFile = source;
         }
     }
+    public class ResourceException : EngineException
+    {
+        public new string SourceFile { get; set; }
+        public ResourceException() : base()
+        {
+            SourceFile = "n/a";
+        }
+        public ResourceException(string msg) : base(msg)
+        {
+            SourceFile = "n/a";
+        }
+        public ResourceException(string msg, string source) : base(msg)
+        {
+            SourceFile = source;
+        }
+    }
 }

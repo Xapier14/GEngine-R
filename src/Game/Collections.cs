@@ -84,6 +84,18 @@ namespace GEngine.Engine
             return _data.Contains(item);
         }
 
+        public bool Contains(string resourceName)
+        {
+            foreach (var data in _data)
+            {
+                if (data.ResourceName == resourceName)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public void CopyTo(ResourceBase[] array, int arrayIndex)
         {
             _data.CopyTo(array, arrayIndex);
