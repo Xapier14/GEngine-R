@@ -5,8 +5,7 @@ A Rewrite of an old project of mine.
 *This is a __work-in-progress__ project, expect no support.*
 
 ## Important Notes:
-Switched to nano-second based timing, needs rework on timing system as it is heavily inaccurate.
-Might switch to using stopwatchs/perf counters instead.
+Nothing worth noting yet.
 
 ## To-Do:
 - [x] Base Engine Loop
