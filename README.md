@@ -12,5 +12,5 @@ A Rewrite of an old project of mine.
 - [ ] Object/Instances
 - [ ] Audio Module
 - [x] Resources/Texture loading
-- [ ] Resources/Audio loading
+- [x] Resources/Audio loading
 - [ ] Resource Manager
