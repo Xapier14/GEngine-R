@@ -120,8 +120,7 @@ namespace GEngine.Engine
         {
             get
             {
-                int w, h;
-                SDL_GetWindowSize(_SDL_Window, out w, out h);
+                SDL_GetWindowSize(_SDL_Window, out int w, out int h);
                 return new Size(w, h);
             }
         }
@@ -373,7 +372,7 @@ namespace GEngine.Engine
             Sampler tpsAvg = new Sampler(5000);
             logicTimer.Start();
             drawTimer.Start();
-            double total = 0;
+            double total;
             bool flip = false;
             do
             {
@@ -384,7 +383,6 @@ namespace GEngine.Engine
                     tpsAvg.AddPoint(1000.00/_cur_logictime);
                     logicTimer.Restart();
                     LogicStep();
-
                 }
                 if (ETtoMS(drawTimer.ElapsedTicks) >= Properties.TargetFrametime || !Properties.EnableFramelimiter)
                 {

@@ -42,10 +42,12 @@ namespace GEngine.Game
     public abstract class Scene
     {
         public SceneProperties Properties { get; set; }
+        public Size SceneSize { get; set; }
         public GameObjectCollection GameObjects { get; set; }
 
         public Scene(Size sceneSize, Size viewSize)
         {
+            SceneSize = sceneSize;
             Properties = new SceneProperties();
             Properties.View = new View(viewSize);
             Properties.View.OriginType = OriginType.CenterOrigin;
@@ -59,6 +61,5 @@ namespace GEngine.Game
     public class SceneInstance
     {
         public Scene Reference { get; set; }
-        public Size SceneSize { get; set; }
     }
 }

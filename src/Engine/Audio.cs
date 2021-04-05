@@ -59,24 +59,34 @@ namespace GEngine.Engine
             }
             else
             {
-                Mix_HaltMusic();
+#pragma warning disable CA1806 // Do not ignore method results
+                Mix_HaltMusic(); //Method always return 0, pretty silly imo.
+#pragma warning restore CA1806 // Do not ignore method results
             }
         }
         public void PlayEffect(string audioResource, int loops = 0, int audioChannel = 0)
         {
             var res = _resources.GetAudioResource(audioResource);
             if (res.AudioType != AudioType.Effect) throw new EngineException($"Audio '{audioResource}' is not an effect.", "AudioEngine.PlayEffect()");
-            Mix_PlayChannel(audioChannel, res.DataPtr[0], loops);
+            if(Mix_PlayChannel(audioChannel, res.DataPtr[0], loops) == -1)
+            {
+                Debug.Log("AudioEngine.PlayEffectTimed()", "Error playing effect, could either be caused by no free channels or a fatal error.");
+            }
         }
         public void PlayEffectTimed(string audioResource, int playingTimeMs, int loops = 0, int audioChannel = 0)
         {
             var res = _resources.GetAudioResource(audioResource);
             if (res.AudioType != AudioType.Effect) throw new EngineException($"Audio '{audioResource}' is not an effect.", "AudioEngine.PlayEffect()");
-            Mix_PlayChannelTimed(audioChannel, res.DataPtr[0], loops, playingTimeMs);
+            if (Mix_PlayChannelTimed(audioChannel, res.DataPtr[0], loops, playingTimeMs) == -1)
+            {
+                Debug.Log("AudioEngine.PlayEffectTimed()","Error playing effect, could either be caused by no free channels or a fatal error.");
+            }
         }
         public void StopChannel(int audioChannel = 0)
         {
-            Mix_HaltChannel(audioChannel);
+#pragma warning disable CA1806 // Do not ignore method results
+            Mix_HaltChannel(audioChannel); //Method always return 0, pretty silly imo.
+#pragma warning restore CA1806 // Do not ignore method results
         }
         public void PauseChannel(int audioChannel = 0)
         {
