@@ -65,6 +65,72 @@ namespace GEngine.Engine
             throw new EngineException($"GameObject with name '{name}' not found in collection.", "GameObjectCollection.Get()");
         }
     }
+    public class InstanceCollection : ICollection<Instance>
+    {
+        private ICollection<Instance> _data;
+
+        public InstanceCollection()
+        {
+            _data = new List<Instance>();
+        }
+
+        public int Count => _data.Count;
+
+        public bool IsReadOnly => _data.IsReadOnly;
+
+        public void Add(Instance item)
+        {
+            _data.Add(item);
+        }
+
+        public void Clear()
+        {
+            _data.Clear();
+        }
+
+        public bool Contains(Instance item)
+        {
+            return _data.Contains(item);
+        }
+
+        public void CopyTo(Instance[] array, int arrayIndex)
+        {
+            _data.CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<Instance> GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
+        public bool Remove(Instance item)
+        {
+            return _data.Remove(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
+        public Instance Get(string name)
+        {
+            foreach (Instance go in _data)
+            {
+                if (go.Reference.ObjectName == name) return go;
+            }
+            throw new EngineException($"Instance of GameObject '{name}' not found in collection.", "InstanceCollection.Get()");
+        }
+
+        public Instance Get(Guid hash)
+        {
+            foreach (Instance go in _data)
+            {
+                if (go.Hash == hash) return go;
+            }
+            throw new EngineException($"Instance with hash '{hash}' not found in collection.", "InstanceCollection.Get()");
+        }
+    }
     public class ResourceCollection : ICollection<ResourceBase>
     {
         private ICollection<ResourceBase> _data;

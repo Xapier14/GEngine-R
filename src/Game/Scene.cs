@@ -61,5 +61,6 @@ namespace GEngine.Game
     public class SceneInstance
     {
         public Scene Reference { get; set; }
+        public InstanceCollection Instances { get; set; }
     }
 }

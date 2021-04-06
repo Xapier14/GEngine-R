@@ -12,8 +12,11 @@ Nothing worth noting yet.
 - [x] Frame/Logic Timing
 - [x] Input Handler
 - [ ] Object/Scene based rendering
-- [ ] Object/Instances
+- [x] Object/Instances
 - [x] Audio Module
 - [x] Resources/Texture loading
 - [x] Resources/Audio loading
 - [x] Resource Manager
+- [x] GameObject Event System
+- [ ] Scene Instancing
+- [ ] Physics System

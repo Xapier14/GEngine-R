@@ -38,8 +38,8 @@ namespace GEngine.Engine
         {
             TargetTPS = 64;
             TargetFPS = 60;
-            TPSOffset = -0.12; //Play around with this to time the game speed.
-            FPSOffset = -0.12; //Play around with this to time the fps.
+            TPSOffset = -0.15; //Play around with this to time the game speed.
+            FPSOffset = -0.02; //Play around with this to time the fps. (Try: -0.02 & -0.15)
             EnableFramelimiter = true;
             Title = "GEngine | Re:";
         }
@@ -368,8 +368,8 @@ namespace GEngine.Engine
             InitGraphics();
             Stopwatch logicTimer = new Stopwatch();
             Stopwatch drawTimer = new Stopwatch();
-            Sampler fpsAvg = new Sampler(5000);
-            Sampler tpsAvg = new Sampler(5000);
+            Sampler fpsAvg = new Sampler(100);
+            Sampler tpsAvg = new Sampler(100);
             logicTimer.Start();
             drawTimer.Start();
             double total;
