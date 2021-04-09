@@ -6,6 +6,13 @@
     <RootNamespace>GEngine</RootNamespace>
     <AssemblyName>GEngine</AssemblyName>
     <Platforms>AnyCPU;x86</Platforms>
+    <Authors>Lance Crisang</Authors>
+    <Product>GEngine Re:</Product>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <Version>1.0-dev</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <RepositoryType>Public</RepositoryType>
+    <RepositoryUrl>https://github.com/Xapier14/GEngine-R</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

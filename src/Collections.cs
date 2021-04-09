@@ -81,6 +81,8 @@ namespace GEngine.Engine
         public void Add(Instance item)
         {
             _data.Add(item);
+            //add quicksort implementation on instance depth
+            //ascending order where top is the least greatest
         }
 
         public void Clear()

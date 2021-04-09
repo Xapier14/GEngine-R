@@ -55,6 +55,7 @@ namespace GEngine.Engine
         //Engine Props
         public EngineMode Mode { get; set; }
         public EngineProperties Properties { get; set; }
+        private VideoBackend _vBackend { get; set; }
 
         //Threads
         private Thread _SyncThread, _AsyncThread_L, _AsyncThread_D;
@@ -147,6 +148,11 @@ namespace GEngine.Engine
             }
         }
 
+        //OpenGL fix
+        private bool _rebuilt = false;
+        private int _rebuildOnCall = 2;
+        private int _rebuildCurrentCall = 0;
+
         //Stats
         private double _cur_frametime = 0, _cur_logictime = 0, _cur_totaltime = 0;
         private const uint _timeMargin = 3;
@@ -224,8 +230,20 @@ namespace GEngine.Engine
             _graphics = new GraphicsEngine(backend);
             _input = new InputManager();
             _scenes = new SceneManager();
+            _vBackend = backend;
 
             _input.WindowEvent += InputHandler_WindowEvent;
+            _input.EngineEvent += _input_EngineEvent;
+        }
+
+        private void _input_EngineEvent(InputCallbackEventArg eventArg)
+        {
+            switch (eventArg.CallbackType)
+            {
+                case InputCallbackType.RenderDeviceReset:
+                    _resource.RebuildTextures();
+                    break;
+            }
         }
 
         private void InputHandler_WindowEvent(InputCallbackEventArg eventArg)
@@ -245,6 +263,12 @@ namespace GEngine.Engine
                                 EventType = GameEngineEventType.WindowClose
                             });
                         }
+                    break;
+                case InputCallbackType.FocusGained:
+                    if (_vBackend == VideoBackend.OpenGL || _vBackend == VideoBackend.OpenGL_ES || _vBackend == VideoBackend.OpenGL_ES2)
+                    {
+                        _resource.RebuildTextures();
+                    }
                     break;
             }
         }
@@ -266,6 +290,8 @@ namespace GEngine.Engine
                     //unknown mode
                     throw new EngineException("Unknown engine mode.", "GameEngine.Start()");
             }
+            while (_SDL_Renderer == IntPtr.Zero || _SDL_Window == IntPtr.Zero) Thread.Sleep(10);
+            _resource.SetRenderer(_SDL_Renderer);
         }
         public void Stop()
         {
@@ -284,14 +310,22 @@ namespace GEngine.Engine
                         //unknown mode
                         throw new EngineException("Unknown engine mode.", "GameEngine.Stop()");
                 }
+            FreeResources();
             SDL_Quit();
             Debug.Log("GameEngine.Stop()", "Engine stopped.");
+        }
+        private void FreeResources()
+        {
+            SDL_DestroyRenderer(_SDL_Renderer);
+            SDL_DestroyWindow(_SDL_Window);
+            _resource.Quit();
         }
         private void ForceStop()
         {
             _StopThread = true;
             _ForcedThread = true;
             Thread.Sleep(10);
+            FreeResources();
             SDL_Quit();
             Debug.Log("GameEngine.ForceStop()", "Engine forcibly stopped.");
         }
@@ -352,12 +386,35 @@ namespace GEngine.Engine
             if (!DrawPause)
             {
                 _graphics.RenderClear();
-                SDL_FRect rectangle = new SDL_FRect();
-                rectangle.x = 16;
-                rectangle.y = 16;
+                if (!_rebuilt)
+                {
+                    if (_rebuildCurrentCall > _rebuildOnCall)
+                    {
+                        if (_vBackend == VideoBackend.OpenGL || _vBackend == VideoBackend.OpenGL_ES || _vBackend == VideoBackend.OpenGL_ES2)
+                        {
+                            _resource.RebuildTextures();
+                        }
+                        _rebuilt = true;
+                    } else
+                    {
+                        _rebuildCurrentCall++;
+                    }
+                }
+                SDL_Rect rectangle = new SDL_Rect();
+                rectangle.x = 420;
+                rectangle.y = 420;
                 rectangle.w = 300;
                 rectangle.h = 200;
+                SDL_Rect s = new SDL_Rect();
+                s.x = 0;
+                s.y = 0;
+                s.w = 400;
+                s.h = 400;
                 _graphics.SetRenderDrawColor(new ColorRGBA(test, test, test));
+                //SDL_RenderDrawRectF(_SDL_Renderer, ref rectangle);
+                SDL_RenderFillRect(_SDL_Renderer, ref rectangle);
+                _graphics.SetRenderDrawColor(new ColorRGBA(255, 255, 255));
+                if (_resource.HasTexture("spr_test")) SDL_RenderCopy(_SDL_Renderer, _resource.GetTextureResource("spr_test").Textures[0], ref s, ref s);
                 SDL_RenderPresent(_SDL_Renderer);
             }
         }

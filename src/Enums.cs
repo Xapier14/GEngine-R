@@ -41,7 +41,12 @@ namespace GEngine.Engine
     }
     public enum InputCallbackType
     {
-        WindowClose
+        WindowClose,
+        RenderDeviceReset,
+        FocusGained,
+        FocusLost,
+        WindowExposed,
+        WindowShown
     }
 }
 namespace GEngine.Game

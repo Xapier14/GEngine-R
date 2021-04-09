@@ -16,6 +16,8 @@ namespace GEngine.Engine
 {
     public class ResourceManager
     {
+        private const bool FLAG_ALLOW_MISSING_METADATA = true;
+        private const bool FLAG_USE_ALTERNATE_TEXTURE_STRAT = false;
         private ResourceCollection _Audio, _Textures;
         private IntPtr _SDL_Renderer;
 
@@ -26,6 +28,36 @@ namespace GEngine.Engine
             IMG_Init(IMG_InitFlags.IMG_INIT_JPG | IMG_InitFlags.IMG_INIT_PNG | IMG_InitFlags.IMG_INIT_TIF);
             Mix_Init(MIX_InitFlags.MIX_INIT_OGG | MIX_InitFlags.MIX_INIT_MP3 | MIX_InitFlags.MIX_INIT_OPUS | MIX_InitFlags.MIX_INIT_MID | MIX_InitFlags.MIX_INIT_FLAC);
             _SDL_Renderer = gameRenderer;
+        }
+        public void Quit()
+        {
+            foreach(AudioResource au in _Audio)
+            {
+                au.Destroy();
+            }
+            foreach(TextureResource te in _Textures)
+            {
+                te.Destroy();
+            }
+        }
+        public void SetRenderer(IntPtr sdlRenderer)
+        {
+            _SDL_Renderer = sdlRenderer;
+        }
+        public bool HasTexture(string resourceName)
+        {
+            foreach (TextureResource res in _Textures)
+            {
+                if (res.ResourceName == resourceName) return true;
+            }
+            return false;
+        }
+        public void RebuildTextures()
+        {
+            foreach(TextureResource tex in _Textures)
+            {
+                tex.Rebuild(_SDL_Renderer);
+            }
         }
         public void LoadAsTexture(string fileLocation, string resourceName)
         {
@@ -75,10 +107,10 @@ namespace GEngine.Engine
                     files.Add(entry.Name);
                 }
             }
-            if (!loadedMetadata)
+            if (!loadedMetadata && !FLAG_ALLOW_MISSING_METADATA)
             {
                 archive.Dispose();
-                if (!File.Exists(fileLocation)) throw new ResourceException($"Error loading resource '{resourceName}'. Metadata not found.", fileLocation);
+                throw new ResourceException($"Error loading resource '{resourceName}'. Metadata not found.", fileLocation);
             }
             List<IntPtr> surfaces = new List<IntPtr>();
             List<IntPtr> textures = new List<IntPtr>();
@@ -90,22 +122,41 @@ namespace GEngine.Engine
                 {
                     ZipArchiveEntry data = archive.GetEntry(file);
                     Stream s = data.Open();
-                    byte[] byteData = new byte[s.Length];
+                    byte[] byteData = new byte[data.Length];
                     GCHandle handle = GCHandle.Alloc(byteData, GCHandleType.Pinned);
                     s.Read(byteData, 0, byteData.Length);
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Read texture data from {file}#{resourceName} @ {byteData.Length} byte(s).");
                     IntPtr rwops = SDL_RWFromMem(handle.AddrOfPinnedObject(), byteData.Length);
-                    IntPtr surface = IMG_Load_RW(rwops, 1);
-                    if (SDL_GetError() != "" || surface == IntPtr.Zero || rwops == IntPtr.Zero)
+                    IntPtr surface;
+                    int rwop_close = 1;
+                    if (FLAG_USE_ALTERNATE_TEXTURE_STRAT) rwop_close = 0;
+                    /*
+                    if (file.EndsWith(".bmp"))
                     {
-                        Debug.Log("ResourceManager.LoadAsTexture()", $"Error reading texture data {file}#{resourceName}.");
+                        surface = IMG_LoadTyped_RW(rwops, 0, "BMP");
+                    } else
+                    */
+                    surface = IMG_Load_RW(rwops, rwop_close);
+                    string sE1 = SDL_GetError();
+                    if (surface == IntPtr.Zero || rwops == IntPtr.Zero)
+                    {
+                        Debug.Log("ResourceManager.LoadAsTexture()", $"Error reading texture data {file}#{resourceName}. {sE1}");
                         continue;
                     }
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Loaded texture data as surface from {file}#{resourceName}.");
-                    IntPtr texture = SDL_CreateTextureFromSurface(_SDL_Renderer, surface);
-                    if (SDL_GetError() != "" || texture == IntPtr.Zero)
+                    IntPtr texture;
+                    if (!FLAG_USE_ALTERNATE_TEXTURE_STRAT)
                     {
-                        Debug.Log("ResourceManager.LoadAsTexture()", $"Error creating texture data {file}#{resourceName}.");
+                        texture = SDL_CreateTextureFromSurface(_SDL_Renderer, surface);
+                    }
+                    else
+                    {
+                        texture = IMG_LoadTexture_RW(_SDL_Renderer, rwops, 1);
+                    }
+                    string sE2 = SDL_GetError();
+                    if (texture == IntPtr.Zero)
+                    {
+                        Debug.Log("ResourceManager.LoadAsTexture()", $"Error creating texture data {file}#{resourceName}. {sE2}");
                         continue;
                     }
                     surfaces.Add(surface);
@@ -179,6 +230,11 @@ namespace GEngine.Engine
     {
         public IntPtr[] DataPtr { get; set; }
         public string ResourceName { get; set; }
+
+        public virtual void Destroy()
+        {
+
+        }
     }
     public class AudioResource : ResourceBase
     {
@@ -193,5 +249,36 @@ namespace GEngine.Engine
         public Size SpriteSize { get; set; }
         public Size SheetSize { get; set; }
         public int Count { get => Textures.Length; }
+
+        public override void Destroy()
+        {
+            foreach (IntPtr tex in Textures)
+            {
+                SDL_DestroyTexture(tex);
+            }
+            foreach (IntPtr sur in DataPtr)
+            {
+                SDL_FreeSurface(sur);
+            }
+        }
+
+        public void Rebuild(IntPtr renderer)
+        {
+            foreach (IntPtr tex in Textures)
+            {
+                SDL_DestroyTexture(tex);
+            }
+            int i = 0;
+            foreach (IntPtr sur in DataPtr)
+            {
+                List<IntPtr> textures = new List<IntPtr>();
+                IntPtr tex = SDL_CreateTextureFromSurface(renderer, sur);
+                if (tex == IntPtr.Zero)
+                {
+                    Debug.Log("TextureResource.Rebuild()", $"Could not rebuild texture {ResourceName}#{i}: {SDL_GetError()}");
+                }
+                i++;
+            }
+        }
     }
 }

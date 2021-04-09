@@ -72,11 +72,11 @@ namespace GEngine.Engine
             if (win == IntPtr.Zero)
             {
                 //Error
-                Debug.Log("Graphics.CreateWindow(string, int, int, int, int)", "Error creating SDL window.");
+                Debug.Log("Graphics.CreateWindow()", "Error creating SDL window.");
                 Debug.Log("SDL_GetError()", SDL_GetError());
-                throw new EngineException("Error creating SDL window.", "Graphics.CreateWindow(string, int, int, int, int)");
+                throw new EngineException("Error creating SDL window.", "Graphics.CreateWindow()");
             }
-            Debug.Log("Graphics.CreateWindow(string, int, int, int, int)", "Created SDL window.");
+            Debug.Log("Graphics.CreateWindow()", "Created SDL window.");
             Window = win;
             return win;
         }
@@ -95,6 +95,13 @@ namespace GEngine.Engine
             }
             Debug.Log("Graphics.CreateRenderer()", "Created SDL renderer.");
             Renderer = ren;
+
+            SDL_GetRendererInfo(ren, out SDL_RendererInfo info);
+
+            Console.WriteLine("[Renderer Info] Name: {0}", UTF8_ToManaged(info.name));
+            Console.WriteLine("[Renderer Info] Flags: {0}", info.flags);
+            Console.WriteLine("[Renderer Info] Max Texture Size: {0}x{1}", info.max_texture_width, info.max_texture_height);
+
             return ren;
         }
         public void RenderClear()
@@ -118,7 +125,7 @@ namespace GEngine.Engine
         {
             SDL_SetRenderDrawColor(Renderer, color.Red, color.Green, color.Blue, color.Alpha);
         }
-        public void DrawScene()
+        public void DrawScene(SceneInstance scene)
         {
 
         }

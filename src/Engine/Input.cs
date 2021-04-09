@@ -16,6 +16,7 @@ namespace GEngine.Engine
         private Dictionary<SDL_Keycode, bool> _keys;
         public delegate void InputManagerEventHandler(InputCallbackEventArg eventArg);
         public event InputManagerEventHandler WindowEvent;
+        public event InputManagerEventHandler EngineEvent;
 
         public InputManager()
         {
@@ -40,6 +41,30 @@ namespace GEngine.Engine
                                     CallbackType = InputCallbackType.WindowClose
                                 });
                                 break;
+                            case SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED:
+                                WindowEvent?.Invoke(new InputCallbackEventArg()
+                                {
+                                    CallbackType = InputCallbackType.FocusGained
+                                });
+                                break;
+                            case SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST:
+                                WindowEvent?.Invoke(new InputCallbackEventArg()
+                                {
+                                    CallbackType = InputCallbackType.FocusLost
+                                });
+                                break;
+                            case SDL_WindowEventID.SDL_WINDOWEVENT_EXPOSED:
+                                WindowEvent?.Invoke(new InputCallbackEventArg()
+                                {
+                                    CallbackType = InputCallbackType.WindowExposed
+                                });
+                                break;
+                            case SDL_WindowEventID.SDL_WINDOWEVENT_SHOWN:
+                                WindowEvent?.Invoke(new InputCallbackEventArg()
+                                {
+                                    CallbackType = InputCallbackType.WindowShown
+                                });
+                                break;
                         }
                         break;
                     case SDL_EventType.SDL_KEYDOWN:
@@ -60,6 +85,12 @@ namespace GEngine.Engine
                         {
                             _keys.Add(e.key.keysym.sym, false);
                         }
+                        break;
+                    case SDL_EventType.SDL_RENDER_DEVICE_RESET:
+                        EngineEvent?.Invoke(new InputCallbackEventArg()
+                        {
+                            CallbackType = InputCallbackType.RenderDeviceReset
+                        });
                         break;
                 }
             }

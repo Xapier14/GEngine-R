@@ -78,7 +78,7 @@
       }
     },
     "D:\\Project Repositories\\GEngine-R\\GEngine-R.csproj": {
-      "version": "1.0.0",
+      "version": "1.0.0-dev",
       "restore": {
         "projectUniqueName": "D:\\Project Repositories\\GEngine-R\\GEngine-R.csproj",
         "projectName": "GEngine",

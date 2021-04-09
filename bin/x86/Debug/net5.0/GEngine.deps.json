@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v5.0": {
-      "GEngine/1.0.0": {
+      "GEngine/1.0-dev": {
         "dependencies": {
           "SDL2-CS": "1.0.0"
         },
@@ -22,7 +22,7 @@
     }
   },
   "libraries": {
-    "GEngine/1.0.0": {
+    "GEngine/1.0-dev": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

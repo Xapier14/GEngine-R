@@ -10,27 +10,23 @@ namespace GEngine.Game
 {
     public class View
     {
-        public Coord Position { get; set; }
         public Size Size { get; set; }
         public OriginType OriginType { get; set; }
 
         public View()
         {
-            Position = new Coord() { X = 0, Y = 0 };
             Size = new Size() { W = 0, H = 0 };
             OriginType = OriginType.ManualOrigin;
         }
 
         public View(int w, int h)
         {
-            Position = new Coord() { X = 0, Y = 0 };
             Size = new Size() { W = w, H = h };
             OriginType = OriginType.ManualOrigin;
         }
 
         public View(Size size)
         {
-            Position = new Coord() { X = 0, Y = 0 };
             Size = new Size() { W = size.W, H = size.H };
             OriginType = OriginType.ManualOrigin;
         }
@@ -41,9 +37,9 @@ namespace GEngine.Game
     }
     public abstract class Scene
     {
+        public string Name { get; set; }
         public SceneProperties Properties { get; set; }
         public Size SceneSize { get; set; }
-        public GameObjectCollection GameObjects { get; set; }
 
         public Scene(Size sceneSize, Size viewSize)
         {
@@ -53,14 +49,43 @@ namespace GEngine.Game
             Properties.View.OriginType = OriginType.CenterOrigin;
         }
 
-        public static SceneInstance CreateInstance()
+        public SceneInstance CreateInstance()
         {
             throw new NotImplementedException();
+        }
+
+        public virtual void OnCreate(SceneInstance caller)
+        {
+
+        }
+
+        public virtual void Step(SceneInstance caller)
+        {
+
+        }
+
+        public virtual void OnDestroy(SceneInstance caller)
+        {
+
         }
     }
     public class SceneInstance
     {
-        public Scene Reference { get; set; }
+        public Scene BaseReference { get; set; }
         public InstanceCollection Instances { get; set; }
+        public Type ReferenceType { get; set; }
+        public Coord ViewPosition { get; set; }
+        public dynamic Reference
+        {
+            get
+            {
+                return Convert.ChangeType(BaseReference, ReferenceType);
+            }
+        }
+        public void Reinstance()
+        {
+            BaseReference.OnDestroy(this);
+            BaseReference.OnCreate(this);
+        }
     }
 }

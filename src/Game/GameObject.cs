@@ -64,6 +64,7 @@ namespace GEngine.Game
         public Coord Position;
         public int ImageIndex { get; set; }
         public int ImageSpeed { get; set; }
+        public int Depth { get; set; }
         public double ImageAngle { get; set; }
         public bool IsAnimated { get; set; }
         public Guid Hash { get; private set; }
@@ -74,6 +75,7 @@ namespace GEngine.Game
             Hash = Guid.NewGuid();
             PhysicsVariables = new PhysicsVariables();
             Position = new Coord(0, 0);
+            Depth = 0;
         }
     }
 }
