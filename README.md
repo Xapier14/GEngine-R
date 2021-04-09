@@ -20,3 +20,7 @@ Nothing worth noting yet.
 - [x] GameObject Event System
 - [ ] Scene Instancing
 - [ ] Physics System
+
+## Known Issues
+- OpenGL & Textures with transparency.
+- Possible Memory Corruption on LoadAsTexture().

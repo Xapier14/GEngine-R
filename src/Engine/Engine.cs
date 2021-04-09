@@ -150,7 +150,13 @@ namespace GEngine.Engine
 
         //OpenGL fix
         private bool _rebuilt = false;
-        private int _rebuildOnCall = 2;
+        private double _rebuildOnCall
+        {
+            get
+            {
+                return Math.Ceiling(Properties.TargetFPS / 10); //Rebuild after 1/32 fps
+            }
+        }
         private int _rebuildCurrentCall = 0;
 
         //Stats
@@ -227,6 +233,13 @@ namespace GEngine.Engine
             Properties = new EngineProperties();
             _resource = new ResourceManager(_SDL_Renderer); //I don't know if this would work.
             _audio = new AudioEngine(_resource);
+
+            if (!IsRenderDriverAvailable(backend))
+            {
+                Debug.Log("GameEngine.GameEngine()", $"Render Driver '{BackendToString(backend)}' is not available. Switched to software fallback.");
+                backend = VideoBackend.Software;
+            }
+
             _graphics = new GraphicsEngine(backend);
             _input = new InputManager();
             _scenes = new SceneManager();
@@ -234,6 +247,49 @@ namespace GEngine.Engine
 
             _input.WindowEvent += InputHandler_WindowEvent;
             _input.EngineEvent += _input_EngineEvent;
+        }
+
+        public string BackendToString(VideoBackend backend)
+        {
+            switch (backend)
+            {
+                case VideoBackend.Direct3D:
+                    return "direct3d";
+                case VideoBackend.OpenGL:
+                    return "opengl";
+                case VideoBackend.OpenGL_ES:
+                    return "opengles";
+                case VideoBackend.OpenGL_ES2:
+                    return "opengles2";
+                case VideoBackend.Metal:
+                    return "metal";
+                case VideoBackend.Software:
+                    return "software";
+                case VideoBackend.Auto:
+                    return "auto";
+                default:
+                    return "n/a";
+            }
+        }
+
+        public bool IsRenderDriverAvailable(VideoBackend backend)
+        {
+            if (backend == VideoBackend.Auto) return true;
+            string[] drivers = GetAvailableRenderDrivers();
+            for (int i = 0; i < drivers.Length; ++i)
+                if (drivers[i] == BackendToString(backend)) return true;
+            return false;
+        }
+
+        public string[] GetAvailableRenderDrivers()
+        {
+            string[] ret = new string[SDL_GetNumRenderDrivers()];
+            for (int i = 0; i < ret.Length; ++i)
+            {
+                SDL_GetRenderDriverInfo(i, out SDL_RendererInfo info);
+                ret[i] = UTF8_ToManaged(info.name);
+            }
+            return ret;
         }
 
         private void _input_EngineEvent(InputCallbackEventArg eventArg)
@@ -280,6 +336,7 @@ namespace GEngine.Engine
                 case EngineMode.Synchronous:
                     _Started = true;
                     _SyncThread = new Thread(new ThreadStart(Sync_Loop));
+                    _SyncThread.Name = "Synchronous Game Thread";
                     _SyncThread.Start();
                     break;
                 case EngineMode.Asynchronous:
@@ -376,7 +433,7 @@ namespace GEngine.Engine
                 string s = SDL_GetError();
                 if (s != "" && !_StopThread)
                 {
-                    Stop();
+                    ForceStop();
                     throw new EngineException("Unexpected SDL Error occured, engine halted.", "GameEngine.LogicStep()");
                 }
             }
@@ -414,7 +471,18 @@ namespace GEngine.Engine
                 //SDL_RenderDrawRectF(_SDL_Renderer, ref rectangle);
                 SDL_RenderFillRect(_SDL_Renderer, ref rectangle);
                 _graphics.SetRenderDrawColor(new ColorRGBA(255, 255, 255));
-                if (_resource.HasTexture("spr_test")) SDL_RenderCopy(_SDL_Renderer, _resource.GetTextureResource("spr_test").Textures[0], ref s, ref s);
+                if (_resource.HasTexture("spr_test"))
+                {
+                    if (!_StopThread && _resource.GetTextureResource("spr_test").Textures.Length > 0)
+                    {
+                        int e = SDL_RenderCopy(_SDL_Renderer, _resource.GetTextureResource("spr_test").Textures[0], ref s, ref s);
+                        if (e != 0)
+                        {
+                            Debug.Log("GameEngine.DrawStep()", "Error rendering rexture: " + SDL_GetError());
+                            throw new EngineException();
+                        }
+                    }
+                }
                 SDL_RenderPresent(_SDL_Renderer);
             }
         }

@@ -16,8 +16,8 @@ namespace GEngine.Engine
 {
     public class ResourceManager
     {
-        private const bool FLAG_ALLOW_MISSING_METADATA = true;
-        private const bool FLAG_USE_ALTERNATE_TEXTURE_STRAT = false;
+        private const bool FLAG_ALLOW_MISSING_METADATA = true; //hack
+        private const bool FLAG_USE_ALTERNATE_TEXTURE_STRAT = false; //hack
         private ResourceCollection _Audio, _Textures;
         private IntPtr _SDL_Renderer;
 
@@ -122,11 +122,13 @@ namespace GEngine.Engine
                 {
                     ZipArchiveEntry data = archive.GetEntry(file);
                     Stream s = data.Open();
-                    byte[] byteData = new byte[data.Length];
-                    GCHandle handle = GCHandle.Alloc(byteData, GCHandleType.Pinned);
-                    s.Read(byteData, 0, byteData.Length);
-                    Debug.Log("ResourceManager.LoadAsTexture()", $"Read texture data from {file}#{resourceName} @ {byteData.Length} byte(s).");
-                    IntPtr rwops = SDL_RWFromMem(handle.AddrOfPinnedObject(), byteData.Length);
+                    byte[] buffer = new byte[data.Length];
+                    //GCHandle handle = GCHandle.Alloc(byteData, GCHandleType.Pinned);
+                    IntPtr ptrArray = Marshal.AllocHGlobal(buffer.Length);
+                    s.Read(buffer, 0, buffer.Length);
+                    Marshal.Copy(buffer, 0, ptrArray, buffer.Length);
+                    Debug.Log("ResourceManager.LoadAsTexture()", $"Read texture data from {file}#{resourceName} @ {buffer.Length} byte(s).");
+                    IntPtr rwops = SDL_RWFromMem(ptrArray, buffer.Length);
                     IntPtr surface;
                     int rwop_close = 1;
                     if (FLAG_USE_ALTERNATE_TEXTURE_STRAT) rwop_close = 0;
@@ -145,6 +147,7 @@ namespace GEngine.Engine
                     }
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Loaded texture data as surface from {file}#{resourceName}.");
                     IntPtr texture;
+                    SDL_RenderClear(_SDL_Renderer);
                     if (!FLAG_USE_ALTERNATE_TEXTURE_STRAT)
                     {
                         texture = SDL_CreateTextureFromSurface(_SDL_Renderer, surface);
@@ -163,7 +166,7 @@ namespace GEngine.Engine
                     textures.Add(texture);
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Created texture from surface {file}#{resourceName}.");
                     //SDL_FreeSurface(surface);
-                    handle.Free();
+                    Marshal.FreeHGlobal(ptrArray);
                 } catch
                 {
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Error loading texture {file}#{resourceName}. Skipped file.");
