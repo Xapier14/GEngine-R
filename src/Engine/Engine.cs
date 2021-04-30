@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using static SDL2.SDL;
 
 using GEngine.Game;
@@ -19,6 +20,7 @@ namespace GEngine.Engine
         public double TPSOffset { get; set; }
         public double FPSOffset { get; set; }
         public bool EnableFramelimiter { get; set; }
+        public bool HideConsoleWindow { get; set; }
         public string Title { get; set; }
         public double TargetFrametime
         {
@@ -42,6 +44,7 @@ namespace GEngine.Engine
             TPSOffset = -0.15; //Play around with this to time the game speed.
             FPSOffset = -0.02; //Play around with this to time the fps. (Try: -0.02 & -0.15)
             EnableFramelimiter = true;
+            HideConsoleWindow = true;
             Title = "GEngine | Re:";
         }
     }
@@ -233,6 +236,12 @@ namespace GEngine.Engine
         public event GameEngineEventHandler OnWindowClose;
         public event GameEngineEventHandler OnInfoMsg;
 
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
         public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto)
         {
             ResourcesLoaded = false;
@@ -346,6 +355,11 @@ namespace GEngine.Engine
 
         public void Start()
         {
+            if (Properties.HideConsoleWindow)
+            {
+                ShowWindow(GetConsoleWindow(), 0);
+            }
+
             switch (Mode)
             {
                 case EngineMode.Synchronous:
@@ -503,6 +517,8 @@ namespace GEngine.Engine
             {
                 SDL_Delay(1000);
             }
+
+            GEngine.LoadStatics(this);
 
             logicTimer.Start();
             drawTimer.Start();

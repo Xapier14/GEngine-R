@@ -39,6 +39,7 @@ namespace GEngine.Engine
                     break;
                 case VideoBackend.OpenGL:
                     SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+                    SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_DEPTH_SIZE, 32);
                     break;
                 case VideoBackend.OpenGL_ES:
                     SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles");

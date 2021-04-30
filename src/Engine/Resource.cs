@@ -18,7 +18,7 @@ namespace GEngine.Engine
     public class ResourceManager
     {
         private const bool FLAG_ALLOW_MISSING_METADATA = true; //hack
-        private const bool FLAG_USE_ALTERNATE_TEXTURE_STRAT = false; //hack
+        private const bool FLAG_USE_ALTERNATE_TEXTURE_STRAT = false; //hack, but wont work lol
         private ResourceCollection _Audio, _Textures;
         private IntPtr _SDL_Renderer;
 
