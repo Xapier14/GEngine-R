@@ -24,6 +24,7 @@ namespace GEngine.Engine
         public SceneManager()
         {
             _Scenes = new Dictionary<string, Scene>();
+            _ActiveScenes = new Dictionary<string, SceneInstance>();
         }
 
         public void AddScene(Scene scene)
@@ -68,7 +69,13 @@ namespace GEngine.Engine
         {
             return _Scenes.ContainsKey(name);
         }
-
+        public void SceneStep()
+        {
+            if (_CurrentScene != null)
+            {
+                _CurrentScene.BaseReference.Step(_CurrentScene);
+            }
+        }
         public void SwitchToScene(string name, bool reinstance = true)
         {
             if (!HasScene(name)) throw new EngineException($"Scene '{name}' not found.");
@@ -100,6 +107,7 @@ namespace GEngine.Engine
                 //recycle
                 _ActiveScenes[name].Reinstance();
             }
+            _ActiveScenes[name].BaseReference.OnCreate(_ActiveScenes[name]);
         }
 
         public bool HasInstance(string name)

@@ -26,6 +26,10 @@ namespace GEngine.Engine
         }
         public IntPtr Window { get; set; }
         public IntPtr Renderer { get; set; }
+
+
+        private VideoBackend _backend;
+
         public GraphicsEngine(VideoBackend backend)
         {
             switch (backend)
@@ -49,6 +53,7 @@ namespace GEngine.Engine
                     SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
                     break;
             }
+            _backend = backend;
             RenderClearColor = new ColorRGBA(140, 180, 200);
         }
         public void Init()
@@ -63,6 +68,36 @@ namespace GEngine.Engine
             {
                 //OK
             }
+        }
+        public void CreateWindowAndRenderer(string windowTitle, int x, int y, int w, int h, out IntPtr window, out IntPtr renderer)
+        {
+            IntPtr wi, re;
+            int flag = 0;
+            if (_backend != VideoBackend.Direct3D && _backend != VideoBackend.Metal && _backend != VideoBackend.Software) flag = (int)SDL_WindowFlags.SDL_WINDOW_OPENGL;
+            int res = SDL_CreateWindowAndRenderer(w, h, (SDL_WindowFlags)flag, out wi, out re);
+            if (res != 0)
+            {
+                Debug.Log("Graphics.CreateWindowAndRenderer()", "Error creating SDL window & renderer.");
+                Debug.Log("SDL_GetError()", SDL_GetError());
+                throw new EngineException("Error creating SDL window & renderer.", "Graphics.CreateWindowAndRenderer()");
+            }
+            SDL_SetWindowTitle(wi, windowTitle);
+            if (wi == IntPtr.Zero)
+            {
+                //Error
+                Debug.Log("Graphics.CreateWindowAndRenderer()", "Error creating SDL window.");
+                throw new EngineException("Error creating SDL window.", "Graphics.CreateWindowAndRenderer()");
+            }
+            if (re == IntPtr.Zero)
+            {
+                //Error
+                Debug.Log("Graphics.CreateWindowAndRenderer()", "Error creating SDL renderer.");
+                throw new EngineException("Error creating SDL renderer.", "Graphics.CreateWindowAndRenderer()");
+            }
+            window = wi;
+            renderer = re;
+            Window = wi;
+            Renderer = re;
         }
         public IntPtr CreateWindow(string windowTitle, int x, int y, int w, int h)
         {
@@ -85,7 +120,7 @@ namespace GEngine.Engine
             if (Window == IntPtr.Zero)
                 throw new EngineException("Window is NULL.", "Graphics.CreateRenderer()");
             IntPtr ren;
-            ren = SDL_CreateRenderer(Window, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL_RendererFlags.SDL_RENDERER_TARGETTEXTURE);
+            ren = SDL_CreateRenderer(IntPtr.Zero, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL_RendererFlags.SDL_RENDERER_TARGETTEXTURE);
             if (ren == IntPtr.Zero)
             {
                 //Error
@@ -104,10 +139,15 @@ namespace GEngine.Engine
 
             return ren;
         }
+        public SDL_RendererInfo GetRendererInfo(IntPtr renderer)
+        {
+            SDL_GetRendererInfo(renderer, out SDL_RendererInfo info);
+            return info;
+        }
         public void RenderClear()
         {
-            if (Renderer == IntPtr.Zero)
-                throw new EngineException("Renderer is NULL.", "Graphics.RenderClear()");
+            if (Renderer == IntPtr.Zero) return;
+                //throw new EngineException("Renderer is NULL.", "Graphics.RenderClear()");
             try
             {
                 if (SDL_RenderClear(Renderer) != 0)
@@ -127,7 +167,33 @@ namespace GEngine.Engine
         }
         public void DrawScene(SceneInstance scene)
         {
+            InstanceCollection instances = scene.Instances;
+            instances.SortByDepth();
 
+            //draw sprites
+            foreach(Instance inst in instances)
+            {
+                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ImageIndex);
+            }
+        }
+        public void DrawSprite(TextureResource texture, Coord position, double angle, int textureIndex)
+        {
+            SDL_Rect dst = new SDL_Rect();
+            dst.x = position.X;
+            dst.y = position.Y;
+            dst.w = texture.SpriteSize.W;
+            dst.h = texture.SpriteSize.H;
+
+            //Console.WriteLine("[Graphics.DrawSprite] Drawing texture '{0}'[{1}] onto ({2}, {3}) with size {4}x{5}.", texture.ResourceName, textureIndex, position.X, position.Y, texture.SpriteSize.W, texture.SpriteSize.H);
+
+            //SetRenderDrawColor(new ColorRGBA(255, 255, 255, 255));
+
+            int res = SDL_RenderCopyEx(Renderer, texture.Textures[textureIndex], IntPtr.Zero, ref dst, angle, IntPtr.Zero, SDL_RendererFlip.SDL_FLIP_NONE);
+            if (res != 0)
+            {
+                //error
+                throw new EngineException("Error rendering texture '" + texture.ResourceName + "'.", "GraphicsEngine.DrawSprite()");
+            }
         }
     }
 }

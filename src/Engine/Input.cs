@@ -26,6 +26,17 @@ namespace GEngine.Engine
         {
             SDL_InitSubSystem(SDL_INIT_EVENTS);
         }
+        public bool IsDown(SDL_Keycode key)
+        {
+            //if (!_keys.ContainsKey(key)) return false;
+            if (_keys.TryGetValue(key, out bool result))
+            {
+                return result;
+            } else
+            {
+                return false;
+            }
+        }
         public void PollEvent()
         {
             while (SDL_PollEvent(out SDL_Event e) != 0)

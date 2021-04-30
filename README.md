@@ -11,16 +11,19 @@ Nothing worth noting yet.
 - [x] Base Engine Loop
 - [x] Frame/Logic Timing
 - [x] Input Handler
-- [ ] Object/Scene based rendering
+- [x] Object/Scene based rendering (incomplete)
 - [x] Object/Instances
 - [x] Audio Module
 - [x] Resources/Texture loading
 - [x] Resources/Audio loading
 - [x] Resource Manager
 - [x] GameObject Event System
-- [ ] Scene Instancing
+- [x] Scene Instancing
 - [ ] Physics System
 
 ## Known Issues
 - OpenGL & Textures with transparency.
 - Possible Memory Corruption on LoadAsTexture().
+- Certain graphics drivers are incompatible with certain VideoBackends.
+- Scene ViewPorts are not yet implemented.
+- Instance depth sorting not yet implemented.

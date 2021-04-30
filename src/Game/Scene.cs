@@ -40,18 +40,35 @@ namespace GEngine.Game
         public string Name { get; set; }
         public SceneProperties Properties { get; set; }
         public Size SceneSize { get; set; }
+        public GameObjectInfoCollection GameObjects { get; set; }
+        public Type ReferenceType { get; set; }
 
         public Scene(Size sceneSize, Size viewSize)
         {
             SceneSize = sceneSize;
             Properties = new SceneProperties();
+            GameObjects = new GameObjectInfoCollection();
             Properties.View = new View(viewSize);
             Properties.View.OriginType = OriginType.CenterOrigin;
         }
 
         public SceneInstance CreateInstance()
         {
-            throw new NotImplementedException();
+            SceneInstance instance = new SceneInstance();
+            instance.BaseReference = this;
+            instance.Instances = new InstanceCollection();
+            instance.ReferenceType = ReferenceType;
+            instance.ViewPosition = new Coord(0, 0);
+
+            foreach(var obj in GameObjects)
+            {
+                Instance inst = obj.GameObject.CreateInstance(out Guid guid);
+                inst.Position = new Coord(obj.Position.X, obj.Position.Y);
+                instance.Instances.Add(inst);
+                inst.BaseReference.OnCreate(inst, instance);
+            }
+
+            return instance;
         }
 
         public virtual void OnCreate(SceneInstance caller)
@@ -61,12 +78,18 @@ namespace GEngine.Game
 
         public virtual void Step(SceneInstance caller)
         {
-
+            foreach (Instance inst in caller.Instances)
+            {
+                inst.BaseReference.Step(inst, caller);
+            }
         }
 
         public virtual void OnDestroy(SceneInstance caller)
         {
-
+            foreach (Instance inst in caller.Instances)
+            {
+                inst.BaseReference.OnDestroy(inst, caller);
+            }
         }
     }
     public class SceneInstance

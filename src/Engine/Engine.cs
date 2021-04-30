@@ -8,6 +8,7 @@ using static SDL2.SDL;
 
 using GEngine.Game;
 using System.Diagnostics;
+using System.Security;
 
 namespace GEngine.Engine
 {
@@ -48,14 +49,17 @@ namespace GEngine.Engine
     public class GameEngineEventArgs : EventArgs
     {
         public GameEngineEventType EventType { get; set; }
+        public string Message { get; set; }
     }
 
+    //[SuppressUnmanagedCodeSecurity]
     public class GameEngine
     {
         //Engine Props
         public EngineMode Mode { get; set; }
         public EngineProperties Properties { get; set; }
         private VideoBackend _vBackend { get; set; }
+        public bool ResourcesLoaded { get; set; }
 
         //Threads
         private Thread _SyncThread, _AsyncThread_L, _AsyncThread_D;
@@ -114,7 +118,7 @@ namespace GEngine.Engine
         private bool _initLogic = false, _initGraphics = false;
         private byte test = 0;
         private bool rev = false;
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
         //Window Stuff
         private bool _allowClose = true, _handleClose = false;
         public Size WindowSize
@@ -227,11 +231,13 @@ namespace GEngine.Engine
         //Events
         public delegate void GameEngineEventHandler(GameEngineEventArgs eventArgs);
         public event GameEngineEventHandler OnWindowClose;
+        public event GameEngineEventHandler OnInfoMsg;
 
         public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto)
         {
+            ResourcesLoaded = false;
             Properties = new EngineProperties();
-            _resource = new ResourceManager(_SDL_Renderer); //I don't know if this would work.
+            _resource = new ResourceManager(IntPtr.Zero); //I don't know if this would work.
             _audio = new AudioEngine(_resource);
 
             if (!IsRenderDriverAvailable(backend))
@@ -247,6 +253,15 @@ namespace GEngine.Engine
 
             _input.WindowEvent += InputHandler_WindowEvent;
             _input.EngineEvent += _input_EngineEvent;
+        }
+
+        private void InformMessage(string msg)
+        {
+            OnInfoMsg?.Invoke(new GameEngineEventArgs()
+            {
+                EventType = GameEngineEventType.Information,
+                Message = msg
+            });
         }
 
         public string BackendToString(VideoBackend backend)
@@ -348,7 +363,7 @@ namespace GEngine.Engine
                     throw new EngineException("Unknown engine mode.", "GameEngine.Start()");
             }
             while (_SDL_Renderer == IntPtr.Zero || _SDL_Window == IntPtr.Zero) Thread.Sleep(10);
-            _resource.SetRenderer(_SDL_Renderer);
+            _resource.SetRenderer(_graphics.Renderer);
         }
         public void Stop()
         {
@@ -400,10 +415,12 @@ namespace GEngine.Engine
             if (!_initGraphics)
             {
                 _graphics.Init();
-                _graphics.CreateWindow(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
-                _graphics.CreateRenderer();
-                _SDL_Renderer = _graphics.Renderer;
-                _SDL_Window = _graphics.Window;
+                _graphics.CreateWindowAndRenderer(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, out _SDL_Window, out _SDL_Renderer);
+                //_graphics.CreateWindow(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
+                //_graphics.CreateRenderer();
+                //SDL_Delay(2000);
+                //_SDL_Renderer = _graphics.Renderer;
+                //_SDL_Window = _graphics.Window;
                 _graphics.RenderClearColor = new ColorRGBA(120, 180, 230);
                 _initGraphics = true;
             }
@@ -414,21 +431,25 @@ namespace GEngine.Engine
             if (!LogicPause)
             {
                 //Do stuff here
-                if (test == 0)
-                {
-                    rev = false;
-                } else if (test == 255)
-                {
-                    rev = true;
-                }
-                if (rev)
-                {
-                    test--;
-                } else
-                {
-                    test++;
-                }
-                //Console.WriteLine(test);
+                /*
+                    if (test == 0)
+                    {
+                        rev = false;
+                    } else if (test == 255)
+                    {
+                        rev = true;
+                    }
+                    if (rev)
+                    {
+                        test--;
+                    } else
+                    {
+                        test++;
+                    }
+                    //Console.WriteLine(test);
+                */
+
+                _scenes.SceneStep();
 
                 string s = SDL_GetError();
                 if (s != "" && !_StopThread)
@@ -450,6 +471,7 @@ namespace GEngine.Engine
                         if (_vBackend == VideoBackend.OpenGL || _vBackend == VideoBackend.OpenGL_ES || _vBackend == VideoBackend.OpenGL_ES2)
                         {
                             _resource.RebuildTextures();
+                            InformMessage("Textures rebuilt.");
                         }
                         _rebuilt = true;
                     } else
@@ -457,31 +479,12 @@ namespace GEngine.Engine
                         _rebuildCurrentCall++;
                     }
                 }
-                SDL_Rect rectangle = new SDL_Rect();
-                rectangle.x = 420;
-                rectangle.y = 420;
-                rectangle.w = 300;
-                rectangle.h = 200;
-                SDL_Rect s = new SDL_Rect();
-                s.x = 0;
-                s.y = 0;
-                s.w = 400;
-                s.h = 400;
-                _graphics.SetRenderDrawColor(new ColorRGBA(test, test, test));
-                //SDL_RenderDrawRectF(_SDL_Renderer, ref rectangle);
-                SDL_RenderFillRect(_SDL_Renderer, ref rectangle);
-                _graphics.SetRenderDrawColor(new ColorRGBA(255, 255, 255));
-                if (_resource.HasTexture("spr_test"))
+                try
                 {
-                    if (!_StopThread && _resource.GetTextureResource("spr_test").Textures.Length > 0)
-                    {
-                        int e = SDL_RenderCopy(_SDL_Renderer, _resource.GetTextureResource("spr_test").Textures[0], ref s, ref s);
-                        if (e != 0)
-                        {
-                            Debug.Log("GameEngine.DrawStep()", "Error rendering rexture: " + SDL_GetError());
-                            throw new EngineException();
-                        }
-                    }
+                    _graphics.DrawScene(_scenes.GetInstance(_scenes.CurrentScene));
+                } catch (EngineException ex)
+                {
+                    Debug.Log("GameEngine.DrawStep()", $"Could not draw current scene('{_scenes.CurrentScene}').");
                 }
                 SDL_RenderPresent(_SDL_Renderer);
             }
@@ -495,6 +498,12 @@ namespace GEngine.Engine
             Stopwatch drawTimer = new Stopwatch();
             Sampler fpsAvg = new Sampler(100);
             Sampler tpsAvg = new Sampler(100);
+
+            while (!ResourcesLoaded)
+            {
+                SDL_Delay(1000);
+            }
+
             logicTimer.Start();
             drawTimer.Start();
             double total;

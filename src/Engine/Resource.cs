@@ -11,6 +11,7 @@ using static SDL2.SDL;
 using static SDL2.SDL_image;
 using static SDL2.SDL_mixer;
 using System.Runtime.InteropServices;
+using System.Runtime.ExceptionServices;
 
 namespace GEngine.Engine
 {
@@ -59,9 +60,50 @@ namespace GEngine.Engine
                 tex.Rebuild(_SDL_Renderer);
             }
         }
+
+        public void SetTextureSpriteSize(string resourceName, Size size)
+        {
+            if (!HasTexture(resourceName))
+            {
+                Debug.Log("ResourceManager.SetTextureSpriteSize()", $"Target texture resource '{resourceName}' not found.");
+                return;
+            }
+            foreach (TextureResource text in _Textures)
+            {
+                if (text.ResourceName == resourceName)
+                {
+                    text.SpriteSize = new Size(size.W, size.H);
+                    return;
+                }
+            }
+        }
+
+        public void SetTextureSpriteSize(string resourceName, int w, int h)
+        {
+            if (!HasTexture(resourceName))
+            {
+                Debug.Log("ResourceManager.SetTextureSpriteSize()", $"Target texture resource '{resourceName}' not found.");
+                return;
+            }
+            foreach (TextureResource text in _Textures)
+            {
+                if (text.ResourceName == resourceName)
+                {
+                    text.SpriteSize = new Size(w, h);
+                    return;
+                }
+            }
+        }
+
         public void LoadAsTexture(string fileLocation, string resourceName)
         {
-            if (_SDL_Renderer == IntPtr.Zero) throw new ResourceException($"SDL Renderer not yet initialized, try calling GameEngine.InitGraphics() first", fileLocation);
+            if (_SDL_Renderer == IntPtr.Zero)
+            {
+                Debug.Log("ResourceManager.LoadAsTexture()", "SDL Renderer not yet initialized, waiting for init.");
+                while (_SDL_Renderer == IntPtr.Zero) SDL_Delay(100);
+                Debug.Log("ResourceManager.LoadAsTexture()", "SDL Renderer initialized.");
+                //throw new ResourceException($"SDL Renderer not yet initialized, try calling GameEngine.InitGraphics() first", fileLocation);
+            }
             if (_Textures.Contains(resourceName)) throw new ResourceException($"A resource with the same name '{resourceName}' already exists.", fileLocation);
             if (!File.Exists(fileLocation)) throw new ResourceException($"Error loading resource '{resourceName}'. File not found.", fileLocation);
             ZipArchive archive;
@@ -130,15 +172,7 @@ namespace GEngine.Engine
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Read texture data from {file}#{resourceName} @ {buffer.Length} byte(s).");
                     IntPtr rwops = SDL_RWFromMem(ptrArray, buffer.Length);
                     IntPtr surface;
-                    int rwop_close = 1;
-                    if (FLAG_USE_ALTERNATE_TEXTURE_STRAT) rwop_close = 0;
-                    /*
-                    if (file.EndsWith(".bmp"))
-                    {
-                        surface = IMG_LoadTyped_RW(rwops, 0, "BMP");
-                    } else
-                    */
-                    surface = IMG_Load_RW(rwops, rwop_close);
+                    surface = IMG_Load_RW(rwops, 0);
                     string sE1 = SDL_GetError();
                     if (surface == IntPtr.Zero || rwops == IntPtr.Zero)
                     {
@@ -147,14 +181,23 @@ namespace GEngine.Engine
                     }
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Loaded texture data as surface from {file}#{resourceName}.");
                     IntPtr texture;
-                    SDL_RenderClear(_SDL_Renderer);
-                    if (!FLAG_USE_ALTERNATE_TEXTURE_STRAT)
+                    while (_SDL_Renderer == IntPtr.Zero) SDL_Delay(100);
+                    try
                     {
-                        texture = SDL_CreateTextureFromSurface(_SDL_Renderer, surface);
-                    }
-                    else
+                        if (!FLAG_USE_ALTERNATE_TEXTURE_STRAT)
+                        {
+                            //SDL_Renderc
+                            texture = SDL_CreateTextureFromSurface(_SDL_Renderer, surface);
+                            //texture = CreateTexture(_SDL_Renderer, surface);
+                        }
+                        else
+                        {
+                            texture = IMG_LoadTexture_RW(_SDL_Renderer, rwops, 0);
+                        }
+                    } catch (Exception e)
                     {
-                        texture = IMG_LoadTexture_RW(_SDL_Renderer, rwops, 1);
+                        Debug.Log("ResourceManager.LoadAsTexture()", $"Error creating texture data {file}#{resourceName}. {e.Message}");
+                        continue;
                     }
                     string sE2 = SDL_GetError();
                     if (texture == IntPtr.Zero)
@@ -167,6 +210,7 @@ namespace GEngine.Engine
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Created texture from surface {file}#{resourceName}.");
                     //SDL_FreeSurface(surface);
                     Marshal.FreeHGlobal(ptrArray);
+                    SDL_RWclose(rwops);
                 } catch
                 {
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Error loading texture {file}#{resourceName}. Skipped file.");
@@ -185,6 +229,7 @@ namespace GEngine.Engine
             _Textures.Add(res);
             Debug.Log("ResourceManager.LoadAsTexture()", $"Successfully added texture {resourceName} to resources.");
         }
+
         public void LoadAsAudio(string fileLocation, string resourceName, AudioType audioType)
         {
             if (_Audio.Contains(resourceName)) throw new ResourceException($"A resource with the same name '{resourceName}' already exists.", fileLocation);

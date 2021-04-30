@@ -37,7 +37,8 @@ namespace GEngine.Engine
     }
     public enum GameEngineEventType
     {
-        WindowClose
+        WindowClose,
+        Information
     }
     public enum InputCallbackType
     {
