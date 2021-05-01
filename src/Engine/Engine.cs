@@ -36,6 +36,7 @@ namespace GEngine.Engine
                 return (1000.00 / TargetTPS) + TPSOffset;
             }
         }
+        public RenderScaleQuality RenderScaleQuality { get; set; }
 
         public EngineProperties()
         {
@@ -46,6 +47,7 @@ namespace GEngine.Engine
             EnableFramelimiter = true;
             HideConsoleWindow = true;
             Title = "GEngine | Re:";
+            RenderScaleQuality = RenderScaleQuality.Nearest;
         }
     }
 
@@ -293,6 +295,21 @@ namespace GEngine.Engine
                     return "auto";
                 default:
                     return "n/a";
+            }
+        }
+
+        private string ParseRenderScale(RenderScaleQuality quality)
+        {
+            switch (quality)
+            {
+                default:
+                    return "0";
+                case RenderScaleQuality.Nearest:
+                    return "0";
+                case RenderScaleQuality.Linear:
+                    return "1";
+                case RenderScaleQuality.Anisotropic:
+                    return "2";
             }
         }
 
@@ -579,7 +596,9 @@ namespace GEngine.Engine
             Sampler fpsAvg = new Sampler(100);
             Sampler tpsAvg = new Sampler(100);
 
+            //Initial Stuff
             GEngine.LoadStatics(this);
+            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, ParseRenderScale(Properties.RenderScaleQuality));
 
             while (!ResourcesLoaded)
             {

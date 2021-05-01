@@ -40,6 +40,12 @@ namespace GEngine.Engine
         WindowClose,
         Information
     }
+    public enum RenderScaleQuality
+    {
+        Nearest,
+        Linear,
+        Anisotropic
+    }
     public enum InputCallbackType
     {
         WindowClose,
