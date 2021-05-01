@@ -20,13 +20,15 @@ Nothing worth noting yet.
 - [x] GameObject Event System
 - [x] Scene Instancing
 - [ ] Physics System
+- [ ] Animations
+- [ ] Object Texture Offsets
 
 ## Known Issues
 - OpenGL & Textures with transparency.
 - Possible Memory Corruption on LoadAsTexture().
 - Certain graphics drivers are incompatible with certain VideoBackends.
 - Scene ViewPorts are not yet implemented.
-- Instance depth sorting not yet implemented.
+- Objects that are out of screen are still drawn.
 
 ## How-To:
 1. Grab a copy of GEngine.dll. You can find one in "bin\x86\Debug\net5.0\" (Alternatively, you can just clone the repo).

@@ -74,6 +74,7 @@ namespace GEngine.Engine
             if (_CurrentScene != null)
             {
                 _CurrentScene.BaseReference.Step(_CurrentScene);
+                _CurrentScene.Instances.SortByDepth(true);
             }
         }
         public void SwitchToScene(string name, bool reinstance = true)

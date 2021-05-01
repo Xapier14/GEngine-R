@@ -175,7 +175,7 @@ namespace GEngine.Engine
         public void DrawScene(SceneInstance scene)
         {
             InstanceCollection instances = scene.Instances;
-            instances.SortByDepth();
+            //instances.SortByDepth();
 
             //draw sprites
             foreach(Instance inst in instances)

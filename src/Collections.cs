@@ -169,13 +169,7 @@ namespace GEngine.Engine
                 return this[i];
             }
         }
-        public bool IsSorted
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsSorted { get; private set; }
 
         public int Count => _data.Count;
 
@@ -184,8 +178,7 @@ namespace GEngine.Engine
         public void Add(Instance item)
         {
             _data.Add(item);
-            //add quicksort implementation on instance depth
-            //ascending order where top is the least greatest
+            if (IsSorted) IsSorted = false;
         }
 
         public void Clear()
@@ -236,9 +229,9 @@ namespace GEngine.Engine
             throw new EngineException($"Instance with hash '{hash}' not found in collection.", "InstanceCollection.Get()");
         }
 
-        public void SortByDepth()
+        public void SortByDepth(bool force)
         {
-            if (IsSorted) return;
+            if (IsSorted && !force) return;
 
             Instance[] instances = new Instance[this.Count];
 
@@ -246,6 +239,70 @@ namespace GEngine.Engine
 
             this.Clear();
 
+            Instance[] sorted = mrg_srt(instances);
+
+            foreach(Instance inst in sorted)
+            {
+                this.Add(inst);
+            }
+
+            IsSorted = true;
+        }
+
+        private static Instance[] mrg_srt(Instance[] arr)
+        {
+            if (arr.Length < 2) return arr;
+            if (arr.Length == 2)
+            {
+                if (arr[0].Depth > arr[1].Depth)
+                {
+                    Instance temp = arr[0];
+                    arr[0] = arr[1];
+                    arr[1] = temp;
+                    return arr;
+                }
+            }
+            int split_point = (int)Math.Round((double)arr.Length / 2);
+            SplitInstArr sp = split(arr, split_point);
+            Instance[] a1 = mrg_srt(sp.arr1);
+            Instance[] a2 = mrg_srt(sp.arr2);
+            return join(a1, a2);
+        }
+
+        private static Instance[] join(Instance[] arr1, Instance[] arr2)
+        {
+            Instance[] r = new Instance[arr1.Length + arr2.Length];
+            for (int i = 0; i < arr1.Length; ++i)
+            {
+                r[i] = arr1[i];
+            }
+            for (int i = 0; i < arr2.Length; ++i)
+            {
+                r[arr1.Length + i] = arr2[i];
+            }
+            return r;
+        }
+
+        private static SplitInstArr split(Instance[] arr, int splitPoint)
+        {
+            if (splitPoint >= arr.Length) throw new ArgumentOutOfRangeException("Split point out-of-range.");
+            Instance[] a1 = new Instance[splitPoint];
+            Instance[] a2 = new Instance[arr.Length - splitPoint];
+            for (int i = 0; i < splitPoint; ++i)
+            {
+                a1[i] = arr[i];
+            }
+            for (int i = splitPoint; i < arr.Length; ++i)
+            {
+                a2[i - splitPoint] = arr[i];
+            }
+            return new SplitInstArr() { arr1 = a1, arr2 = a2 };
+        }
+
+        private struct SplitInstArr
+        {
+            public Instance[] arr1;
+            public Instance[] arr2;
         }
     }
     public class ResourceCollection : ICollection<ResourceBase>
