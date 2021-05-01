@@ -579,12 +579,12 @@ namespace GEngine.Engine
             Sampler fpsAvg = new Sampler(100);
             Sampler tpsAvg = new Sampler(100);
 
+            GEngine.LoadStatics(this);
+
             while (!ResourcesLoaded)
             {
                 SDL_Delay(1000);
             }
-
-            GEngine.LoadStatics(this);
 
             logicTimer.Start();
             drawTimer.Start();
