@@ -296,6 +296,29 @@ namespace GEngine.Engine
             }
         }
 
+        public VideoBackend StringToBackend(string backend)
+        {
+            switch (backend.ToLower())
+            {
+                case "direct3d":
+                    return VideoBackend.Direct3D;
+                case "opengl":
+                    return VideoBackend.OpenGL;
+                case "opengles":
+                    return VideoBackend.OpenGL_ES;
+                case "opengles2":
+                    return VideoBackend.OpenGL_ES2;
+                case "metal":
+                    return VideoBackend.Metal;
+                case "software":
+                    return VideoBackend.Software;
+                case "auto":
+                    return VideoBackend.Auto;
+                default:
+                    return VideoBackend.Auto;
+            }
+        }
+
         public bool IsRenderDriverAvailable(VideoBackend backend)
         {
             if (backend == VideoBackend.Auto) return true;
@@ -353,11 +376,54 @@ namespace GEngine.Engine
             }
         }
 
+        public void LoadConfig(string configFileLocation)
+        {
+            if (_Started) throw new EngineException("Cannot load config when engine has already started.", "GameEngine.LoadConfig()");
+            if (Loader.TryParseIni(configFileLocation, out Dictionary<string, string> config))
+            {
+                foreach (KeyValuePair<string, string> pair in config)
+                {
+
+                    try
+                    {
+                        switch (pair.Key.ToLower())
+                        {
+                            default:
+                                Debug.Log("GameEngine.LoadConfig()", $"Key '{pair.Key}' not valid.");
+                                break;
+                            case "target_fps":
+                                Properties.TargetFPS = double.Parse(pair.Value);
+                                break;
+                            case "framelimiter":
+                                Properties.EnableFramelimiter = bool.Parse(pair.Value);
+                                break;
+                            case "video_backend":
+                                _graphics.SetVideoBackend(StringToBackend(pair.Value));
+                                break;
+                                    //add config values here.
+                        }
+
+                    }
+                    catch
+                    {
+                        Debug.Log("GameEngine.LoadConfig()", $"Invalid value '{pair.Value}' for key '{pair.Key}'");
+                        continue;
+                    }
+                }
+            } else
+            {
+                Debug.Log("GameEngine.LoadConfig()", "No configuration file found.");
+            }
+        }
+
         public void Start()
         {
             if (Properties.HideConsoleWindow)
             {
                 ShowWindow(GetConsoleWindow(), 0);
+            } else
+            {
+                ShowWindow(GetConsoleWindow(), 5);
             }
 
             switch (Mode)

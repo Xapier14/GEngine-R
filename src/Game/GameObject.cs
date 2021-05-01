@@ -16,6 +16,8 @@ namespace GEngine.Game
         public int DefaultImageSpeed { get; set; }
         public int DefaultImageIndex { get; set; }
         public double DefaultImageAngle { get; set; }
+        public double DefaultScaleX { get; set; }
+        public double DefaultScaleY { get; set; }
 
         public Instance CreateInstance(out Guid hash)
         {
@@ -27,10 +29,23 @@ namespace GEngine.Game
                 ImageSpeed = DefaultImageSpeed,
                 ImageAngle = DefaultImageAngle,
                 IsAnimated = IsAnimated,
-                ReferenceType = Type
+                ReferenceType = Type,
+                ScaleX = DefaultScaleX,
+                ScaleY = DefaultScaleY
             };
             hash = newInstance.Hash;
             return newInstance;
+        }
+
+        public GameObject()
+        {
+            DefaultScaleX = 1;
+            DefaultScaleY = 1;
+            DefaultImageAngle = 0;
+            DefaultImageIndex = 0;
+            DefaultImageSpeed = 0;
+            IsAnimated = true;
+            PhysicsAttributes = new PhysicsAttributes();
         }
 
         public virtual void OnCreate(Instance caller, SceneInstance scene)
@@ -40,7 +55,9 @@ namespace GEngine.Game
 
         public virtual void Step(Instance caller, SceneInstance scene)
         {
-
+            //constraints
+            if (caller.ImageAngle >= 360) caller.ImageAngle -= 360;
+            if (caller.ImageAngle < 0) caller.ImageAngle += 360;
         }
 
         public virtual void OnDestroy(Instance caller, SceneInstance scene)
@@ -69,6 +86,8 @@ namespace GEngine.Game
         public bool IsAnimated { get; set; }
         public Guid Hash { get; private set; }
         public Type ReferenceType { get; set; }
+        public double ScaleX { get; set; }
+        public double ScaleY { get; set; }
 
         public Instance()
         {

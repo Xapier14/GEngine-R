@@ -34,6 +34,13 @@ namespace GEngine.Game
     public class SceneProperties
     {
         public View View { get; set; }
+        public bool AnimateSprites { get; set; }
+        public SceneProperties(Size viewSize)
+        {
+            AnimateSprites = true;
+            View = new View(viewSize);
+            View.OriginType = OriginType.CenterOrigin;
+        }
     }
     public abstract class Scene
     {
@@ -46,10 +53,8 @@ namespace GEngine.Game
         public Scene(Size sceneSize, Size viewSize)
         {
             SceneSize = sceneSize;
-            Properties = new SceneProperties();
+            Properties = new SceneProperties(viewSize);
             GameObjects = new GameObjectInfoCollection();
-            Properties.View = new View(viewSize);
-            Properties.View.OriginType = OriginType.CenterOrigin;
         }
 
         public SceneInstance CreateInstance()

@@ -26,12 +26,32 @@ namespace GEngine.Engine
         }
         public IntPtr Window { get; set; }
         public IntPtr Renderer { get; set; }
-
+        private bool _init = false;
 
         private VideoBackend _backend;
 
         public GraphicsEngine(VideoBackend backend)
         {
+            SetVideoBackend(backend);
+            RenderClearColor = new ColorRGBA(140, 180, 200);
+        }
+        public void Init()
+        {
+            if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0)
+            {
+                //ERROR
+                Debug.Log("Graphics.Init()", "Error initializing SDL2 Video Sub-System.");
+                Debug.Log("SDL_GetError()", SDL_GetError());
+                throw new EngineException("Error initializing SDL2 Video Sub-System.", "Graphics.Init()");
+            } else
+            {
+                //OK
+                _init = true;
+            }
+        }
+        public void SetVideoBackend(VideoBackend backend)
+        {
+            if (_init) throw new EngineException("Graphics module already initialized, cannot change video backend.", "GraphicsEngine.SetVideoBackend()");
             switch (backend)
             {
                 case VideoBackend.Direct3D:
@@ -55,20 +75,6 @@ namespace GEngine.Engine
                     break;
             }
             _backend = backend;
-            RenderClearColor = new ColorRGBA(140, 180, 200);
-        }
-        public void Init()
-        {
-            if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0)
-            {
-                //ERROR
-                Debug.Log("Graphics.Init()", "Error initializing SDL2 Video Sub-System.");
-                Debug.Log("SDL_GetError()", SDL_GetError());
-                throw new EngineException("Error initializing SDL2 Video Sub-System.", "Graphics.Init()");
-            } else
-            {
-                //OK
-            }
         }
         public void CreateWindowAndRenderer(string windowTitle, int x, int y, int w, int h, out IntPtr window, out IntPtr renderer)
         {
@@ -174,16 +180,16 @@ namespace GEngine.Engine
             //draw sprites
             foreach(Instance inst in instances)
             {
-                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ImageIndex);
+                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex);
             }
         }
-        public void DrawSprite(TextureResource texture, Coord position, double angle, int textureIndex)
+        public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex)
         {
             SDL_Rect dst = new SDL_Rect();
             dst.x = position.X;
             dst.y = position.Y;
-            dst.w = texture.SpriteSize.W;
-            dst.h = texture.SpriteSize.H;
+            dst.w = Convert.ToInt32(Math.Floor(texture.SpriteSize.W * scaleX));
+            dst.h = Convert.ToInt32(Math.Floor(texture.SpriteSize.H * scaleY));
 
             //Console.WriteLine("[Graphics.DrawSprite] Drawing texture '{0}'[{1}] onto ({2}, {3}) with size {4}x{5}.", texture.ResourceName, textureIndex, position.X, position.Y, texture.SpriteSize.W, texture.SpriteSize.H);
 
