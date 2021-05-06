@@ -29,6 +29,10 @@ namespace GEngine.Engine
             IMG_Init(IMG_InitFlags.IMG_INIT_JPG | IMG_InitFlags.IMG_INIT_PNG | IMG_InitFlags.IMG_INIT_TIF);
             Mix_Init(MIX_InitFlags.MIX_INIT_OGG | MIX_InitFlags.MIX_INIT_MP3 | MIX_InitFlags.MIX_INIT_OPUS | MIX_InitFlags.MIX_INIT_MID | MIX_InitFlags.MIX_INIT_FLAC);
             _SDL_Renderer = gameRenderer;
+            if (FLAG_ALLOW_MISSING_METADATA) Debug.Log("ResourceManager", "Warning! Resource manager has 'IGNORE_MISSING_METADATA' set to true.");
+#pragma warning disable CS0162 // Unreachable code detected
+            if (FLAG_USE_ALTERNATE_TEXTURE_STRAT) Debug.Log("ResourceManager", "Warning! Resource manager has 'ALTERNATE_TEXTURE_STRAT' set to true.");
+#pragma warning restore CS0162 // Unreachable code detected
         }
         public void Quit()
         {
@@ -100,6 +104,8 @@ namespace GEngine.Engine
             if (_SDL_Renderer == IntPtr.Zero)
             {
                 Debug.Log("ResourceManager.LoadAsTexture()", "SDL Renderer not yet initialized, waiting for init.");
+                Debug.Log("ResourceManager.LoadAsTexture()", "Warning! Call 'GameEngine.Start()' first before loading game resources.");
+                Debug.Log("ResourceManager.LoadAsTexture()", "Otherwise, this will be an endless loop.");
                 while (_SDL_Renderer == IntPtr.Zero) SDL_Delay(100);
                 Debug.Log("ResourceManager.LoadAsTexture()", "SDL Renderer initialized.");
                 //throw new ResourceException($"SDL Renderer not yet initialized, try calling GameEngine.InitGraphics() first", fileLocation);
@@ -192,7 +198,9 @@ namespace GEngine.Engine
                         }
                         else
                         {
+#pragma warning disable CS0162 // Unreachable code detected
                             texture = IMG_LoadTexture_RW(_SDL_Renderer, rwops, 0);
+#pragma warning restore CS0162 // Unreachable code detected
                         }
                     } catch (Exception e)
                     {
@@ -271,7 +279,14 @@ namespace GEngine.Engine
         }
         public TextureResource GetTextureResource(string resourceName)
         {
-            return (TextureResource)_Textures.Get(resourceName);
+            try
+            {
+                return (TextureResource)_Textures.Get(resourceName);
+            } catch (EngineException ex)
+            {
+                Debug.Log("ResourceManager.GetTextureResource()", ex.Message);
+                throw;
+            }
         }
     }
     public class ResourceBase

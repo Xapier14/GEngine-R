@@ -12,6 +12,8 @@ namespace GEngine.Engine
     public class GraphicsEngine
     {
         private ColorRGBA _renderColor;
+        public bool DrawBorders { get; set; }
+        public ColorRGBA BorderColor { get; set; }
         public ColorRGBA RenderClearColor
         {
             get
@@ -34,6 +36,7 @@ namespace GEngine.Engine
         {
             SetVideoBackend(backend);
             RenderClearColor = new ColorRGBA(140, 180, 200);
+            BorderColor = new ColorRGBA(0, 40, 200);
         }
         public void Init()
         {
@@ -200,6 +203,33 @@ namespace GEngine.Engine
             {
                 //error
                 throw new EngineException("Error rendering texture '" + texture.ResourceName + "'.", "GraphicsEngine.DrawSprite()");
+            }
+            if (DrawBorders)
+            {
+                int rdc = SDL_GetRenderDrawColor(Renderer, out byte r, out byte g, out byte b, out byte a);
+                if (rdc != 0)
+                {
+                    //error
+                    throw new EngineException("Error getting current render color.", "GraphicsEngine.DrawSprite()");
+                }
+                int srdc1 = SDL_SetRenderDrawColor(Renderer, BorderColor.Red, BorderColor.Green, BorderColor.Blue, BorderColor.Alpha);
+                if (srdc1 != 0)
+                {
+                    //error
+                    throw new EngineException("Error setting render draw color to debug border color.", "GraphicsEngine.DrawSprite()");
+                }
+                int bres = SDL_RenderDrawRect(Renderer, ref dst);
+                if (bres != 0)
+                {
+                    //error
+                    throw new EngineException("Error drawing sprite border for '" + texture.ResourceName + "'.", "GraphicsEngine.DrawSprite()");
+                }
+                int srdc2 = SDL_SetRenderDrawColor(Renderer, r, g, b, a);
+                if (srdc2 != 0)
+                {
+                    //error
+                    throw new EngineException("Error restoring render draw color.", "GraphicsEngine.DrawSprite()");
+                }
             }
         }
     }

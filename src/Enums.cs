@@ -55,6 +55,12 @@ namespace GEngine.Engine
         WindowExposed,
         WindowShown
     }
+    public enum MouseRelation
+    {
+        Monitor,
+        Scene,
+        Viewport
+    }
 }
 namespace GEngine.Game
 {

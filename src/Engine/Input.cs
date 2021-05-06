@@ -14,10 +14,35 @@ namespace GEngine.Engine
     public class InputManager
     {
         private Dictionary<SDL_Keycode, bool> _keys;
+        private bool _leftMB = false, _rightMB = false, _middleMB = false;
+
         public delegate void InputManagerEventHandler(InputCallbackEventArg eventArg);
         public event InputManagerEventHandler WindowEvent;
         public event InputManagerEventHandler EngineEvent;
 
+        public bool MouseLeftButtonDown
+        {
+            get
+            {
+                return _leftMB;
+            }
+        }
+
+        public bool MouseRightButtonDown
+        {
+            get
+            {
+                return _rightMB;
+            }
+        }
+
+        public bool MouseMiddleButtonDown
+        {
+            get
+            {
+                return _middleMB;
+            }
+        }
         public InputManager()
         {
             _keys = new Dictionary<SDL_Keycode, bool>();
@@ -95,6 +120,33 @@ namespace GEngine.Engine
                         else
                         {
                             _keys.Add(e.key.keysym.sym, false);
+                        }
+                        break;
+                    case SDL_EventType.SDL_MOUSEBUTTONDOWN:
+                        switch (e.button.button){
+                            case (byte)SDL_BUTTON_LEFT:
+                                _leftMB = true;
+                                break;
+                            case (byte)SDL_BUTTON_RIGHT:
+                                _rightMB = true;
+                                break;
+                            case (byte)SDL_BUTTON_MIDDLE:
+                                _middleMB = true;
+                                break;
+                        }
+                        break;
+                    case SDL_EventType.SDL_MOUSEBUTTONUP:
+                        switch (e.button.button)
+                        {
+                            case (byte)SDL_BUTTON_LEFT:
+                                _leftMB = false;
+                                break;
+                            case (byte)SDL_BUTTON_RIGHT:
+                                _rightMB = false;
+                                break;
+                            case (byte)SDL_BUTTON_MIDDLE:
+                                _middleMB = false;
+                                break;
                         }
                         break;
                     case SDL_EventType.SDL_RENDER_DEVICE_RESET:

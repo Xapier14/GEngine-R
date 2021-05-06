@@ -462,6 +462,7 @@ namespace GEngine.Engine
             while (_SDL_Renderer == IntPtr.Zero || _SDL_Window == IntPtr.Zero) Thread.Sleep(10);
             _resource.SetRenderer(_graphics.Renderer);
         }
+
         public void Stop()
         {
             _StopThread = true;
@@ -582,6 +583,7 @@ namespace GEngine.Engine
                 } catch (EngineException ex)
                 {
                     Debug.Log("GameEngine.DrawStep()", $"Could not draw current scene('{_scenes.CurrentScene}').");
+                    Debug.Log("GameEngine.DrawStep()", $"Reason: {ex.Message}");
                 }
                 SDL_RenderPresent(_SDL_Renderer);
             }
