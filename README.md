@@ -1,10 +1,12 @@
-﻿# GEngine | Re
+# GEngine | Re
 A 2D Game Engine built on SDL2.
 A Rewrite of an old project of mine.
 
 *This is a __work-in-progress__ project, expect no support.*
 
 ## Important Notes:
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R?ref=badge_shield)
+
 Nothing worth noting yet.
 
 ## To-Do:
@@ -61,3 +63,6 @@ Nothing worth noting yet.
 
 ## Switching/Loading Scenes:
 1. After creating and registering scenes, call Scenes.SwitchToScene(). (Note: This will create an instance of the scene as well as game object instances.)
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R?ref=badge_large)
