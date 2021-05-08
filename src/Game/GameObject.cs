@@ -18,6 +18,7 @@ namespace GEngine.Game
         public double DefaultImageAngle { get; set; }
         public double DefaultScaleX { get; set; }
         public double DefaultScaleY { get; set; }
+        public Coord DefaultOffset { get; set; }
 
         public Instance CreateInstance(out Guid hash)
         {
@@ -31,7 +32,8 @@ namespace GEngine.Game
                 IsAnimated = IsAnimated,
                 ReferenceType = Type,
                 ScaleX = DefaultScaleX,
-                ScaleY = DefaultScaleY
+                ScaleY = DefaultScaleY,
+                Offset = new Coord(DefaultOffset.X, DefaultOffset.Y)
             };
             hash = newInstance.Hash;
             return newInstance;
@@ -88,6 +90,7 @@ namespace GEngine.Game
         public Type ReferenceType { get; set; }
         public double ScaleX { get; set; }
         public double ScaleY { get; set; }
+        public Coord Offset { get; set; }
 
         public Instance()
         {

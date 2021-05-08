@@ -602,6 +602,30 @@ namespace GEngine.Engine
             GEngine.LoadStatics(this);
             SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, ParseRenderScale(Properties.RenderScaleQuality));
 
+            /*
+            SDL_Rect bf = new SDL_Rect();
+            SDL_Rect af = new SDL_Rect();
+
+            SDL_RenderGetViewport(_SDL_Renderer, out bf);
+
+            SDL_RenderSetScale(_SDL_Renderer, 3, 3);
+
+            SDL_RenderGetViewport(_SDL_Renderer, out af);
+
+            Console.WriteLine("[BF] Size: {0}x{1} : ({2}, {3})", bf.w, bf.h, bf.x, bf.y);
+            Console.WriteLine("[AF] Size: {0}x{1} : ({2}, {3})", af.w, af.h, af.x, af.y);
+            */
+
+            SDL_Rect tt = new SDL_Rect()
+            {
+                x = 50,
+                y = 50,
+                w = 400,
+                h = 300
+            };
+
+            //SDL_RenderSetViewport(_SDL_Renderer, ref tt);
+
             while (!ResourcesLoaded)
             {
                 SDL_Delay(1000);

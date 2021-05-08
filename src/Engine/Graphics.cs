@@ -183,14 +183,14 @@ namespace GEngine.Engine
             //draw sprites
             foreach(Instance inst in instances)
             {
-                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex);
+                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y);
             }
         }
-        public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex)
+        public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex, int offsetX = 0, int offsetY = 0)
         {
             SDL_Rect dst = new SDL_Rect();
-            dst.x = position.X;
-            dst.y = position.Y;
+            dst.x = position.X - offsetX;
+            dst.y = position.Y - offsetY;
             dst.w = Convert.ToInt32(Math.Floor(texture.SpriteSize.W * scaleX));
             dst.h = Convert.ToInt32(Math.Floor(texture.SpriteSize.H * scaleY));
 
@@ -220,6 +220,18 @@ namespace GEngine.Engine
                 }
                 int bres = SDL_RenderDrawRect(Renderer, ref dst);
                 if (bres != 0)
+                {
+                    //error
+                    throw new EngineException("Error drawing sprite border for '" + texture.ResourceName + "'.", "GraphicsEngine.DrawSprite()");
+                }
+                int srdcp = SDL_SetRenderDrawColor(Renderer, 200, 240, 20, 255);
+                if (srdcp != 0)
+                {
+                    //error
+                    throw new EngineException("Error setting render draw color to debug point.", "GraphicsEngine.DrawSprite()");
+                }
+                int pres = SDL_RenderDrawPoint(Renderer, position.X, position.Y);
+                if (pres != 0)
                 {
                     //error
                     throw new EngineException("Error drawing sprite border for '" + texture.ResourceName + "'.", "GraphicsEngine.DrawSprite()");
