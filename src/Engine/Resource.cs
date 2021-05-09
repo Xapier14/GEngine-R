@@ -18,11 +18,13 @@ namespace GEngine.Engine
     public class ResourceManager
     {
         private const bool FLAG_ALLOW_MISSING_METADATA = true; //hack
-        private const bool FLAG_USE_ALTERNATE_TEXTURE_STRAT = false; //hack, but wont work lol
         private ResourceCollection _Audio, _Textures;
         private IntPtr _SDL_Renderer;
 
-        public ResourceManager(IntPtr gameRenderer)
+        public ResourceManager()
+        {
+        }
+        public void Init(IntPtr gameRenderer)
         {
             _Audio = new ResourceCollection();
             _Textures = new ResourceCollection();
@@ -30,9 +32,6 @@ namespace GEngine.Engine
             Mix_Init(MIX_InitFlags.MIX_INIT_OGG | MIX_InitFlags.MIX_INIT_MP3 | MIX_InitFlags.MIX_INIT_OPUS | MIX_InitFlags.MIX_INIT_MID | MIX_InitFlags.MIX_INIT_FLAC);
             _SDL_Renderer = gameRenderer;
             if (FLAG_ALLOW_MISSING_METADATA) Debug.Log("ResourceManager", "Warning! Resource manager has 'IGNORE_MISSING_METADATA' set to true.");
-#pragma warning disable CS0162 // Unreachable code detected
-            if (FLAG_USE_ALTERNATE_TEXTURE_STRAT) Debug.Log("ResourceManager", "Warning! Resource manager has 'ALTERNATE_TEXTURE_STRAT' set to true.");
-#pragma warning restore CS0162 // Unreachable code detected
         }
         public void Quit()
         {
@@ -40,10 +39,12 @@ namespace GEngine.Engine
             {
                 au.Destroy();
             }
+            _Audio.Clear();
             foreach(TextureResource te in _Textures)
             {
                 te.Destroy();
             }
+            _Textures.Clear();
         }
         public void SetRenderer(IntPtr sdlRenderer)
         {
@@ -190,18 +191,7 @@ namespace GEngine.Engine
                     while (_SDL_Renderer == IntPtr.Zero) SDL_Delay(100);
                     try
                     {
-                        if (!FLAG_USE_ALTERNATE_TEXTURE_STRAT)
-                        {
-                            //SDL_Renderc
-                            texture = SDL_CreateTextureFromSurface(_SDL_Renderer, surface);
-                            //texture = CreateTexture(_SDL_Renderer, surface);
-                        }
-                        else
-                        {
-#pragma warning disable CS0162 // Unreachable code detected
-                            texture = IMG_LoadTexture_RW(_SDL_Renderer, rwops, 0);
-#pragma warning restore CS0162 // Unreachable code detected
-                        }
+                        texture = SDL_CreateTextureFromSurface(_SDL_Renderer, surface);
                     } catch (Exception e)
                     {
                         Debug.Log("ResourceManager.LoadAsTexture()", $"Error creating texture data {file}#{resourceName}. {e.Message}");

@@ -183,14 +183,14 @@ namespace GEngine.Engine
             //draw sprites
             foreach(Instance inst in instances)
             {
-                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y);
+                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y, scene.ViewPosition.X, scene.ViewPosition.Y);
             }
         }
-        public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex, int offsetX = 0, int offsetY = 0)
+        public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex, int offsetX = 0, int offsetY = 0, int sceneX = 0, int sceneY = 0)
         {
             SDL_Rect dst = new SDL_Rect();
-            dst.x = position.X - offsetX;
-            dst.y = position.Y - offsetY;
+            dst.x = position.X - offsetX - sceneX;
+            dst.y = position.Y - offsetY - sceneY;
             dst.w = Convert.ToInt32(Math.Floor(texture.SpriteSize.W * scaleX));
             dst.h = Convert.ToInt32(Math.Floor(texture.SpriteSize.H * scaleY));
 

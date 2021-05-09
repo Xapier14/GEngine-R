@@ -102,7 +102,7 @@ namespace GEngine.Game
         public Scene BaseReference { get; set; }
         public InstanceCollection Instances { get; set; }
         public Type ReferenceType { get; set; }
-        public Coord ViewPosition { get; set; }
+        public Coord ViewPosition = new Coord(0,0);
         public dynamic Reference
         {
             get

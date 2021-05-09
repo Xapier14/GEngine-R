@@ -27,6 +27,12 @@ namespace GEngine.Engine
             _ActiveScenes = new Dictionary<string, SceneInstance>();
         }
 
+        public void Clear()
+        {
+            _Scenes.Clear();
+            _ActiveScenes.Clear();
+        }
+
         public void AddScene(Scene scene)
         {
             if (!_Scenes.ContainsKey(scene.Name))

@@ -248,7 +248,7 @@ namespace GEngine.Engine
         {
             ResourcesLoaded = false;
             Properties = new EngineProperties();
-            _resource = new ResourceManager(IntPtr.Zero); //I don't know if this would work.
+            _resource = new ResourceManager(); //I don't know if this would work.
             _audio = new AudioEngine(_resource);
 
             if (!IsRenderDriverAvailable(backend))
@@ -442,13 +442,16 @@ namespace GEngine.Engine
             {
                 ShowWindow(GetConsoleWindow(), 5);
             }
-
+            _StopThread = false;
+            ResourcesLoaded = false;
+            _SDL_Renderer = IntPtr.Zero;
+            _SDL_Window = IntPtr.Zero;
             switch (Mode)
             {
                 case EngineMode.Synchronous:
                     _Started = true;
                     _SyncThread = new Thread(new ThreadStart(Sync_Loop));
-                    _SyncThread.Name = "Synchronous Game Thread";
+                    _SyncThread.Name = "Synchronous Game Thread " + _SyncThread.GetHashCode().ToString();
                     _SyncThread.Start();
                     break;
                 case EngineMode.Asynchronous:
@@ -490,13 +493,14 @@ namespace GEngine.Engine
             SDL_DestroyWindow(_SDL_Window);
             _resource.Quit();
         }
-        private void ForceStop()
+        public void ForceStop()
         {
             _StopThread = true;
             _ForcedThread = true;
             Thread.Sleep(10);
             FreeResources();
             SDL_Quit();
+            _scenes.Clear();
             Debug.Log("GameEngine.ForceStop()", "Engine forcibly stopped.");
         }
         private void InitLogic()
@@ -505,6 +509,7 @@ namespace GEngine.Engine
             {
                 _audio.Init();
                 _input.Init();
+                _resource.Init(IntPtr.Zero);
                 _initLogic = true;
             }
         }
@@ -550,8 +555,9 @@ namespace GEngine.Engine
                 _scenes.SceneStep();
 
                 string s = SDL_GetError();
-                if (s != "" && !_StopThread)
+                if (s != "" && !_StopThread && false)
                 {
+                    Console.WriteLine("[UE] ! - " + s);
                     ForceStop();
                     throw new EngineException("Unexpected SDL Error occured, engine halted.", "GameEngine.LogicStep()");
                 }
@@ -584,6 +590,7 @@ namespace GEngine.Engine
                 {
                     Debug.Log("GameEngine.DrawStep()", $"Could not draw current scene('{_scenes.CurrentScene}').");
                     Debug.Log("GameEngine.DrawStep()", $"Reason: {ex.Message}");
+                    Debug.Log("SDL_ERROR-GE_DS - " + SDL_GetError());
                 }
                 SDL_RenderPresent(_SDL_Renderer);
             }
@@ -662,6 +669,9 @@ namespace GEngine.Engine
                 _tps = tpsAvg.GetAverage();
             } while (!_StopThread);
             _Aborted_S = true;
+            _SyncThread = null;
+            _initLogic = false;
+            _initGraphics = false;
         }
         private void Async_LogicLoop()
         {
