@@ -153,9 +153,57 @@ namespace GEngine.Engine
             throw new EngineException($"GameObject with name '{name}' not found in collection.", "GameObjectCollection.Get()");
         }
     }
+    public class InstanceCollectionEventArgs : EventArgs
+    {
+        public InstanceCollectionEventType Type { get; set; }
+        public Instance Reference { get; set; }
+    }
+    public enum InstanceCollectionEventType
+    {
+        AddObject,
+        RemoveObject,
+        AccessedObject,
+        Misc
+    }
     public class InstanceCollection : ICollection<Instance>
     {
         private ICollection<Instance> _data;
+        public delegate void InstanceCollectionEventHandler(InstanceCollectionEventArgs eventArgs);
+        public event InstanceCollectionEventHandler OnObjectAdd;
+        public event InstanceCollectionEventHandler OnObjectRemove;
+        public event InstanceCollectionEventHandler OnObjectAccess;
+        public event InstanceCollectionEventHandler OnGeneralizedEvent;
+
+        private void EventAdd(Instance inst)
+        {
+            var eArg = new InstanceCollectionEventArgs()
+            {
+                Reference = inst,
+                Type = InstanceCollectionEventType.AddObject
+            };
+            OnObjectAdd?.Invoke(eArg);
+            OnGeneralizedEvent?.Invoke(eArg);
+        }
+        private void EventRemove(Instance inst)
+        {
+            var eArg = new InstanceCollectionEventArgs()
+            {
+                Reference = inst,
+                Type = InstanceCollectionEventType.RemoveObject
+            };
+            OnObjectRemove?.Invoke(eArg);
+            OnGeneralizedEvent?.Invoke(eArg);
+        }
+        private void EventAccess(Instance inst)
+        {
+            var eArg = new InstanceCollectionEventArgs()
+            {
+                Reference = inst,
+                Type = InstanceCollectionEventType.AccessedObject
+            };
+            OnObjectAccess?.Invoke(eArg);
+            OnGeneralizedEvent?.Invoke(eArg);
+        }
 
         public InstanceCollection()
         {

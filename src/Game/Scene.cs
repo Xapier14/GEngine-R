@@ -23,12 +23,16 @@ namespace GEngine.Game
         public Size SceneSize { get; set; }
         public GameObjectInfoCollection GameObjects { get; set; }
         public Type ReferenceType { get; set; }
+        public bool UsesPhysics { get; set; }
+        public Coord WorldGravity { get; set; }
 
         public Scene(Size sceneSize, Size viewSize)
         {
             SceneSize = sceneSize;
             Properties = new SceneProperties(viewSize);
             GameObjects = new GameObjectInfoCollection();
+            UsesPhysics = false;
+            WorldGravity = new Coord(0, 0);
         }
 
         public SceneInstance CreateInstance()
@@ -39,6 +43,8 @@ namespace GEngine.Game
             instance.ReferenceType = ReferenceType;
             instance.ViewPosition = new Coord(0, 0);
             instance.ViewOrigin = new Coord(0, 0);
+            instance.UsesPhysics = UsesPhysics;
+            instance.PhysicsWorld = new PhysicsWorld(SceneSize, WorldGravity);
 
             foreach(var obj in GameObjects)
             {
@@ -79,6 +85,8 @@ namespace GEngine.Game
         public Type ReferenceType { get; set; }
         public Coord ViewPosition = new Coord(0,0);
         public Coord ViewOrigin = new Coord(0, 0);
+        public bool UsesPhysics { get; set; }
+        public PhysicsWorld PhysicsWorld { get; set; }
         public dynamic Reference
         {
             get
