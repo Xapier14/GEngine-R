@@ -38,6 +38,7 @@ namespace GEngine.Game
             instance.Instances = new InstanceCollection();
             instance.ReferenceType = ReferenceType;
             instance.ViewPosition = new Coord(0, 0);
+            instance.ViewOrigin = new Coord(0, 0);
 
             foreach(var obj in GameObjects)
             {
@@ -77,6 +78,7 @@ namespace GEngine.Game
         public InstanceCollection Instances { get; set; }
         public Type ReferenceType { get; set; }
         public Coord ViewPosition = new Coord(0,0);
+        public Coord ViewOrigin = new Coord(0, 0);
         public dynamic Reference
         {
             get

@@ -29,7 +29,6 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 - OpenGL & Textures with transparency.
 - Possible Memory Corruption on LoadAsTexture().
 - Certain graphics drivers are incompatible with VideoBackends.
-- Scene ViewPorts are not yet implemented.
 - Objects that are out of screen are still drawn.
 
 ## How-To:
