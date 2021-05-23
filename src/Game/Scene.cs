@@ -39,13 +39,9 @@ namespace GEngine.Game
         {
             SceneInstance instance = new SceneInstance();
             instance.BaseReference = this;
-            instance.Instances = new InstanceCollection();
             instance.ReferenceType = ReferenceType;
-            instance.ViewPosition = new Coord(0, 0);
-            instance.ViewOrigin = new Coord(0, 0);
             instance.UsesPhysics = UsesPhysics;
-            instance.PhysicsWorld = new PhysicsWorld(SceneSize, WorldGravity);
-
+            instance._initPhysics();
             foreach(var obj in GameObjects)
             {
                 Instance inst = obj.GameObject.CreateInstance(out Guid guid);
@@ -87,6 +83,32 @@ namespace GEngine.Game
         public Coord ViewOrigin = new Coord(0, 0);
         public bool UsesPhysics { get; set; }
         public PhysicsWorld PhysicsWorld { get; set; }
+        private bool _initializedPhysics = false;
+
+        public SceneInstance()
+        {
+            ViewPosition = new Coord(0, 0);
+            ViewOrigin = new Coord(0, 0);
+            Instances = new InstanceCollection();
+        }
+        internal void _initPhysics()
+        {
+            if (_initializedPhysics) return;
+            _initializedPhysics = true;
+            PhysicsWorld = new PhysicsWorld(BaseReference.SceneSize, BaseReference.WorldGravity);
+            Instances.OnGeneralizedEvent += Instances_OnGeneralizedEvent;
+        }
+
+        private void Instances_OnGeneralizedEvent(InstanceCollectionEventArgs eventArgs)
+        {
+            switch (eventArgs.Type)
+            {
+                case InstanceCollectionEventType.AddObject:
+                    PhysicsWorld.AddObject(eventArgs.Reference);
+                    break;
+            }
+        }
+
         public dynamic Reference
         {
             get
