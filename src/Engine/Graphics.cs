@@ -84,6 +84,7 @@ namespace GEngine.Engine
             IntPtr wi, re;
             int flag = 0;
             if (_backend != VideoBackend.Direct3D && _backend != VideoBackend.Metal && _backend != VideoBackend.Software) flag = (int)SDL_WindowFlags.SDL_WINDOW_OPENGL;
+            /*
             int res = SDL_CreateWindowAndRenderer(w, h, (SDL_WindowFlags)flag, out wi, out re);
             if (res != 0)
             {
@@ -91,6 +92,10 @@ namespace GEngine.Engine
                 Debug.Log("SDL_GetError()", SDL_GetError());
                 throw new EngineException("Error creating SDL window & renderer.", "Graphics.CreateWindowAndRenderer()");
             }
+            */
+            SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "0");
+            wi = SDL_CreateWindow(windowTitle, x, y, w, h, (SDL_WindowFlags)flag);
+            re = SDL_CreateRenderer(wi, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
             SDL_SetWindowTitle(wi, windowTitle);
             if (wi == IntPtr.Zero)
             {

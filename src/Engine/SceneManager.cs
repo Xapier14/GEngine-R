@@ -17,6 +17,7 @@ namespace GEngine.Engine
         {
             get
             {
+                if (_CurrentScene == null) return "";
                 return _CurrentScene.BaseReference.Name;
             }
         }
@@ -58,6 +59,7 @@ namespace GEngine.Engine
         public SceneInstance GetInstance(string name)
         {
             if (!HasInstance(name)) throw new EngineException($"Scene '{name}' does not have an instance.");
+            if (name == "") return null;
             return _ActiveScenes[name];
         }
         public void RemoveScene(string name)

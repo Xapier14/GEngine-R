@@ -246,6 +246,7 @@ namespace GEngine.Engine
 
         public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto)
         {
+            SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "1");
             ResourcesLoaded = false;
             Properties = new EngineProperties();
             _resource = new ResourceManager(); //I don't know if this would work.
@@ -507,9 +508,9 @@ namespace GEngine.Engine
         {
             if (!_initLogic)
             {
+                //_resource.Init(IntPtr.Zero);
                 _audio.Init();
                 _input.Init();
-                _resource.Init(IntPtr.Zero);
                 _initLogic = true;
             }
         }
@@ -525,6 +526,8 @@ namespace GEngine.Engine
                 //_SDL_Renderer = _graphics.Renderer;
                 //_SDL_Window = _graphics.Window;
                 _graphics.RenderClearColor = new ColorRGBA(120, 180, 230);
+                _resource.Init(_SDL_Renderer);
+                _resource.EngineInit = false;
                 _initGraphics = true;
             }
         }
@@ -585,12 +588,13 @@ namespace GEngine.Engine
                 }
                 try
                 {
-                    _graphics.DrawScene(_scenes.GetInstance(_scenes.CurrentScene));
+                    SceneInstance si = _scenes.GetInstance(_scenes.CurrentScene);
+                    if (si != null) _graphics.DrawScene(si);
                 } catch (EngineException ex)
                 {
                     Debug.Log("GameEngine.DrawStep()", $"Could not draw current scene('{_scenes.CurrentScene}').");
-                    Debug.Log("GameEngine.DrawStep()", $"Reason: {ex.Message}");
-                    Debug.Log("SDL_ERROR-GE_DS - " + SDL_GetError());
+                    //Debug.Log("GameEngine.DrawStep()", $"Reason: {ex.Message}");
+                    //Debug.Log("SDL_ERROR-GE_DS - " + SDL_GetError());
                 }
                 SDL_RenderPresent(_SDL_Renderer);
             }
@@ -632,7 +636,7 @@ namespace GEngine.Engine
             };
 
             //SDL_RenderSetViewport(_SDL_Renderer, ref tt);
-
+            _resource.EngineInit = true;
             while (!ResourcesLoaded)
             {
                 SDL_Delay(1000);

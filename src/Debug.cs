@@ -16,7 +16,13 @@ namespace GEngine
             DateTime now = DateTime.Now;
             if (WriteToFile)
             {
-                sw = File.AppendText("log.txt");
+                try
+                {
+                    sw = File.AppendText("log.txt");
+                } catch
+                {
+                    //sw.Close();
+                }
             }
             if (title != "")
             {

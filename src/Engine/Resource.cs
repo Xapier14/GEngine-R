@@ -20,6 +20,7 @@ namespace GEngine.Engine
         private const bool FLAG_ALLOW_MISSING_METADATA = true; //hack
         private ResourceCollection _Audio, _Textures;
         private IntPtr _SDL_Renderer;
+        public bool EngineInit = false;
 
         public ResourceManager()
         {
@@ -100,8 +101,9 @@ namespace GEngine.Engine
             }
         }
 
-        public void LoadAsTexture(string fileLocation, string resourceName)
+        unsafe public void LoadAsTexture(string fileLocation, string resourceName)
         {
+            while (!EngineInit) SDL_Delay(100);
             if (_SDL_Renderer == IntPtr.Zero)
             {
                 Debug.Log("ResourceManager.LoadAsTexture()", "SDL Renderer not yet initialized, waiting for init.");
@@ -172,16 +174,23 @@ namespace GEngine.Engine
                     ZipArchiveEntry data = archive.GetEntry(file);
                     Stream s = data.Open();
                     byte[] buffer = new byte[data.Length];
-                    //GCHandle handle = GCHandle.Alloc(byteData, GCHandleType.Pinned);
-                    IntPtr ptrArray = Marshal.AllocHGlobal(buffer.Length);
                     s.Read(buffer, 0, buffer.Length);
-                    Marshal.Copy(buffer, 0, ptrArray, buffer.Length);
+                    string fn = "temp" + data.Name;
+                    File.WriteAllBytes(fn, buffer);
+                    //Marshal.Copy(buffer, 0, ptrArray, buffer.Length);
+                    //GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+                    //IntPtr ptrArray = handle.AddrOfPinnedObject();
+                    //IntPtr ptrArray = Marshal.AllocHGlobal(buffer.Length);
+                    //s.Read(buffer, 0, buffer.Length);
+                    //Marshal.Copy(buffer, 0, ptrArray, buffer.Length);
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Read texture data from {file}#{resourceName} @ {buffer.Length} byte(s).");
-                    IntPtr rwops = SDL_RWFromMem(ptrArray, buffer.Length);
-                    IntPtr surface;
-                    surface = IMG_Load_RW(rwops, 0);
+                    //IntPtr rwops = SDL_RWFromMem(ptrArray, buffer.Length);
+                    IntPtr surface = IMG_Load(fn);
+                    //IntPtr surface = IMG_Load_RW(rwops, 0);
+                    SDL_Surface sd = *(SDL_Surface*)surface;
+                    File.Delete(fn);
                     string sE1 = SDL_GetError();
-                    if (surface == IntPtr.Zero || rwops == IntPtr.Zero)
+                    if (surface == IntPtr.Zero)// || rwops == IntPtr.Zero)
                     {
                         Debug.Log("ResourceManager.LoadAsTexture()", $"Error reading texture data {file}#{resourceName}. {sE1}");
                         continue;
@@ -207,8 +216,9 @@ namespace GEngine.Engine
                     textures.Add(texture);
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Created texture from surface {file}#{resourceName}.");
                     //SDL_FreeSurface(surface);
-                    Marshal.FreeHGlobal(ptrArray);
-                    SDL_RWclose(rwops);
+                    //Marshal.FreeHGlobal(ptrArray);
+                    //handle.Free();
+                    //SDL_RWclose(rwops);
                 } catch
                 {
                     Debug.Log("ResourceManager.LoadAsTexture()", $"Error loading texture {file}#{resourceName}. Skipped file.");
@@ -230,6 +240,7 @@ namespace GEngine.Engine
 
         public void LoadAsAudio(string fileLocation, string resourceName, AudioType audioType)
         {
+            while (!EngineInit) SDL_Delay(100);
             if (_Audio.Contains(resourceName)) throw new ResourceException($"A resource with the same name '{resourceName}' already exists.", fileLocation);
             if (!File.Exists(fileLocation)) throw new ResourceException($"Error loading resource '{resourceName}'. File not found.", fileLocation);
             try

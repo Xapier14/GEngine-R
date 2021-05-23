@@ -15,6 +15,10 @@
     <RepositoryUrl>https://github.com/Xapier14/GEngine-R</RepositoryUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\GitClones\SDL2-CS\SDL2-CS.Core.csproj" />
   </ItemGroup>
