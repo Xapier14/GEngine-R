@@ -18,7 +18,7 @@ namespace GEngine.Engine
     }
     public class PhysicsAttributes
     {
-
+        
     }
     public class PhysicsVariables
     {
@@ -26,16 +26,35 @@ namespace GEngine.Engine
     }
     public class PhysicsWorld
     {
+        private const float UNIT_SCALE = 0.1f;
         private World _b2World;
-        private Dictionary<Instance, BodyDef> _instBodyDef;
+        private Dictionary<Instance, BodyDefPair> _instBodyDef;
 
         public PhysicsWorld(Size worldSize, Coord gravity)
         {
-            _instBodyDef = new Dictionary<Instance, BodyDef>();
-            Vec2 g = new Vec2(gravity.X, gravity.Y);
-            _b2World = new World(new AABB(), g, true);
+            _instBodyDef = new Dictionary<Instance, BodyDefPair>();
+            Vec2 g = new Vec2(gravity.X * UNIT_SCALE, gravity.Y * UNIT_SCALE);
+            AABB worldBounds = new AABB();
+            worldBounds.LowerBound.Set(0, 0);
+            worldBounds.UpperBound.Set(UNIT_SCALE * worldSize.W, UNIT_SCALE * worldSize.H);
+            _b2World = new World(worldBounds, g, true);
         }
 
-        public void AddObject
+        public void AddObject(Instance inst)
+        {
+            BodyDef iDef = new BodyDef();
+            iDef.Position.Set(inst.Position.X * UNIT_SCALE, inst.Position.Y * UNIT_SCALE);
+            Body iBody = _b2World.CreateBody(iDef);
+
+        }
+
+        public void UpdateCycle()
+        {
+
+        }
+    }
+    internal struct BodyDefPair
+    {
+
     }
 }
