@@ -63,5 +63,11 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 ## Switching/Loading Scenes:
 1. After creating and registering scenes, call Scenes.SwitchToScene(). (Note: This will create an instance of the scene as well as game object instances.)
 
+## Dependencies
+* SDL2
+* SDL2-CS.Core
+* Box2D.NetStandard
+* .Net 5.0
+
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R?ref=badge_large)
