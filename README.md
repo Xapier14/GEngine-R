@@ -7,7 +7,7 @@ A Rewrite of an old project of mine.
 ## Important Notes:
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R?ref=badge_shield)
 
-Nothing worth noting yet.
+OpenGL backend is buggy, use direct3d or software mode instead.
 
 ## To-Do:
 - [x] Base Engine Loop
@@ -23,12 +23,12 @@ Nothing worth noting yet.
 - [x] Scene Instancing
 - [ ] Physics System
 - [ ] Animations
-- [ ] Object Texture Offsets
+- [x] Object Texture Offsets
 
 ## Known Issues
 - OpenGL & Textures with transparency.
 - Possible Memory Corruption on LoadAsTexture().
-- Certain graphics drivers are incompatible with certain VideoBackends.
+- Certain graphics drivers are incompatible with VideoBackends.
 - Scene ViewPorts are not yet implemented.
 - Objects that are out of screen are still drawn.
 

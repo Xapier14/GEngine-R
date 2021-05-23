@@ -8,38 +8,12 @@ using GEngine.Engine;
 
 namespace GEngine.Game
 {
-    public class View
-    {
-        public Size Size { get; set; }
-        public OriginType OriginType { get; set; }
-
-        public View()
-        {
-            Size = new Size() { W = 0, H = 0 };
-            OriginType = OriginType.ManualOrigin;
-        }
-
-        public View(int w, int h)
-        {
-            Size = new Size() { W = w, H = h };
-            OriginType = OriginType.ManualOrigin;
-        }
-
-        public View(Size size)
-        {
-            Size = new Size() { W = size.W, H = size.H };
-            OriginType = OriginType.ManualOrigin;
-        }
-    }
     public class SceneProperties
     {
-        public View View { get; set; }
         public bool AnimateSprites { get; set; }
         public SceneProperties(Size viewSize)
         {
             AnimateSprites = true;
-            View = new View(viewSize);
-            View.OriginType = OriginType.CenterOrigin;
         }
     }
     public abstract class Scene
