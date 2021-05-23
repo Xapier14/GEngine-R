@@ -27,4 +27,8 @@
     <Folder Include="src\Net\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Box2D.NetStandard" Version="1.0.3" />
+  </ItemGroup>
+
 </Project>
