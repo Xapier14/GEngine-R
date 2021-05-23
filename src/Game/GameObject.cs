@@ -12,6 +12,7 @@ namespace GEngine.Game
         public TextureResource DefaultSprite { get; set; }
         public PhysicsAttributes PhysicsAttributes { get; set; }
         public string ObjectName { get; set; }
+        public bool IsActivated { get; set; }
         public bool IsAnimated { get; set; }
         public int DefaultImageSpeed { get; set; }
         public int DefaultImageIndex { get; set; }
@@ -29,6 +30,7 @@ namespace GEngine.Game
                 ImageIndex = DefaultImageIndex,
                 ImageSpeed = DefaultImageSpeed,
                 ImageAngle = DefaultImageAngle,
+                IsActivated = IsActivated,
                 IsAnimated = IsAnimated,
                 ReferenceType = Type,
                 ScaleX = DefaultScaleX,
@@ -85,6 +87,7 @@ namespace GEngine.Game
         public int ImageSpeed { get; set; }
         public int Depth { get; set; }
         public double ImageAngle { get; set; }
+        public bool IsActivated { get; set; }
         public bool IsAnimated { get; set; }
         public Guid Hash { get; private set; }
         public Type ReferenceType { get; set; }
