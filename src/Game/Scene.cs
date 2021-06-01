@@ -60,6 +60,10 @@ namespace GEngine.Game
 
         public virtual void Step(SceneInstance caller)
         {
+            if (caller.PhysicsWorld != null && caller.UsesPhysics)
+            {
+                caller.PhysicsWorld.UpdateCycle();
+            }
             foreach (Instance inst in caller.Instances)
             {
                 inst.BaseReference.Step(inst, caller);

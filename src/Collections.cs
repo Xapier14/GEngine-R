@@ -226,6 +226,7 @@ namespace GEngine.Engine
         public void Add(Instance item)
         {
             _data.Add(item);
+            EventAdd(item);
             if (IsSorted) IsSorted = false;
         }
 

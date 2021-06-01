@@ -21,14 +21,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GitClones\SDL2-CS\SDL2-CS.Core.csproj" />
+    <ProjectReference Include="..\..\GitClones\VelcroPhysics\src\VelcroPhysics\VelcroPhysics.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="src\Net\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Box2D.NetStandard" Version="1.0.3" />
   </ItemGroup>
 
 </Project>

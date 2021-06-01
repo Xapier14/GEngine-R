@@ -38,4 +38,20 @@ namespace GEngine
             SourceFile = source;
         }
     }
+    public class PhysicsException : EngineException
+    {
+        public new string SourceFile { get; set; }
+        public PhysicsException() : base()
+        {
+            SourceFile = "n/a";
+        }
+        public PhysicsException(string msg) : base(msg)
+        {
+            SourceFile = "n/a";
+        }
+        public PhysicsException(string msg, string source) : base(msg)
+        {
+            SourceFile = source;
+        }
+    }
 }
