@@ -37,9 +37,11 @@ namespace GEngine.Engine
             }
         }
         public RenderScaleQuality RenderScaleQuality { get; set; }
+        public bool TPSAnimations { get; set; }
 
         public EngineProperties()
         {
+            TPSAnimations = false;
             TargetTPS = 64;
             TargetFPS = 60;
             TPSOffset = -0.15; //Play around with this to time the game speed.
@@ -556,6 +558,7 @@ namespace GEngine.Engine
                 */
 
                 _scenes.SceneStep();
+                if (Properties.TPSAnimations) _scenes.AnimationStep();
 
                 string s = SDL_GetError();
                 if (s != "" && !_StopThread && false)
@@ -604,7 +607,7 @@ namespace GEngine.Engine
                 // Render to Screen
                 SDL_RenderPresent(_SDL_Renderer);
                 // Advance animations for current scene
-                _scenes.AnimationStep();
+                if (!Properties.TPSAnimations)_scenes.AnimationStep();
             }
         }
         private void Sync_Loop()
