@@ -83,7 +83,21 @@ namespace GEngine.Game
             }
         }
         public Coord Position;
-        public int ImageIndex { get; set; }
+        private int _imageIndex;
+        public int ImageIndex { get
+            {
+                return _imageIndex;
+            }
+            set
+            {
+                if (value < 0) throw new EngineException("ImageIndex cannot be lesser than 0.");
+                if (value != 0 && Sprite != null)
+                {
+                    if (value >= Sprite.Count) throw new EngineException("ImageIndex is out-of-range.");
+                }
+                _imageIndex = value;
+            }
+        }
         public int ImageSpeed { get; set; }
         public int Depth { get; set; }
         public double ImageAngle { get; set; }
@@ -102,6 +116,7 @@ namespace GEngine.Game
             PhysicsVariables = new PhysicsVariables();
             Position = new Coord(0, 0);
             Depth = 0;
+            _imageIndex = 0;
             _currentImageSpeed = 0;
         }
 
