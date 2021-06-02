@@ -94,6 +94,7 @@ namespace GEngine.Game
         public double ScaleX { get; set; }
         public double ScaleY { get; set; }
         public Coord Offset { get; set; }
+        private int _currentImageSpeed;
 
         public Instance()
         {
@@ -101,6 +102,25 @@ namespace GEngine.Game
             PhysicsVariables = new PhysicsVariables();
             Position = new Coord(0, 0);
             Depth = 0;
+            _currentImageSpeed = 0;
+        }
+
+        public void AnimationStep()
+        {
+            if (_currentImageSpeed >= ImageSpeed)
+            {
+                _currentImageSpeed = 0;
+                if (ImageIndex >= Sprite.Count-1)
+                {
+                    ImageIndex = 0;
+                } else
+                {
+                    ImageIndex++;
+                }
+            } else
+            {
+                _currentImageSpeed++;
+            }
         }
     }
 }

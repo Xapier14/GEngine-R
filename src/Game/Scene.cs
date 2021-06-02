@@ -125,5 +125,13 @@ namespace GEngine.Game
             BaseReference.OnDestroy(this);
             BaseReference.OnCreate(this);
         }
+
+        public void AnimationStep()
+        {
+            foreach (Instance inst in Instances)
+            {
+                if (inst.IsAnimated) inst.AnimationStep();
+            }
+        }
     }
 }

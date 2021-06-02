@@ -570,13 +570,18 @@ namespace GEngine.Engine
         {
             if (!DrawPause)
             {
+                // Clear
                 _graphics.RenderClear();
+                // If engine is set to rebuild textures
                 if (!_rebuilt)
                 {
+                    // And that it is due for rebuild
                     if (_rebuildCurrentCall > _rebuildOnCall)
                     {
+                        // And that the backend is some form of OpenGL
                         if (_vBackend == VideoBackend.OpenGL || _vBackend == VideoBackend.OpenGL_ES || _vBackend == VideoBackend.OpenGL_ES2)
                         {
+                            // Rebuild textures
                             _resource.RebuildTextures();
                             InformMessage("Textures rebuilt.");
                         }
@@ -596,7 +601,10 @@ namespace GEngine.Engine
                     //Debug.Log("GameEngine.DrawStep()", $"Reason: {ex.Message}");
                     //Debug.Log("SDL_ERROR-GE_DS - " + SDL_GetError());
                 }
+                // Render to Screen
                 SDL_RenderPresent(_SDL_Renderer);
+                // Advance animations for current scene
+                _scenes.AnimationStep();
             }
         }
         private void Sync_Loop()

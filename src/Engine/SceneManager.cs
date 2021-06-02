@@ -123,5 +123,15 @@ namespace GEngine.Engine
         {
             return _ActiveScenes.ContainsKey(name);
         }
+
+        public void AnimationStep()
+        {
+            if (_CurrentScene == null)
+            {
+                Debug.Log("SceneManager.AnimationStep()", "Cannot advance animation on a null scene instance.");
+                return;
+            }
+            _CurrentScene.AnimationStep();
+        }
     }
 }
