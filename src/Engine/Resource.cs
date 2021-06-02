@@ -124,11 +124,13 @@ namespace GEngine.Engine
             {
                 throw new ResourceException($"Error loading resource '{resourceName}'.", fileLocation);
             }
+            // sort by name
+            var entries = archive.Entries.OrderBy(zip => zip.Name);
             bool loadedMetadata = false;
             List<string> files = new List<string>();
             Size spriteSize = new Size(), sheetSize = new Size();
             bool isSheet = false;
-            foreach (ZipArchiveEntry entry in archive.Entries)
+            foreach (ZipArchiveEntry entry in entries)
             {
                 if (entry.Name == "metadata")
                 {
