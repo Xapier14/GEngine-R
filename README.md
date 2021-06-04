@@ -22,7 +22,7 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 - [x] GameObject Event System
 - [x] Scene Instancing
 - [ ] Physics System
-- [ ] Animations
+- [x] Animations
 - [x] Object Texture Offsets
 
 ## Known Issues

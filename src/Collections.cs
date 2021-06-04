@@ -245,6 +245,20 @@ namespace GEngine.Engine
             }
         }
 
+        public Instance[] this[GameObject reference]
+        {
+            get
+            {
+                List<Instance> instances = new List<Instance>();
+                foreach (Instance inst in this)
+                {
+                    if ((inst.Reference as GameObject) == reference)
+                        instances.Add(inst);
+                }
+                return instances.ToArray();
+            }
+        }
+
         public bool IsSorted { get; private set; }
 
         public int Count => _data.Count;
