@@ -18,9 +18,9 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Clone VelcroPhysics
-      run: git clone https://github.com/Genbox/VelcroPhysics.git
+      run: git clone https://github.com/Genbox/VelcroPhysics.git ..\..\GitClones\VelcroPhysics
     - name: Clone SDL2-CS
-      run: git clone https://github.com/flibitijibibo/SDL2-CS.git
+      run: git clone https://github.com/flibitijibibo/SDL2-CS.git ..\..\GitClones\SDL2-CS
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
