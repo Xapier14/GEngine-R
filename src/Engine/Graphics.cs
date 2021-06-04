@@ -203,7 +203,11 @@ namespace GEngine.Engine
 
             //SetRenderDrawColor(new ColorRGBA(255, 255, 255, 255));
 
-            int res = SDL_RenderCopyEx(Renderer, texture.Textures[textureIndex], IntPtr.Zero, ref dst, angle, IntPtr.Zero, SDL_RendererFlip.SDL_FLIP_NONE);
+            int index = textureIndex;
+            if (index >= texture.Count || index < 0)
+                index = 0;
+
+            int res = SDL_RenderCopyEx(Renderer, texture.Textures[index], IntPtr.Zero, ref dst, angle, IntPtr.Zero, SDL_RendererFlip.SDL_FLIP_NONE);
             if (res != 0)
             {
                 //error

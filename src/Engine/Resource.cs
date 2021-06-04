@@ -17,7 +17,7 @@ namespace GEngine.Engine
 {
     public class ResourceManager
     {
-        private const bool FLAG_ALLOW_MISSING_METADATA = true; //hack
+        private const bool FLAG_ALLOW_MISSING_METADATA = false; //hack, allows resources with missing metadata. requires explicit information on sprite sizes
         private ResourceCollection _Audio, _Textures;
         private IntPtr _SDL_Renderer;
         public bool EngineInit = false;
@@ -145,10 +145,10 @@ namespace GEngine.Engine
                             JsonDocument doc = JsonDocument.Parse(json);
                             var meta = doc.RootElement;
                             isSheet = meta.GetProperty("IsSheet").GetBoolean();
-                            spriteSize.W = meta.GetProperty("SpriteSize.W").GetInt32();
-                            spriteSize.H = meta.GetProperty("SpriteSize.H").GetInt32();
-                            sheetSize.W = meta.GetProperty("SheetSize.W").GetInt32();
-                            sheetSize.H = meta.GetProperty("SheetSize.H").GetInt32();
+                            spriteSize.W = meta.GetProperty("SpriteSize").GetProperty("Width").GetInt32();
+                            spriteSize.H = meta.GetProperty("SpriteSize").GetProperty("Height").GetInt32();
+                            sheetSize.W = meta.GetProperty("SheetSize").GetProperty("Width").GetInt32();
+                            sheetSize.H = meta.GetProperty("SheetSize").GetProperty("Height").GetInt32();
                             doc.Dispose();
                         } catch
                         {
