@@ -217,6 +217,34 @@ namespace GEngine.Engine
                 return this[i];
             }
         }
+
+        public Instance this[Guid hash]
+        {
+            get
+            {
+                foreach (Instance inst in this)
+                {
+                    if (inst.Hash == hash)
+                        return inst;
+                }
+                return null;
+            }
+        }
+
+        public Instance[] this[string objectName]
+        {
+            get
+            {
+                List<Instance> instances = new List<Instance>();
+                foreach (Instance inst in this)
+                {
+                    if ((inst.Reference as GameObject).ObjectName == objectName)
+                        instances.Add(inst);
+                }
+                return instances.ToArray();
+            }
+        }
+
         public bool IsSorted { get; private set; }
 
         public int Count => _data.Count;
