@@ -17,9 +17,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Restore dependencies
+    - name: Clone VelcroPhysics
       run: git clone https://github.com/Genbox/VelcroPhysics.git
+    - name: Clone SDL2-CS
       run: git clone https://github.com/flibitijibibo/SDL2-CS.git
+    - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
