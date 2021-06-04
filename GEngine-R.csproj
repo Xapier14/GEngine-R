@@ -12,6 +12,7 @@
     <Version>1.0-dev</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <RepositoryType>Public</RepositoryType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RepositoryUrl>https://github.com/Xapier14/GEngine-R</RepositoryUrl>
   </PropertyGroup>
 
