@@ -10,7 +10,7 @@ namespace GEngine.Game
     public abstract class GameObject
     {
         public TextureResource DefaultSprite { get; set; }
-        public PhysicsAttributes PhysicsAttributes { get; set; }
+        public PhysicsAttributes DefaultPhysicsAttributes { get; set; }
         public string ObjectName { get; set; }
         public bool IsActivated { get; set; }
         public bool IsAnimated { get; set; }
@@ -49,7 +49,7 @@ namespace GEngine.Game
             DefaultImageIndex = 0;
             DefaultImageSpeed = 0;
             IsAnimated = true;
-            PhysicsAttributes = new PhysicsAttributes();
+            DefaultPhysicsAttributes = new PhysicsAttributes();
         }
 
         public virtual void OnCreate(Instance caller, SceneInstance scene)
@@ -74,6 +74,7 @@ namespace GEngine.Game
     {
         public TextureResource Sprite { get; set; }
         public PhysicsVariables PhysicsVariables { get; set; }
+        public PhysicsAttributes PhysicsAttributes { get; set; }
         public GameObject BaseReference { get; set; }
         public dynamic Reference
         {

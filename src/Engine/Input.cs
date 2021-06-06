@@ -13,7 +13,7 @@ namespace GEngine.Engine
     }
     public class InputManager
     {
-        private Dictionary<SDL_Keycode, bool> _keys;
+        private Dictionary<SDL_Keycode, bool> _keys, _statePressed, _stateReleased;
         private bool _leftMB = false, _rightMB = false, _middleMB = false;
 
         public delegate void InputManagerEventHandler(InputCallbackEventArg eventArg);
@@ -46,6 +46,8 @@ namespace GEngine.Engine
         public InputManager()
         {
             _keys = new Dictionary<SDL_Keycode, bool>();
+            _statePressed = new Dictionary<SDL_Keycode, bool>();
+            _stateReleased = new Dictionary<SDL_Keycode, bool>();
         }
         public void Init()
         {
@@ -53,7 +55,6 @@ namespace GEngine.Engine
         }
         public bool IsDown(SDL_Keycode key)
         {
-            //if (!_keys.ContainsKey(key)) return false;
             if (_keys.TryGetValue(key, out bool result))
             {
                 return result;
@@ -61,6 +62,18 @@ namespace GEngine.Engine
             {
                 return false;
             }
+        }
+        public bool IsUp(SDL_Keycode key)
+        {
+            return !IsDown(key);
+        }
+        public bool IsPressed(SDL_Keycode key)
+        {
+            throw new NotImplementedException();
+        }
+        public bool IsReleased(SDL_Keycode key)
+        {
+            throw new NotImplementedException();
         }
         public void PollEvent()
         {

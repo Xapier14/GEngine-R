@@ -55,7 +55,10 @@ namespace GEngine.Game
 
         public virtual void OnCreate(SceneInstance caller)
         {
-
+            foreach (Instance inst in caller.Instances)
+            {
+                if (inst.IsActivated) inst.BaseReference.OnCreate(inst, caller);
+            }
         }
 
         public virtual void Step(SceneInstance caller)
@@ -66,7 +69,7 @@ namespace GEngine.Game
             }
             foreach (Instance inst in caller.Instances)
             {
-                inst.BaseReference.Step(inst, caller);
+                if (inst.IsActivated) inst.BaseReference.Step(inst, caller);
             }
         }
 
@@ -74,7 +77,7 @@ namespace GEngine.Game
         {
             foreach (Instance inst in caller.Instances)
             {
-                inst.BaseReference.OnDestroy(inst, caller);
+                if (inst.IsActivated) inst.BaseReference.OnDestroy(inst, caller);
             }
         }
     }
