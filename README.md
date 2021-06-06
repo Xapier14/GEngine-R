@@ -35,7 +35,7 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 * SDL2
 * SDL2-CS.Core
 * Genbox.VelcroPhysics
-* .Net 5.0
+* .Net 5.0 ([x86](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-5.0.6-windows-x86-installer))
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R?ref=badge_large)
