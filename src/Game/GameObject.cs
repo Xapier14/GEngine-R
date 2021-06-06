@@ -49,6 +49,7 @@ namespace GEngine.Game
             DefaultImageIndex = 0;
             DefaultImageSpeed = 0;
             IsAnimated = true;
+            IsActivated = true;
             DefaultPhysicsAttributes = new PhysicsAttributes();
         }
 
