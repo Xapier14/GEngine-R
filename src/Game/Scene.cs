@@ -102,7 +102,7 @@ namespace GEngine.Game
         {
             if (_initializedPhysics) return;
             _initializedPhysics = true;
-            PhysicsWorld = new PhysicsWorld(BaseReference.SceneSize, BaseReference.WorldGravity);
+            PhysicsWorld = new PhysicsWorld(BaseReference.WorldGravity);
             Instances.OnGeneralizedEvent += Instances_OnGeneralizedEvent;
         }
 

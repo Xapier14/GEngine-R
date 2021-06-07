@@ -10,6 +10,7 @@ using static SDL2.SDL;
 using GEngine.Game;
 using System.Diagnostics;
 using System.Security;
+using Genbox.VelcroPhysics.Utilities;
 
 namespace GEngine.Engine
 {
@@ -249,6 +250,7 @@ namespace GEngine.Engine
         public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto)
         {
             SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "1");
+            ConvertUnits.SetDisplayUnitToSimUnitRatio(48f);
             ResourcesLoaded = false;
             Properties = new EngineProperties();
             _resource = new ResourceManager(); //I don't know if this would work.

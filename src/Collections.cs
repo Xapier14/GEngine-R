@@ -168,6 +168,7 @@ namespace GEngine.Engine
     public class InstanceCollection : ICollection<Instance>
     {
         private ICollection<Instance> _data;
+        private bool _allowEvent = true;
         public delegate void InstanceCollectionEventHandler(InstanceCollectionEventArgs eventArgs);
         public event InstanceCollectionEventHandler OnObjectAdd;
         public event InstanceCollectionEventHandler OnObjectRemove;
@@ -176,6 +177,7 @@ namespace GEngine.Engine
 
         private void EventAdd(Instance inst)
         {
+            if (!_allowEvent) return;
             var eArg = new InstanceCollectionEventArgs()
             {
                 Reference = inst,
@@ -323,6 +325,7 @@ namespace GEngine.Engine
         public void SortByDepth(bool force)
         {
             if (IsSorted && !force) return;
+            _allowEvent = false;
 
             Instance[] instances = new Instance[this.Count];
 
@@ -336,7 +339,7 @@ namespace GEngine.Engine
             {
                 this.Add(inst);
             }
-
+            _allowEvent = true;
             IsSorted = true;
         }
 

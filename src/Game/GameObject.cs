@@ -35,7 +35,8 @@ namespace GEngine.Game
                 ReferenceType = Type,
                 ScaleX = DefaultScaleX,
                 ScaleY = DefaultScaleY,
-                Offset = new Coord(DefaultOffset.X, DefaultOffset.Y)
+                Offset = new Coord(DefaultOffset.X, DefaultOffset.Y),
+                PhysicsAttributes = new PhysicsAttributes(DefaultPhysicsAttributes)
             };
             hash = newInstance.Hash;
             return newInstance;

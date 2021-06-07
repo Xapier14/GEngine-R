@@ -69,4 +69,9 @@ namespace GEngine.Game
         CenterOrigin,
         ManualOrigin
     }
+    public enum PhysicsBodyType
+    {
+        Box,
+        Circle
+    }
 }

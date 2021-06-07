@@ -83,6 +83,10 @@ namespace GEngine.Engine
             {
                 _CurrentScene.BaseReference.Step(_CurrentScene);
                 _CurrentScene.Instances.SortByDepth(true);
+                if (_CurrentScene.UsesPhysics)
+                {
+                    _CurrentScene.PhysicsWorld.UpdateCycle();
+                }
             }
         }
         public void SwitchToScene(string name, bool reinstance = true)
