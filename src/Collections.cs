@@ -342,7 +342,7 @@ namespace GEngine.Engine
             _allowEvent = true;
             IsSorted = true;
         }
-
+        //
         private static Instance[] MergeSort(Instance[] arr)
         {
             if (arr.Length < 2) return arr;
