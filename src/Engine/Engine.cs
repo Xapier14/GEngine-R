@@ -283,63 +283,43 @@ namespace GEngine.Engine
 
         public string BackendToString(VideoBackend backend)
         {
-            switch (backend)
+            return backend switch
             {
-                case VideoBackend.Direct3D:
-                    return "direct3d";
-                case VideoBackend.OpenGL:
-                    return "opengl";
-                case VideoBackend.OpenGL_ES:
-                    return "opengles";
-                case VideoBackend.OpenGL_ES2:
-                    return "opengles2";
-                case VideoBackend.Metal:
-                    return "metal";
-                case VideoBackend.Software:
-                    return "software";
-                case VideoBackend.Auto:
-                    return "auto";
-                default:
-                    return "n/a";
-            }
+                VideoBackend.Direct3D => "direct3d",
+                VideoBackend.OpenGL => "opengl",
+                VideoBackend.OpenGL_ES => "opengles",
+                VideoBackend.OpenGL_ES2 => "opengles2",
+                VideoBackend.Metal => "metal",
+                VideoBackend.Software => "software",
+                VideoBackend.Auto => "auto",
+                _ => "n/a",
+            };
         }
 
         private string ParseRenderScale(RenderScaleQuality quality)
         {
-            switch (quality)
+            return quality switch
             {
-                default:
-                    return "0";
-                case RenderScaleQuality.Nearest:
-                    return "0";
-                case RenderScaleQuality.Linear:
-                    return "1";
-                case RenderScaleQuality.Anisotropic:
-                    return "2";
-            }
+                RenderScaleQuality.Nearest => "0",
+                RenderScaleQuality.Linear => "1",
+                RenderScaleQuality.Anisotropic => "2",
+                _ => "0",
+            };
         }
 
         public VideoBackend StringToBackend(string backend)
         {
-            switch (backend.ToLower())
+            return backend.ToLower() switch
             {
-                case "direct3d":
-                    return VideoBackend.Direct3D;
-                case "opengl":
-                    return VideoBackend.OpenGL;
-                case "opengles":
-                    return VideoBackend.OpenGL_ES;
-                case "opengles2":
-                    return VideoBackend.OpenGL_ES2;
-                case "metal":
-                    return VideoBackend.Metal;
-                case "software":
-                    return VideoBackend.Software;
-                case "auto":
-                    return VideoBackend.Auto;
-                default:
-                    return VideoBackend.Auto;
-            }
+                "direct3d" => VideoBackend.Direct3D,
+                "opengl" => VideoBackend.OpenGL,
+                "opengles" => VideoBackend.OpenGL_ES,
+                "opengles2" => VideoBackend.OpenGL_ES2,
+                "metal" => VideoBackend.Metal,
+                "software" => VideoBackend.Software,
+                "auto" => VideoBackend.Auto,
+                _ => VideoBackend.Auto,
+            };
         }
 
         public bool IsRenderDriverAvailable(VideoBackend backend)
@@ -627,29 +607,6 @@ namespace GEngine.Engine
             GEngine.LoadStatics(this);
             SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, ParseRenderScale(Properties.RenderScaleQuality));
 
-            /*
-            SDL_Rect bf = new SDL_Rect();
-            SDL_Rect af = new SDL_Rect();
-
-            SDL_RenderGetViewport(_SDL_Renderer, out bf);
-
-            SDL_RenderSetScale(_SDL_Renderer, 3, 3);
-
-            SDL_RenderGetViewport(_SDL_Renderer, out af);
-
-            Console.WriteLine("[BF] Size: {0}x{1} : ({2}, {3})", bf.w, bf.h, bf.x, bf.y);
-            Console.WriteLine("[AF] Size: {0}x{1} : ({2}, {3})", af.w, af.h, af.x, af.y);
-            */
-
-            SDL_Rect tt = new SDL_Rect()
-            {
-                x = 50,
-                y = 50,
-                w = 400,
-                h = 300
-            };
-
-            //SDL_RenderSetViewport(_SDL_Renderer, ref tt);
             _resource.EngineInit = true;
             while (!ResourcesLoaded)
             {

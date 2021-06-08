@@ -95,17 +95,12 @@ namespace GEngine.Engine
             Vector2 bodyPosition = ConvertUnits.ToSimUnits(new Vector2(inst.Position.X, inst.Position.Y));
 
             Body body = null;
-            switch (phyType)
+            body = phyType switch
             {
-                case PhysicsBodyType.Box:
-                    body = BodyFactory.CreateRectangle(_velcroWorld, ConvertUnits.ToSimUnits(bodySize.W), ConvertUnits.ToSimUnits(bodySize.H), bodyDensity, bodyPosition, bodyRotation, bodyType, inst);
-                    break;
-                case PhysicsBodyType.Circle:
-                    body = BodyFactory.CreateCircle(_velcroWorld, ConvertUnits.ToSimUnits(bodyRadius), bodyDensity, bodyPosition, bodyType, inst);
-                    break;
-                default:
-                    throw new PhysicsException("Invalid PhysicsBodyType.", "PhysicsWorld.AddObject()");
-            }
+                PhysicsBodyType.Box => BodyFactory.CreateRectangle(_velcroWorld, ConvertUnits.ToSimUnits(bodySize.W), ConvertUnits.ToSimUnits(bodySize.H), bodyDensity, bodyPosition, bodyRotation, bodyType, inst),
+                PhysicsBodyType.Circle => BodyFactory.CreateCircle(_velcroWorld, ConvertUnits.ToSimUnits(bodyRadius), bodyDensity, bodyPosition, bodyType, inst),
+                _ => throw new PhysicsException("Invalid PhysicsBodyType.", "PhysicsWorld.AddObject()"),
+            };
             BodyDefPair pair = new BodyDefPair(inst, body);
             _bodyDefPairs.Add(pair);
             Debug.Log("PhysicsWorld.AddObject()", $"Added object of type '{inst.BaseReference.ObjectName}' @ ({body.Position.X}, {body.Position.Y})[GamePos: {ConvertUnits.ToDisplayUnits(body.Position.X)}, {ConvertUnits.ToDisplayUnits(body.Position.Y)}]");
