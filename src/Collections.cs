@@ -342,7 +342,7 @@ namespace GEngine.Engine
             _allowEvent = true;
             IsSorted = true;
         }
-        //
+
         private static Instance[] MergeSort(Instance[] arr)
         {
             if (arr.Length < 2) return arr;
@@ -360,10 +360,10 @@ namespace GEngine.Engine
             SplitInstArr sp = split(arr, split_point);
             Instance[] a1 = MergeSort(sp.arr1);
             Instance[] a2 = MergeSort(sp.arr2);
-            return join(a1, a2);
+            return Join(a1, a2);
         }
 
-        private static Instance[] join(Instance[] arr1, Instance[] arr2)
+        private static Instance[] Join(Instance[] arr1, Instance[] arr2)
         {
             Instance[] r = new Instance[arr1.Length + arr2.Length];
             for (int i = 0; i < arr1.Length; ++i)
