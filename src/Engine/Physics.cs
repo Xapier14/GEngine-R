@@ -69,7 +69,7 @@ namespace GEngine.Engine
     }
     public class PhysicsWorld
     {
-        private const float UNIT_SCALE = 0.1f;
+        private const float UNIT_SCALE = 1f;
         private World _velcroWorld;
         private List<BodyDefPair> _bodyDefPairs;
         private Stopwatch _timer;
@@ -92,7 +92,7 @@ namespace GEngine.Engine
             float bodyDensity = inst.PhysicsAttributes.Density;
             float bodyRotation = inst.PhysicsVariables.Direction;
             float bodyRadius = inst.PhysicsAttributes.Radius;
-            Vector2 bodyPosition = new Vector2(ConvertUnits.ToSimUnits(inst.Position.X * UNIT_SCALE), ConvertUnits.ToSimUnits(inst.Position.Y * UNIT_SCALE));
+            Vector2 bodyPosition = ConvertUnits.ToSimUnits(new Vector2(inst.Position.X, inst.Position.Y));
 
             Body body = null;
             switch (phyType)
@@ -108,7 +108,7 @@ namespace GEngine.Engine
             }
             BodyDefPair pair = new BodyDefPair(inst, body);
             _bodyDefPairs.Add(pair);
-            Debug.Log("PhysicsWorld.AddObject()", $"Added object of type '{inst.BaseReference.ObjectName}'");
+            Debug.Log("PhysicsWorld.AddObject()", $"Added object of type '{inst.BaseReference.ObjectName}' @ ({body.Position.X}, {body.Position.Y})[GamePos: {ConvertUnits.ToDisplayUnits(body.Position.X)}, {ConvertUnits.ToDisplayUnits(body.Position.Y)}]");
         }
         public void UpdateCycle()
         {
@@ -116,7 +116,7 @@ namespace GEngine.Engine
             // update instance vars
             foreach (BodyDefPair bdp in _bodyDefPairs)
             {
-                Debug.Log("PhysicsWorld.UpdateCycle()", $"Updating {bdp.Owner.BaseReference.ObjectName}... (Position: {bdp.Owner.Position.X}, {bdp.Owner.Position.Y})");
+                //Debug.Log("PhysicsWorld.UpdateCycle()", $"Updating {bdp.Owner.BaseReference.ObjectName}... (Position: {ConvertUnits.ToDisplayUnits(bdp.Owner.Position.X) * UNIT_SCALE}, {ConvertUnits.ToDisplayUnits(bdp.Owner.Position.Y) * UNIT_SCALE})");
                 Body b = bdp.InstanceBody;
                 Instance i = bdp.Owner;
                 UpdateInstance(b, ref i);
@@ -145,7 +145,8 @@ namespace GEngine.Engine
 
         internal void UpdateInstance(Body body, ref Instance instance)
         {
-            Coord pos = Vec2Coord(body.Position, 1f / UNIT_SCALE);
+            Coord pos = Vec2Coord(new Vector2(ConvertUnits.ToDisplayUnits(body.Position.X), ConvertUnits.ToDisplayUnits(body.Position.Y)));
+            //Debug.Log("PhysicsWorld.UpdateInstance()", $"Updating instance of type '{instance.BaseReference.ObjectName}'. Position: {pos.X}, {pos.Y}");
             instance.Position.X = pos.X;
             instance.Position.Y = pos.Y;
             instance.PhysicsVariables.Direction = body.Rotation;
