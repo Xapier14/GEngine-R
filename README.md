@@ -13,7 +13,7 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 - [x] Base Engine Loop
 - [x] Frame/Logic Timing
 - [x] Input Handler
-- [x] Object/Scene based rendering (incomplete)
+- [x] Object/Scene based rendering
 - [x] Object/Instances
 - [x] Audio Module
 - [x] Resources/Texture loading
@@ -21,7 +21,7 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 - [x] Resource Manager
 - [x] GameObject Event System
 - [x] Scene Instancing
-- [ ] Physics System
+- [x] Physics System (Incomplete)
 - [x] Animations
 - [x] Object Texture Offsets
 
