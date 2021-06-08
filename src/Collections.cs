@@ -333,7 +333,7 @@ namespace GEngine.Engine
 
             this.Clear();
 
-            Instance[] sorted = mrg_srt(instances);
+            Instance[] sorted = MergeSort(instances);
 
             foreach(Instance inst in sorted)
             {
@@ -343,7 +343,7 @@ namespace GEngine.Engine
             IsSorted = true;
         }
 
-        private static Instance[] mrg_srt(Instance[] arr)
+        private static Instance[] MergeSort(Instance[] arr)
         {
             if (arr.Length < 2) return arr;
             if (arr.Length == 2)
@@ -358,8 +358,8 @@ namespace GEngine.Engine
             }
             int split_point = (int)Math.Round((double)arr.Length / 2);
             SplitInstArr sp = split(arr, split_point);
-            Instance[] a1 = mrg_srt(sp.arr1);
-            Instance[] a2 = mrg_srt(sp.arr2);
+            Instance[] a1 = MergeSort(sp.arr1);
+            Instance[] a2 = MergeSort(sp.arr2);
             return join(a1, a2);
         }
 
