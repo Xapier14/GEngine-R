@@ -60,11 +60,13 @@ namespace GEngine.Engine
     }
     public class PhysicsVariables
     {
-        public float Direction { get; set; }
+        public float Direction;
+        public Coord Velocity;
         
         public PhysicsVariables()
         {
             Direction = 0f;
+            Velocity = new Coord(0, 0);
         }
     }
     public class PhysicsWorld
@@ -107,11 +109,16 @@ namespace GEngine.Engine
         }
         public void UpdateCycle()
         {
+            foreach (BodyDefPair bdp in _bodyDefPairs)
+            {
+                Body b = bdp.InstanceBody;
+                Instance i = bdp.Owner;
+                ApplyBodyUpdate(ref b, i);
+            }
             _velcroWorld.Step((float)GEngine.Game.CurrentLogictime * 0.01f);
             // update instance vars
             foreach (BodyDefPair bdp in _bodyDefPairs)
             {
-                //Debug.Log("PhysicsWorld.UpdateCycle()", $"Updating {bdp.Owner.BaseReference.ObjectName}... (Position: {ConvertUnits.ToDisplayUnits(bdp.Owner.Position.X) * UNIT_SCALE}, {ConvertUnits.ToDisplayUnits(bdp.Owner.Position.Y) * UNIT_SCALE})");
                 Body b = bdp.InstanceBody;
                 Instance i = bdp.Owner;
                 UpdateInstance(b, ref i);
@@ -138,13 +145,24 @@ namespace GEngine.Engine
             return false;
         }
 
+        internal void ApplyBodyUpdate(ref Body body, Instance instance)
+        {
+            Vector2 velocity = ConvertUnits.ToSimUnits(Coor2Vec2(instance.PhysicsVariables.Velocity));
+            Vector2 position = ConvertUnits.ToSimUnits(Coor2Vec2(instance.Position));
+            body.LinearVelocity = velocity;
+            body.Rotation = instance.PhysicsVariables.Direction;
+            //body.Position = position;
+        }
+
         internal void UpdateInstance(Body body, ref Instance instance)
         {
             Coord pos = Vec2Coord(new Vector2(ConvertUnits.ToDisplayUnits(body.Position.X), ConvertUnits.ToDisplayUnits(body.Position.Y)));
+            Coord vel = Vec2Coord(new Vector2(ConvertUnits.ToDisplayUnits(body.LinearVelocity.X), ConvertUnits.ToDisplayUnits(body.LinearVelocity.Y)));
             //Debug.Log("PhysicsWorld.UpdateInstance()", $"Updating instance of type '{instance.BaseReference.ObjectName}'. Position: {pos.X}, {pos.Y}");
             instance.Position.X = pos.X;
             instance.Position.Y = pos.Y;
             instance.PhysicsVariables.Direction = body.Rotation;
+            instance.PhysicsVariables.Velocity = vel;
         }
     }
     internal struct BodyDefPair

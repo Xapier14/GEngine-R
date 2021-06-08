@@ -29,6 +29,7 @@ namespace GEngine
     }
     public struct Coord
     {
+        public static Coord Zero = new Coord(0, 0);
         public int X { get; set; }
         public int Y { get; set; }
 
