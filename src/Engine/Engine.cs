@@ -124,8 +124,8 @@ namespace GEngine.Engine
 
         //init stuff
         private bool _initLogic = false, _initGraphics = false;
-        private byte test = 0;
-        private bool rev = false;
+        //private byte test = 0;
+        //private bool rev = false;
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         //Window Stuff
         private bool _allowClose = true, _handleClose = false;
@@ -250,10 +250,11 @@ namespace GEngine.Engine
         public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto)
         {
             SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "1");
+            // 48px = 1 meter
             ConvertUnits.SetDisplayUnitToSimUnitRatio(48f);
             ResourcesLoaded = false;
             Properties = new EngineProperties();
-            _resource = new ResourceManager(); //I don't know if this would work.
+            _resource = new ResourceManager();
             _audio = new AudioEngine(_resource);
 
             if (!IsRenderDriverAvailable(backend))
@@ -602,7 +603,7 @@ namespace GEngine.Engine
                     if (si != null) _graphics.DrawScene(si);
                 } catch (EngineException ex)
                 {
-                    Debug.Log("GameEngine.DrawStep()", $"Could not draw current scene('{_scenes.CurrentScene}').");
+                    Debug.Log("GameEngine.DrawStep()", $"Could not draw current scene('{_scenes.CurrentScene}'). Reason: {ex.Message}");
                     //Debug.Log("GameEngine.DrawStep()", $"Reason: {ex.Message}");
                     //Debug.Log("SDL_ERROR-GE_DS - " + SDL_GetError());
                 }

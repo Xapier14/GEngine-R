@@ -32,7 +32,9 @@ namespace GEngine.Engine
             IMG_Init(IMG_InitFlags.IMG_INIT_JPG | IMG_InitFlags.IMG_INIT_PNG | IMG_InitFlags.IMG_INIT_TIF);
             Mix_Init(MIX_InitFlags.MIX_INIT_OGG | MIX_InitFlags.MIX_INIT_MP3 | MIX_InitFlags.MIX_INIT_OPUS | MIX_InitFlags.MIX_INIT_MID | MIX_InitFlags.MIX_INIT_FLAC);
             _SDL_Renderer = gameRenderer;
+#pragma warning disable CS0162 // Unreachable code detected
             if (FLAG_ALLOW_MISSING_METADATA) Debug.Log("ResourceManager", "Warning! Resource manager has 'IGNORE_MISSING_METADATA' set to true.");
+#pragma warning restore CS0162 // Unreachable code detected
         }
         public void Quit()
         {
