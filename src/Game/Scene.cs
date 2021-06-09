@@ -136,5 +136,13 @@ namespace GEngine.Game
                 if (inst.IsAnimated) inst.AnimationStep();
             }
         }
+
+        public void SetInstancePosition(Instance instance, Coord position)
+        {
+            if (!Instances.Contains(instance))
+                throw new EngineException("Instance not exists in SceneInstance.", "SceneInstance.SetInstancePosition()");
+            instance.Position = position;
+            PhysicsWorld?.SetObjectPosition(instance);
+        }
     }
 }

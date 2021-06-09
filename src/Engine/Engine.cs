@@ -518,6 +518,7 @@ namespace GEngine.Engine
         }
         private void LogicStep()
         {
+            double start = GetPreciseMs();
             _input.PollEvent();
             if (!LogicPause)
             {
@@ -551,9 +552,15 @@ namespace GEngine.Engine
                     throw new EngineException("Unexpected SDL Error occured, engine halted.", "GameEngine.LogicStep()");
                 }
             }
+            double end = GetPreciseMs();
+            if (start - end > Properties.TargetLogictime)
+            {
+                Debug.Log("GameEngine.LogicStep()", $"Logic step took {start-end-Properties.TargetLogictime}ms longer than target logic time.");
+            }
         }
         private void DrawStep()
         {
+            double start = GetPreciseMs();
             if (!DrawPause)
             {
                 // Clear
@@ -591,6 +598,11 @@ namespace GEngine.Engine
                 SDL_RenderPresent(_SDL_Renderer);
                 // Advance animations for current scene
                 if (!Properties.TPSAnimations)_scenes.AnimationStep();
+            }
+            double end = GetPreciseMs();
+            if (start - end > Properties.TargetLogictime)
+            {
+                Debug.Log("GameEngine.DrawStep()", $"Draw step took {start - end - Properties.TargetFrametime}ms longer than target frame time.");
             }
         }
         private void Sync_Loop()

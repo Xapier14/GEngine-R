@@ -11,6 +11,7 @@ namespace GEngine.Engine
 {
     public class GraphicsEngine
     {
+        public bool DrawCollisionBounds = true;
         private ColorRGBA _renderColor;
         public bool DrawBorders { get; set; }
         public ColorRGBA BorderColor { get; set; }
@@ -180,6 +181,12 @@ namespace GEngine.Engine
         {
             SDL_SetRenderDrawColor(Renderer, color.Red, color.Green, color.Blue, color.Alpha);
         }
+        public ColorRGBA GetRendererDrawColor()
+        {
+            SDL_GetRenderDrawColor(Renderer, out byte r, out byte g, out byte b, out byte a);
+            ColorRGBA ret = new ColorRGBA(r, g, b, a);
+            return ret;
+        }
         public void DrawScene(SceneInstance scene)
         {
             InstanceCollection instances = scene.Instances;
@@ -189,8 +196,82 @@ namespace GEngine.Engine
             foreach(Instance inst in instances)
             {
                 DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y);
+                if (scene.UsesPhysics && DrawCollisionBounds) DrawCollision(inst, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y);
             }
         }
+
+        public void DrawCollision(Instance inst, int sceneX, int sceneY)
+        {
+            PhysicsBodyType phyBody = inst.PhysicsAttributes.PhysicsBodyType;
+            Coord origin = inst.Position;
+            Coord scene = new Coord(sceneX, sceneY);
+
+            Coord position = new Coord(origin.X - scene.X, origin.Y - scene.Y);
+            ColorRGBA def = GetRendererDrawColor();
+            SetRenderDrawColor(new ColorRGBA(255, 0, 0, 255));
+            switch (phyBody)
+            {
+                case PhysicsBodyType.Box:
+                    int w = inst.PhysicsAttributes.PhysicsBodySize.W / 2;
+                    int h = inst.PhysicsAttributes.PhysicsBodySize.H / 2;
+                    SDL_Rect rect = new SDL_Rect();
+                    rect.x = position.X - w;
+                    rect.y = position.Y - h;
+                    rect.w = w * 2;
+                    rect.h = h * 2;
+                    if (SDL_RenderDrawRect(Renderer, ref rect) != 0)
+                    {
+                        Debug.Log("GraphicsEngine.DrawCollision", $"Could not draw collision rect for instance: {inst.Hash}");
+                    }
+                    //Debug.Log($"Drawing coll-box on: ({rect.x}, {rect.y})[{rect.w}x{rect.h}]");
+                    break;
+                case PhysicsBodyType.Circle:
+                    if (SDL_RenderDrawCircle(Renderer, position.X, position.Y, Convert.ToInt32(inst.PhysicsAttributes.Radius)) != 0)
+                    {
+                        Debug.Log("GraphicsEngine.DrawCollision", $"Could not draw collision circle for instance: {inst.Hash}");
+                    }
+                    break;
+            }
+            SetRenderDrawColor(def);
+        }
+
+        public int SDL_RenderDrawCircle(IntPtr sdlRenderer, int x, int y, int radius)
+        {
+            int ret = 0;
+            int xc = 0, yc = radius;
+            int d = 3 - 2 * radius;
+            ret += CircleOctantDraw(sdlRenderer, x, y, xc, yc);
+            while (yc >= xc)
+            {
+                xc++;
+                if (d > 0)
+                {
+                    yc--;
+                    d = d + 4 * (xc - yc) + 10;
+                } else
+                {
+                    d = d + 4 * xc + 6;
+                }
+                ret += CircleOctantDraw(sdlRenderer, x, y, xc, yc);
+            }
+            return ret;
+        }
+
+        private int CircleOctantDraw(IntPtr renderer, int x, int y, int o_x, int o_y)
+        {
+            int ret = 0;
+            ret += SDL_RenderDrawPoint(renderer, x + o_x, y + o_y);
+            ret += SDL_RenderDrawPoint(renderer, x - o_x, y + o_y);
+            ret += SDL_RenderDrawPoint(renderer, x + o_x, y - o_y);
+            ret += SDL_RenderDrawPoint(renderer, x - o_x, y - o_y);
+            ret += SDL_RenderDrawPoint(renderer, x + o_y, y + o_x);
+            ret += SDL_RenderDrawPoint(renderer, x - o_y, y + o_x);
+            ret += SDL_RenderDrawPoint(renderer, x + o_y, y - o_x);
+            ret += SDL_RenderDrawPoint(renderer, x - o_y, y - o_x);
+
+            return ret;
+        }
+
         public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex, int offsetX = 0, int offsetY = 0, int sceneX = 0, int sceneY = 0)
         {
             SDL_Rect dst = new SDL_Rect();

@@ -124,6 +124,25 @@ namespace GEngine.Engine
                 UpdateInstance(b, ref i);
             }
         }
+        public void SetObjectPosition(Instance inst)
+        {
+            if (!ContainsInstance(inst))
+                throw new PhysicsException("Instance is not in PhysicsWorld.", "PhysicsWorld.SetObjectPosition()");
+            Vector2 position = ConvertUnits.ToSimUnits(Coor2Vec2(inst.Position));
+            Body body = GetBody(inst);
+            
+            body.Position = position;
+        }
+
+        internal Body GetBody(Instance inst)
+        {
+            foreach (BodyDefPair bdp in _bodyDefPairs)
+            {
+                if (bdp.Owner == inst)
+                    return bdp.InstanceBody;
+            }
+            return null;
+        }
 
         internal Vector2 Coor2Vec2(Coord c, float scale = 1)
         {
@@ -148,10 +167,9 @@ namespace GEngine.Engine
         internal void ApplyBodyUpdate(ref Body body, Instance instance)
         {
             Vector2 velocity = ConvertUnits.ToSimUnits(Coor2Vec2(instance.PhysicsVariables.Velocity));
-            Vector2 position = ConvertUnits.ToSimUnits(Coor2Vec2(instance.Position));
+            
             body.LinearVelocity = velocity;
             body.Rotation = instance.PhysicsVariables.Direction;
-            //body.Position = position;
         }
 
         internal void UpdateInstance(Body body, ref Instance instance)
