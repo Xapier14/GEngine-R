@@ -235,7 +235,7 @@ namespace GEngine.Engine
             SetRenderDrawColor(def);
         }
 
-        public int SDL_RenderDrawCircle(IntPtr sdlRenderer, int x, int y, int radius)
+        public static int SDL_RenderDrawCircle(IntPtr sdlRenderer, int x, int y, int radius)
         {
             int ret = 0;
             int xc = 0, yc = radius;
@@ -257,7 +257,7 @@ namespace GEngine.Engine
             return ret;
         }
 
-        private int CircleOctantDraw(IntPtr renderer, int x, int y, int o_x, int o_y)
+        private static int CircleOctantDraw(IntPtr renderer, int x, int y, int o_x, int o_y)
         {
             int ret = 0;
             ret += SDL_RenderDrawPoint(renderer, x + o_x, y + o_y);
