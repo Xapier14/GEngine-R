@@ -24,6 +24,7 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 - [x] Physics System (Incomplete)
 - [x] Animations
 - [x] Object Texture Offsets
+- [ ] CLI Dev Kit
 
 ## Known Issues
 - OpenGL & Textures with transparency.
