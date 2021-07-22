@@ -70,6 +70,11 @@ namespace GEngine.Game
         {
 
         }
+
+        public virtual void OnDraw(Instance caller, SceneInstance scene, GraphicsEngine graphics)
+        {
+
+        }
         public Type Type { get; set; }
     }
     public class Instance
@@ -128,6 +133,7 @@ namespace GEngine.Game
             if (_currentImageSpeed >= ImageSpeed)
             {
                 _currentImageSpeed = 0;
+                if (Sprite == null) return;
                 if (ImageIndex >= Sprite.Count-1)
                 {
                     ImageIndex = 0;
@@ -139,6 +145,11 @@ namespace GEngine.Game
             {
                 _currentImageSpeed++;
             }
+        }
+
+        public override string ToString()
+        {
+            return BaseReference.ObjectName + ": " + Hash;
         }
     }
 }

@@ -20,13 +20,13 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\GitClones\SDL2-CS\SDL2-CS.Core.csproj" />
     <ProjectReference Include="..\..\GitClones\VelcroPhysics\src\VelcroPhysics\VelcroPhysics.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="src\Net\" />
   </ItemGroup>
 
 </Project>

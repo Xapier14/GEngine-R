@@ -11,6 +11,7 @@ namespace GEngine.Engine
 {
     public class GraphicsEngine
     {
+        const bool FLAG_WARNNULLTEXTURE = false;
         public bool DrawCollisionBounds = true;
         private ColorRGBA _renderColor;
         public bool DrawBorders { get; set; }
@@ -195,11 +196,45 @@ namespace GEngine.Engine
             //draw sprites
             foreach(Instance inst in instances)
             {
+                inst.BaseReference.OnDraw(inst, scene, this);
                 DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y);
                 if (scene.UsesPhysics && DrawCollisionBounds) DrawCollision(inst, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y);
             }
         }
+        public void DrawRectangle(int x1, int y1, int x2, int y2)
+        {
+            SDL_Rect rect = new();
+            rect.x = x1;
+            rect.y = y1;
+            rect.w = Math.Abs(x2 - x1);
+            rect.h = Math.Abs(y2 - y1);
 
+            if (SDL_RenderDrawRect(Renderer, ref rect) != 0)
+            {
+                Debug.Log("GraphicsEngine.DrawRectangle", $"Could not draw rectangle. ({x1}, {y1}, {x2}, {y2})");
+            }
+        }
+        public void DrawCircle(int x, int y, int radius)
+        {
+            if (SDL_RenderDrawCircle(Renderer, x, y ,radius) != 0)
+            {
+                Debug.Log("GraphicsEngine.DrawCircle", $"Could not draw circle. ({x}, {y} | Radius: {radius})");
+            }
+        }
+        public void DrawLine(int x1, int y1, int x2, int y2)
+        {
+            if (SDL_RenderDrawLine(Renderer, x1, y1, x2, y2) != 0)
+            {
+                Debug.Log("GraphicsEngine.DrawLine", $"Could not draw line. ({x1}, {y1}, {x2}, {y2})");
+            }
+        }
+        public void DrawPoint(int x, int y)
+        {
+            if (SDL_RenderDrawPoint(Renderer, x, y) != 0)
+            {
+                Debug.Log("GraphicsEngine.DrawPoint", $"Could not draw point. ({x}, {y})");
+            }
+        }
         public void DrawCollision(Instance inst, int sceneX, int sceneY)
         {
             PhysicsBodyType phyBody = inst.PhysicsAttributes.PhysicsBodyType;
@@ -274,6 +309,11 @@ namespace GEngine.Engine
 
         public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex, int offsetX = 0, int offsetY = 0, int sceneX = 0, int sceneY = 0)
         {
+            if (texture == null)
+            {
+                if (FLAG_WARNNULLTEXTURE) Debug.Log("GraphicsEngine.DrawSprite", "Sprite is missing, cannot draw instance.");
+                return;
+            }
             SDL_Rect dst = new SDL_Rect();
             dst.x = position.X - offsetX - sceneX;
             dst.y = position.Y - offsetY - sceneY;

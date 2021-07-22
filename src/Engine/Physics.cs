@@ -22,6 +22,8 @@ namespace GEngine.Engine
         public Size PhysicsBodySize { get; set; }
         public float Density { get; set; }
         public float Radius { get; set; }
+        public float LinearDampening { get; set; }
+        public float Friction { get; set; }
         public PhysicsBodyType PhysicsBodyType { get; set; }
 
         public PhysicsAttributes()
@@ -31,6 +33,8 @@ namespace GEngine.Engine
             PhysicsBodySize = new Size();
             Density = 0f;
             Radius = 0f;
+            LinearDampening = 0f;
+            Friction = 0f;
         }
 
         public PhysicsAttributes(PhysicsAttributes copy)
@@ -40,6 +44,8 @@ namespace GEngine.Engine
             PhysicsBodyType = copy.PhysicsBodyType;
             Density = copy.Density;
             Radius = copy.Radius;
+            LinearDampening = copy.LinearDampening;
+            Friction = copy.Friction;
         }
 
         public PhysicsAttributes(BodyType bodyType, int width, int height, float density)
@@ -48,6 +54,8 @@ namespace GEngine.Engine
             BodyType = bodyType;
             PhysicsBodySize = new Size(width, height);
             Density = density;
+            LinearDampening = 0f;
+            Friction = 0f;
         }
         public PhysicsAttributes(BodyType bodyType, float radius, float density)
         {
@@ -56,6 +64,8 @@ namespace GEngine.Engine
             PhysicsBodySize = new Size(0, 0);
             Radius = radius;
             Density = density;
+            LinearDampening = 0f;
+            Friction = 0f;
         }
     }
     public class PhysicsVariables
@@ -103,9 +113,11 @@ namespace GEngine.Engine
                 PhysicsBodyType.Circle => BodyFactory.CreateCircle(_velcroWorld, ConvertUnits.ToSimUnits(bodyRadius), bodyDensity, bodyPosition, bodyType, inst),
                 _ => throw new PhysicsException("Invalid PhysicsBodyType.", "PhysicsWorld.AddObject()"),
             };
+            body.LinearDamping = inst.PhysicsAttributes.LinearDampening;
+            body.Friction = inst.PhysicsAttributes.Friction;
             BodyDefPair pair = new BodyDefPair(inst, body);
             _bodyDefPairs.Add(pair);
-            Debug.Log("PhysicsWorld.AddObject()", $"Added object of type '{inst.BaseReference.ObjectName}' @ ({body.Position.X}, {body.Position.Y})[GamePos: {ConvertUnits.ToDisplayUnits(body.Position.X)}, {ConvertUnits.ToDisplayUnits(body.Position.Y)}]");
+            Debug.Log("PhysicsWorld.AddObject()", $"Added object '{inst}' @ ({body.Position.X}, {body.Position.Y})[GamePos: {ConvertUnits.ToDisplayUnits(body.Position.X)}, {ConvertUnits.ToDisplayUnits(body.Position.Y)}]");
         }
         public void UpdateCycle()
         {
@@ -115,6 +127,7 @@ namespace GEngine.Engine
                 Instance i = bdp.Owner;
                 ApplyBodyUpdate(ref b, i);
             }
+            _velcroWorld.ProcessChanges();
             _velcroWorld.Step((float)GEngine.Game.CurrentLogictime * 0.01f);
             // update instance vars
             foreach (BodyDefPair bdp in _bodyDefPairs)
@@ -167,16 +180,19 @@ namespace GEngine.Engine
         internal void ApplyBodyUpdate(ref Body body, Instance instance)
         {
             Vector2 velocity = ConvertUnits.ToSimUnits(Coor2Vec2(instance.PhysicsVariables.Velocity));
-            
+            Vector2 position = ConvertUnits.ToSimUnits(Coor2Vec2(instance.Position));
+            body.Position = position;
             body.LinearVelocity = velocity;
             body.Rotation = instance.PhysicsVariables.Direction;
+            body.LinearDamping = instance.PhysicsAttributes.LinearDampening;
+            body.Friction = instance.PhysicsAttributes.Friction;
         }
 
         internal void UpdateInstance(Body body, ref Instance instance)
         {
             Coord pos = Vec2Coord(new Vector2(ConvertUnits.ToDisplayUnits(body.Position.X), ConvertUnits.ToDisplayUnits(body.Position.Y)));
             Coord vel = Vec2Coord(new Vector2(ConvertUnits.ToDisplayUnits(body.LinearVelocity.X), ConvertUnits.ToDisplayUnits(body.LinearVelocity.Y)));
-            //Debug.Log("PhysicsWorld.UpdateInstance()", $"Updating instance of type '{instance.BaseReference.ObjectName}'. Position: {pos.X}, {pos.Y}");
+            //Debug.Log("PhysicsWorld.UpdateInstance()", $"Updating instance of type '{instance}'. Position: {pos.X}, {pos.Y}");
             instance.Position.X = pos.X;
             instance.Position.Y = pos.Y;
             instance.PhysicsVariables.Direction = body.Rotation;

@@ -247,11 +247,10 @@ namespace GEngine.Engine
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto)
+        public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto, float baseUnit = 8f)
         {
             SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "1");
-            // 48px = 1 meter
-            ConvertUnits.SetDisplayUnitToSimUnitRatio(48f);
+            ConvertUnits.SetDisplayUnitToSimUnitRatio(baseUnit);
             ResourcesLoaded = false;
             Properties = new EngineProperties();
             _resource = new ResourceManager();
