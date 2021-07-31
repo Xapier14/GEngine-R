@@ -628,6 +628,7 @@ namespace GEngine.Engine
             drawTimer.Start();
             double total;
             bool flip = false;
+            double old_frametime = 0;
             do
             {
                 total = GetPreciseMs();
@@ -643,9 +644,9 @@ namespace GEngine.Engine
                     if (!flip)
                     {
                         _cur_frametime = ETtoMS(drawTimer.ElapsedTicks);
-                        fpsAvg.AddPoint(1000.00 / _cur_frametime);
-                        drawTimer.Restart();
+                        fpsAvg.AddPoint(1000.00 / (_cur_frametime + old_frametime));
                         DrawStep();
+                        drawTimer.Restart();
                     }
                     if (!Properties.EnableFramelimiter) flip = !flip;
                 }

@@ -25,8 +25,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GitClones\SDL2-CS\SDL2-CS.Core.csproj" />
-    <ProjectReference Include="..\..\GitClones\VelcroPhysics\src\VelcroPhysics\VelcroPhysics.csproj" />
+    <ProjectReference Include="..\VelcroPhysics\src\VelcroPhysics\VelcroPhysics.csproj" />
+    <ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj" />
   </ItemGroup>
 
 </Project>

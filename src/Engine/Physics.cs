@@ -127,7 +127,7 @@ namespace GEngine.Engine
                 Instance i = bdp.Owner;
                 ApplyBodyUpdate(ref b, i);
             }
-            _velcroWorld.ProcessChanges();
+            //_velcroWorld.ProcessChanges();
             _velcroWorld.Step((float)GEngine.Game.CurrentLogictime * 0.01f);
             // update instance vars
             foreach (BodyDefPair bdp in _bodyDefPairs)
