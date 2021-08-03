@@ -16,6 +16,8 @@ namespace GEngine.Engine
 {
     public class EngineProperties
     {
+        public Size WindowResolution { get; set; }
+        public Size InternalResolution { get; set; }
         public double TargetTPS { get; set; }
         public double TargetFPS { get; set; }
         public double TPSOffset { get; set; }
@@ -42,6 +44,8 @@ namespace GEngine.Engine
 
         public EngineProperties()
         {
+            WindowResolution = new(800, 600);
+            InternalResolution = WindowResolution;
             TPSAnimations = false;
             TargetTPS = 64;
             TargetFPS = 60;
@@ -504,12 +508,13 @@ namespace GEngine.Engine
             if (!_initGraphics)
             {
                 _graphics.Init();
-                _graphics.CreateWindowAndRenderer(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, out _SDL_Window, out _SDL_Renderer);
+                _graphics.CreateWindowAndRenderer(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Properties.WindowResolution.W, Properties.WindowResolution.H, out _SDL_Window, out _SDL_Renderer);
                 //_graphics.CreateWindow(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
                 //_graphics.CreateRenderer();
                 //SDL_Delay(2000);
                 //_SDL_Renderer = _graphics.Renderer;
                 //_SDL_Window = _graphics.Window;
+                SDL_RenderSetLogicalSize(_SDL_Renderer, Properties.InternalResolution.W, Properties.InternalResolution.H);
                 _graphics.RenderClearColor = new ColorRGBA(120, 180, 230);
                 _resource.Init(_SDL_Renderer);
                 _resource.EngineInit = false;
