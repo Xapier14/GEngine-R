@@ -474,6 +474,7 @@ namespace GEngine.Engine
         }
         private void FreeResources()
         {
+            _scenes.Clear();
             SDL_DestroyRenderer(_SDL_Renderer);
             SDL_DestroyWindow(_SDL_Window);
             _resource.Quit();

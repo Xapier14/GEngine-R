@@ -49,7 +49,7 @@ namespace GEngine.Game
                 instance.Instances.Add(inst);
                 inst.BaseReference.OnCreate(inst, instance);
             }
-
+            instance.BaseReference.OnCreate(instance);
             return instance;
         }
 
@@ -91,9 +91,11 @@ namespace GEngine.Game
         public bool UsesPhysics { get; set; }
         public PhysicsWorld PhysicsWorld { get; set; }
         private bool _initializedPhysics = false;
+        public bool Destroyed { get; set; }
 
         public SceneInstance()
         {
+            Destroyed = false;
             ViewPosition = new Coord(0, 0);
             ViewOrigin = new Coord(0, 0);
             Instances = new InstanceCollection();

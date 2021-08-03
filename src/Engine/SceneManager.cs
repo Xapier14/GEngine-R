@@ -31,6 +31,15 @@ namespace GEngine.Engine
         public void Clear()
         {
             _Scenes.Clear();
+            foreach (var kp in _ActiveScenes)
+            {
+                foreach (var inst in kp.Value.Instances)
+                {
+                    inst.BaseReference.OnDestroy(inst, kp.Value);
+                }
+                kp.Value.Destroyed = true;
+                kp.Value.BaseReference.OnDestroy(kp.Value);
+            }
             _ActiveScenes.Clear();
         }
 
@@ -79,7 +88,7 @@ namespace GEngine.Engine
         }
         public void SceneStep()
         {
-            if (_CurrentScene != null)
+            if (_CurrentScene != null && !_CurrentScene.Destroyed)
             {
                 _CurrentScene.BaseReference.Step(_CurrentScene);
                 _CurrentScene.Instances.SortByDepth(true);
