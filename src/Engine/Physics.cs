@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 
 using static GEngine.GEngine;
+using Genbox.VelcroPhysics.Shared;
 
 namespace GEngine.Engine
 {
@@ -119,6 +120,38 @@ namespace GEngine.Engine
             _bodyDefPairs.Add(pair);
             Debug.Log("PhysicsWorld.AddObject()", $"Added object '{inst}' @ ({body.Position.X}, {body.Position.Y})[GamePos: {ConvertUnits.ToDisplayUnits(body.Position.X)}, {ConvertUnits.ToDisplayUnits(body.Position.Y)}]");
         }
+
+        public bool CheckCollision(Instance src, int offsetX, int offsetY, out List<Instance> collision)
+        {
+            collision = new();
+            Body body = GetBody(src);
+            if (body == null)
+            {
+                collision = null;
+                return false;
+            }
+            AABB aabb;
+            aabb.UpperBound = new(float.MaxValue, float.MaxValue);
+            aabb.LowerBound = new(-float.MinValue, -float.MinValue);
+            foreach (Fixture fixture in body.FixtureList)
+            {
+                fixture.GetAABB(out AABB child, 0);
+                aabb.Combine(ref child);
+            }
+            List<Fixture> fixtures = _velcroWorld.QueryAABB(ref aabb);
+            foreach(Fixture fixture in fixtures)
+            {
+                if (fixture.UserData != null)
+                {
+                    if (!collision.Contains(fixture.UserData))
+                    {
+                        collision.Add((Instance)fixture.UserData);
+                    }
+                }
+            }
+            return collision.Count > 0;
+        }
+
         public void UpdateCycle()
         {
             foreach (BodyDefPair bdp in _bodyDefPairs)
