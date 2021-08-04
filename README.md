@@ -31,6 +31,9 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 - Possible Memory Corruption on LoadAsTexture().
 - Certain graphics drivers are incompatible with VideoBackends.
 - Objects that are out of screen are still drawn.
+- Inaccurate FPS & TPS Counter.
+- Missing checks on adding GameObjects to scenes.
+- Initial RenderClearColor not being set on OpenGL backend.
 
 ## Dependencies
 * SDL2
