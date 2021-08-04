@@ -100,6 +100,19 @@ namespace GEngine.Game
             ViewOrigin = new Coord(0, 0);
             Instances = new InstanceCollection();
         }
+        public void AddArray(GameObject obj, Coord start, Coord offset, int repetitions)
+        {
+            if (repetitions < 1) return;
+            Coord pos = new(start.X, start.Y);
+            for (int i = 0; i < repetitions; i++)
+            {
+                Instance inst = obj.CreateInstance(out Guid hash);
+                inst.Position.X = pos.X;
+                inst.Position.Y = pos.Y;
+                Instances.Add(inst);
+                pos += offset;
+            }
+        }
         internal void _initPhysics()
         {
             if (_initializedPhysics) return;

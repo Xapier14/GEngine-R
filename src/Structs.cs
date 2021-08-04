@@ -38,6 +38,9 @@ namespace GEngine
             X = x;
             Y = y;
         }
+
+        public static Coord operator +(Coord a, Coord b) => new(a.X + b.X, a.Y + b.Y);
+        public static Coord operator -(Coord a, Coord b) => new(a.X - b.X, a.Y - b.Y);
     }
     public struct Size
     {
