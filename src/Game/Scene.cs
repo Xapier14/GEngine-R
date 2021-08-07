@@ -42,6 +42,10 @@ namespace GEngine.Game
             instance.ReferenceType = ReferenceType;
             instance.UsesPhysics = UsesPhysics;
             instance._initPhysics();
+            if (GameObjects.Count > 10000)
+            {
+                Debug.Log($"Warning! Scene '{Name}' has too many GameObjects! (Exceeds 10,000. Count: {GameObjects.Count})");
+            }
             foreach(var obj in GameObjects)
             {
                 Instance inst = obj.GameObject.CreateInstance(out Guid guid);
