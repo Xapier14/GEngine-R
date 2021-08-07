@@ -20,6 +20,17 @@ namespace GEngine.Engine
         public event InputManagerEventHandler WindowEvent;
         public event InputManagerEventHandler EngineEvent;
 
+        private Coord _windowMouse, _screenMouse;
+
+        public Coord WindowMouse
+        {
+            get => _windowMouse;
+        }
+        public Coord ScreenMouse
+        {
+            get => _screenMouse;
+        }
+
         public bool MouseLeftButtonDown
         {
             get
@@ -77,6 +88,11 @@ namespace GEngine.Engine
         }
         public void PollEvent()
         {
+            // get window relative mouse location
+            SDL_GetMouseState(out int x, out int y);
+            _windowMouse.X = x;
+            _windowMouse.Y = y;
+
             while (SDL_PollEvent(out SDL_Event e) != 0)
             {
                 switch (e.type)

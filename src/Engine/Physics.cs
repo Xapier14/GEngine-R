@@ -98,7 +98,7 @@ namespace GEngine.Engine
         public void AddObject(Instance inst)
         {
             if (ContainsInstance(inst))
-                throw new PhysicsException("Object already in world.", "PhysicsWorld.AddObjecct()");
+                throw new PhysicsException("Object already in world.", "PhysicsWorld.AddObject()");
             PhysicsBodyType phyType = inst.PhysicsAttributes.PhysicsBodyType;
             BodyType bodyType = inst.PhysicsAttributes.BodyType;
             Size bodySize = inst.PhysicsAttributes.PhysicsBodySize;
@@ -114,11 +114,17 @@ namespace GEngine.Engine
                 PhysicsBodyType.Circle => BodyFactory.CreateCircle(_velcroWorld, ConvertUnits.ToSimUnits(bodyRadius), bodyDensity, bodyPosition, bodyType, inst),
                 _ => throw new PhysicsException("Invalid PhysicsBodyType.", "PhysicsWorld.AddObject()"),
             };
+
+            foreach (Fixture fixture in body.FixtureList)
+            {
+                fixture.UserData = inst;
+            }
+
             body.LinearDamping = inst.PhysicsAttributes.LinearDampening;
             body.Friction = inst.PhysicsAttributes.Friction;
             BodyDefPair pair = new BodyDefPair(inst, body);
             _bodyDefPairs.Add(pair);
-            Debug.Log("PhysicsWorld.AddObject()", $"Added object '{inst}' @ ({body.Position.X}, {body.Position.Y})[GamePos: {ConvertUnits.ToDisplayUnits(body.Position.X)}, {ConvertUnits.ToDisplayUnits(body.Position.Y)}]");
+            //Debug.Log("PhysicsWorld.AddObject()", $"Added object '{inst}' @ ({body.Position.X}, {body.Position.Y})[GamePos: {ConvertUnits.ToDisplayUnits(body.Position.X)}, {ConvertUnits.ToDisplayUnits(body.Position.Y)}]");
         }
 
         public bool CheckCollision(Instance src, int offsetX, int offsetY, out List<Instance> collision)
@@ -130,13 +136,20 @@ namespace GEngine.Engine
                 collision = null;
                 return false;
             }
-            AABB aabb;
+            AABB aabb = new();
             aabb.UpperBound = new(float.MaxValue, float.MaxValue);
             aabb.LowerBound = new(-float.MinValue, -float.MinValue);
+            body.GetTransform(out Transform transform);
             foreach (Fixture fixture in body.FixtureList)
             {
-                fixture.GetAABB(out AABB child, 0);
-                aabb.Combine(ref child);
+                fixture.Shape.ComputeAABB(ref transform, 0, out AABB child);
+                if (body.FixtureList.Count > 1)
+                {
+                    aabb.Combine(ref child);
+                } else
+                {
+                    aabb = child;
+                }
             }
             List<Fixture> fixtures = _velcroWorld.QueryAABB(ref aabb);
             foreach(Fixture fixture in fixtures)
