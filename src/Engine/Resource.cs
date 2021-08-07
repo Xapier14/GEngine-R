@@ -187,7 +187,7 @@ namespace GEngine.Engine
                     //IntPtr ptrArray = Marshal.AllocHGlobal(buffer.Length);
                     //s.Read(buffer, 0, buffer.Length);
                     //Marshal.Copy(buffer, 0, ptrArray, buffer.Length);
-                    Debug.Log("ResourceManager.LoadAsTexture()", $"Read texture data from {file}#{resourceName} @ {buffer.Length} byte(s).");
+                    //Debug.Log("ResourceManager.LoadAsTexture()", $"Read texture data from {file}#{resourceName} @ {buffer.Length} byte(s).");
                     //IntPtr rwops = SDL_RWFromMem(ptrArray, buffer.Length);
                     IntPtr surface = IMG_Load(fn);
                     //IntPtr surface = IMG_Load_RW(rwops, 0);
@@ -199,7 +199,7 @@ namespace GEngine.Engine
                         Debug.Log("ResourceManager.LoadAsTexture()", $"Error reading texture data {file}#{resourceName}. {sE1}");
                         continue;
                     }
-                    Debug.Log("ResourceManager.LoadAsTexture()", $"Loaded texture data as surface from {file}#{resourceName}.");
+                    //Debug.Log("ResourceManager.LoadAsTexture()", $"Loaded texture data as surface from {file}#{resourceName}.");
                     IntPtr texture;
                     while (_SDL_Renderer == IntPtr.Zero) SDL_Delay(100);
                     try
@@ -218,7 +218,7 @@ namespace GEngine.Engine
                     }
                     surfaces.Add(surface);
                     textures.Add(texture);
-                    Debug.Log("ResourceManager.LoadAsTexture()", $"Created texture from surface {file}#{resourceName}.");
+                    //Debug.Log("ResourceManager.LoadAsTexture()", $"Created texture from surface {file}#{resourceName}.");
                     //SDL_FreeSurface(surface);
                     //Marshal.FreeHGlobal(ptrArray);
                     //handle.Free();
