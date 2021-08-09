@@ -19,6 +19,8 @@ namespace GEngine.Game
         public double DefaultImageAngle { get; set; }
         public double DefaultScaleX { get; set; }
         public double DefaultScaleY { get; set; }
+        public bool DefaultFlipX { get; set; }
+        public bool DefaultFlipY { get; set; }
         public Coord DefaultOffset { get; set; }
 
         public Instance CreateInstance(out Guid hash)
@@ -35,6 +37,8 @@ namespace GEngine.Game
                 ReferenceType = Type,
                 ScaleX = DefaultScaleX,
                 ScaleY = DefaultScaleY,
+                FlipX = DefaultFlipX,
+                FlipY = DefaultFlipY,
                 Offset = new Coord(DefaultOffset.X, DefaultOffset.Y),
                 PhysicsAttributes = new PhysicsAttributes(DefaultPhysicsAttributes)
             };
@@ -49,6 +53,8 @@ namespace GEngine.Game
             DefaultImageAngle = 0;
             DefaultImageIndex = 0;
             DefaultImageSpeed = 0;
+            DefaultFlipX = false;
+            DefaultFlipY = false;
             IsAnimated = true;
             IsActivated = true;
             DefaultPhysicsAttributes = new PhysicsAttributes();
@@ -115,6 +121,8 @@ namespace GEngine.Game
         public Type ReferenceType { get; set; }
         public double ScaleX { get; set; }
         public double ScaleY { get; set; }
+        public bool FlipX { get; set; }
+        public bool FlipY { get; set; }
         public Coord Offset { get; set; }
         private int _currentImageSpeed;
 

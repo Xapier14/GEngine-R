@@ -197,7 +197,7 @@ namespace GEngine.Engine
             foreach(Instance inst in instances)
             {
                 inst.BaseReference.OnDraw(inst, scene, this);
-                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y);
+                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y, inst.FlipX, inst.FlipY);
                 if (scene.UsesPhysics && DrawCollisionBounds) DrawCollision(inst, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y);
             }
         }
@@ -307,7 +307,7 @@ namespace GEngine.Engine
             return ret;
         }
 
-        public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex, int offsetX = 0, int offsetY = 0, int sceneX = 0, int sceneY = 0)
+        public void DrawSprite(TextureResource texture, Coord position, double angle, double scaleX, double scaleY, int textureIndex, int offsetX = 0, int offsetY = 0, int sceneX = 0, int sceneY = 0, bool flipX = false, bool flipY = false)
         {
             if (texture == null)
             {
@@ -324,11 +324,19 @@ namespace GEngine.Engine
 
             //SetRenderDrawColor(new ColorRGBA(255, 255, 255, 255));
 
+            SDL_RendererFlip flip = SDL_RendererFlip.SDL_FLIP_NONE;
+
+            if (flipX)
+                flip |= SDL_RendererFlip.SDL_FLIP_HORIZONTAL;
+            if (flipY)
+                flip |= SDL_RendererFlip.SDL_FLIP_VERTICAL;
+
+
             int index = textureIndex;
             if (index >= texture.Count || index < 0)
                 index = 0;
 
-            int res = SDL_RenderCopyEx(Renderer, texture.Textures[index], IntPtr.Zero, ref dst, angle, IntPtr.Zero, SDL_RendererFlip.SDL_FLIP_NONE);
+            int res = SDL_RenderCopyEx(Renderer, texture.Textures[index], IntPtr.Zero, ref dst, angle, IntPtr.Zero, flip);
             if (res != 0)
             {
                 //error
