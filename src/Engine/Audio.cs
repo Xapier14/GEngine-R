@@ -26,7 +26,7 @@ namespace GEngine.Engine
         public void Init()
         {
             SDL_InitSubSystem(SDL_INIT_AUDIO);
-        Mix_Init(MIX_InitFlags.MIX_INIT_OGG | MIX_InitFlags.MIX_INIT_MP3 | MIX_InitFlags.MIX_INIT_OPUS | MIX_InitFlags.MIX_INIT_MID | MIX_InitFlags.MIX_INIT_FLAC);
+            //Mix_Init(0);
         }
         public void PlayMusic(string audioResource, int loops = -1)
         {

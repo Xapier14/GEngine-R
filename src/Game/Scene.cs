@@ -63,6 +63,10 @@ namespace GEngine.Game
             {
                 if (inst.IsActivated) inst.BaseReference.OnCreate(inst, caller);
             }
+
+            caller.Destroyed = false;
+            caller.ViewPosition = new Coord(0, 0);
+            caller.ViewOrigin = new Coord(0, 0);
         }
 
         public virtual void Step(SceneInstance caller)
@@ -71,7 +75,7 @@ namespace GEngine.Game
             {
                 caller.PhysicsWorld.UpdateCycle();
             }
-            foreach (Instance inst in caller.Instances)
+            foreach (Instance inst in caller.Instances.ToList())
             {
                 if (inst.IsActivated) inst.BaseReference.Step(inst, caller);
             }
@@ -81,8 +85,9 @@ namespace GEngine.Game
         {
             foreach (Instance inst in caller.Instances)
             {
-                if (inst.IsActivated) inst.BaseReference.OnDestroy(inst, caller);
+                inst.BaseReference.OnDestroy(inst, caller);
             }
+            caller.Instances.Clear();
         }
     }
     public class SceneInstance
@@ -146,6 +151,13 @@ namespace GEngine.Game
         {
             BaseReference.OnDestroy(this);
             BaseReference.OnCreate(this);
+            foreach (var obj in BaseReference.GameObjects)
+            {
+                Instance inst = obj.GameObject.CreateInstance(out Guid guid);
+                inst.Position = new Coord(obj.Position.X, obj.Position.Y);
+                Instances.Add(inst);
+                inst.BaseReference.OnCreate(inst, this);
+            }
         }
 
         public void AnimationStep()

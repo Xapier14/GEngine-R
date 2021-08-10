@@ -29,8 +29,16 @@ namespace GEngine.Engine
         {
             _Audio = new ResourceCollection();
             _Textures = new ResourceCollection();
-            IMG_Init(IMG_InitFlags.IMG_INIT_JPG | IMG_InitFlags.IMG_INIT_PNG | IMG_InitFlags.IMG_INIT_TIF);
-            Mix_Init(MIX_InitFlags.MIX_INIT_OGG | MIX_InitFlags.MIX_INIT_MP3 | MIX_InitFlags.MIX_INIT_OPUS | MIX_InitFlags.MIX_INIT_MID | MIX_InitFlags.MIX_INIT_FLAC);
+            IMG_InitFlags imgFlags = IMG_InitFlags.IMG_INIT_JPG | IMG_InitFlags.IMG_INIT_PNG;
+            MIX_InitFlags mixFlags = MIX_InitFlags.MIX_INIT_OGG | MIX_InitFlags.MIX_INIT_MP3 | MIX_InitFlags.MIX_INIT_OPUS;
+            if (IMG_Init(imgFlags) != (int)imgFlags)
+            {
+                Debug.Log("Warning, IMG_Init() failed to init JPG and PNG support.");
+            }
+            if (Mix_Init(mixFlags) != (int)mixFlags)
+            {
+                Debug.Log("Warning, IMG_Init() failed to init OGG, OPUS, and MP3 support.");
+            }
             _SDL_Renderer = gameRenderer;
 #pragma warning disable CS0162 // Unreachable code detected
             if (FLAG_ALLOW_MISSING_METADATA) Debug.Log("ResourceManager", "Warning! Resource manager has 'IGNORE_MISSING_METADATA' set to true.");
@@ -255,7 +263,7 @@ namespace GEngine.Engine
                         throw new ResourceException("Audio type is invalid.", "ResourceManager.LoadAsAudio()");
                     case AudioType.Music:
                         IntPtr mus = Mix_LoadMUS(fileLocation);
-                        if (SDL_GetError() != "" || mus == IntPtr.Zero) throw new ResourceException($"Error loading '{fileLocation}'.","ResourceManager.LoadAsAudio()");
+                        if (mus == IntPtr.Zero) throw new ResourceException($"Error loading '{fileLocation}'.","ResourceManager.LoadAsAudio()");
                         AudioResource a1 = new AudioResource();
                         a1.DataPtr = new IntPtr[1] { mus };
                         a1.ResourceName = resourceName;
@@ -264,7 +272,7 @@ namespace GEngine.Engine
                         return;
                     case AudioType.Effect:
                         IntPtr eff = Mix_LoadWAV(fileLocation);
-                        if (SDL_GetError() != "" || eff == IntPtr.Zero) throw new ResourceException($"Error loading '{fileLocation}'.", "ResourceManager.LoadAsAudio()");
+                        if (eff == IntPtr.Zero) throw new ResourceException($"Error loading '{fileLocation}'.", "ResourceManager.LoadAsAudio()");
                         AudioResource a2 = new AudioResource();
                         a2.DataPtr = new IntPtr[1] { eff };
                         a2.ResourceName = resourceName;
@@ -274,7 +282,7 @@ namespace GEngine.Engine
                 }
             } catch
             {
-                throw new ResourceException("Error in loading audio.", "ResourceManager.LoadAsAudio()");
+                throw new ResourceException($"Error in loading audio. {SDL_GetError()}", "ResourceManager.LoadAsAudio()");
             }
         }
 
