@@ -30,15 +30,16 @@ namespace GEngine.Engine
             _Audio = new ResourceCollection();
             _Textures = new ResourceCollection();
             IMG_InitFlags imgFlags = IMG_InitFlags.IMG_INIT_JPG | IMG_InitFlags.IMG_INIT_PNG;
-            MIX_InitFlags mixFlags = MIX_InitFlags.MIX_INIT_OGG | MIX_InitFlags.MIX_INIT_MP3 | MIX_InitFlags.MIX_INIT_OPUS;
+            //MIX_InitFlags mixFlags = MIX_InitFlags.MIX_INIT_MP3;
             if (IMG_Init(imgFlags) != (int)imgFlags)
             {
                 Debug.Log("Warning, IMG_Init() failed to init JPG and PNG support.");
             }
-            if (Mix_Init(mixFlags) != (int)mixFlags)
-            {
-                Debug.Log("Warning, IMG_Init() failed to init OGG, OPUS, and MP3 support.");
-            }
+            //if (Mix_Init(mixFlags) != (int)mixFlags)
+            //{
+                //Debug.Log("Warning, IMG_Init() failed to init OGG, OPUS, and MP3 support.");
+            //}
+            Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024);
             _SDL_Renderer = gameRenderer;
 #pragma warning disable CS0162 // Unreachable code detected
             if (FLAG_ALLOW_MISSING_METADATA) Debug.Log("ResourceManager", "Warning! Resource manager has 'IGNORE_MISSING_METADATA' set to true.");

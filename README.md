@@ -34,9 +34,12 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 - Inaccurate FPS & TPS Counter.
 - Missing checks on adding GameObjects to scenes.
 - Initial RenderClearColor not being set on OpenGL backend.
+- Only WAV files are supported for audio.
 
 ## Dependencies
 * SDL2
+* SDL_Mixer
+* SDL_Image
 * SDL2-CS.Core
 * Genbox.VelcroPhysics
 * .Net 5.0 ([x86](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-5.0.6-windows-x86-installer))

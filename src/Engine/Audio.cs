@@ -43,6 +43,7 @@ namespace GEngine.Engine
             {
                 Mix_PlayMusic(_resources.GetAudioResource(audioResource).DataPtr[0], loops);
             }
+            Console.WriteLine(SDL_GetError());
         }
         public void PauseMusic()
         {
