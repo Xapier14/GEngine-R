@@ -284,6 +284,56 @@ namespace GEngine.Engine
             });
         }
 
+        public string ShowMessageBox(string title, string message, params string[] buttons)
+        {
+            SDL_MessageBoxData msgBox = new();
+            msgBox.message = message;
+            msgBox.title = title;
+            msgBox.numbuttons = buttons.Length;
+            msgBox.window = _SDL_Window;
+            if (buttons.Length < 1)
+            {
+                msgBox.numbuttons = 1;
+            }
+            SDL_MessageBoxButtonData[] bData = new SDL_MessageBoxButtonData[msgBox.numbuttons];
+            if (buttons.Length < 1)
+            {
+                bData[0] = new SDL_MessageBoxButtonData()
+                {
+                    buttonid = 1,
+                    flags = SDL_MessageBoxButtonFlags.SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
+                    text = "Ok"
+                };
+            } else
+            {
+                for (int i = 0; i < buttons.Length; ++i)
+                {
+                    bData[i] = new SDL_MessageBoxButtonData()
+                    {
+                        buttonid = i,
+                        text = buttons[i]
+                    };
+                }
+            }
+            msgBox.buttons = bData;
+
+            if (SDL_ShowMessageBox(ref msgBox, out int buttonId) != 0)
+            {
+                Debug.Log("Could not show message box!");
+                return "";
+            } else
+            {
+                if (buttonId >= 0 && buttonId < buttons.Length)
+                {
+                    return buttons[buttonId];
+                } else
+                {
+                    return "";
+                }
+            }
+
+        }
+
         public string BackendToString(VideoBackend backend)
         {
             return backend switch
