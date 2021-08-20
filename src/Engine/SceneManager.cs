@@ -141,7 +141,7 @@ namespace GEngine.Engine
         {
             if (_CurrentScene == null)
             {
-                Debug.Log("SceneManager.AnimationStep()", "Cannot advance animation on a null scene instance.");
+                //Debug.Log("SceneManager.AnimationStep()", "Cannot advance animation on a null scene instance.");
                 return;
             }
             _CurrentScene.AnimationStep();

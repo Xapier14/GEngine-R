@@ -131,9 +131,9 @@ namespace GEngine.Engine
             {
                 archive = ZipFile.OpenRead(fileLocation);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new ResourceException($"Error loading resource '{resourceName}'.", fileLocation);
+                throw new ResourceException($"Error loading resource '{resourceName}', {ex.Message}.", fileLocation);
             }
             // sort by name
             var entries = archive.Entries.OrderBy(zip => zip.Name);
@@ -248,7 +248,7 @@ namespace GEngine.Engine
                 ResourceName = resourceName
             };
             _Textures.Add(res);
-            Debug.Log("ResourceManager.LoadAsTexture()", $"Successfully added texture {resourceName} to resources.");
+            //Debug.Log("ResourceManager.LoadAsTexture()", $"Successfully added texture {resourceName} to resources.");
         }
 
         public void LoadAsAudio(string fileLocation, string resourceName, AudioType audioType)

@@ -208,12 +208,39 @@ namespace GEngine.Net
                     }
                     timeout.Reset();
 
+                    // Register client to the client table and send game information.
+                    Thread clientThread = new(new ParameterizedThreadStart(_clientWorkThread));
+                    _clients.Add(ip, (client, clientThread));
+
+                    Debug.Log("Debugger", $"Creating thread for client from ip: {ip}.");
+                    clientThread.Start(ip);
                 }
                 else
                     Thread.Sleep(500);
             }
             _tcp.Stop();
             _tcp = null;
+        }
+        private void _clientWorkThread(object ip)
+        {
+            TcpClient client;
+            if (_clients.TryGetValue((string)ip, out (TcpClient,Thread) val))
+            {
+                client = val.Item1;
+            } else
+            {
+                Debug.Log("Debugger", $"Attempted to create a thread for {ip}, but ip is not registered in the client table.");
+                return;
+            }
+            while (client.Connected)
+            {
+                //stuff
+
+                Thread.Sleep(200);
+            }
+
+            Debug.Log("Debugger", $"Session for {ip} ended.");
+            _clients.Remove((string)ip);
         }
     }
     public struct ClientResponse

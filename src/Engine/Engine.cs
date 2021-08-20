@@ -639,13 +639,14 @@ namespace GEngine.Engine
                         _rebuildCurrentCall++;
                     }
                 }
+                if (_scenes.CurrentScene != "")
                 try
                 {
                     SceneInstance si = _scenes.GetInstance(_scenes.CurrentScene);
                     if (si != null) _graphics.DrawScene(si);
                 } catch (EngineException ex)
                 {
-                    Debug.Log("GameEngine.DrawStep()", $"Could not draw current scene('{_scenes.CurrentScene}'). Reason: {ex.Message}");
+                    Debug.Log("GameEngine.DrawStep()", $"Could not draw current scene ('{_scenes.CurrentScene}'). Reason: {ex.Message}");
                     //Debug.Log("GameEngine.DrawStep()", $"Reason: {ex.Message}");
                     //Debug.Log("SDL_ERROR-GE_DS - " + SDL_GetError());
                 }

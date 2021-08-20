@@ -22,6 +22,7 @@ namespace GEngine.Game
         public bool DefaultFlipX { get; set; }
         public bool DefaultFlipY { get; set; }
         public Coord DefaultOffset { get; set; }
+        public Dictionary<string, object> DefaultInstanceVariables { get; set; }
 
         public Instance CreateInstance(out Guid hash)
         {
@@ -42,6 +43,10 @@ namespace GEngine.Game
                 Offset = new Coord(DefaultOffset.X, DefaultOffset.Y),
                 PhysicsAttributes = new PhysicsAttributes(DefaultPhysicsAttributes)
             };
+            foreach (var pair in DefaultInstanceVariables)
+            {
+                newInstance.InstanceVariables.Add(pair.Key, pair.Value);
+            }
             hash = newInstance.Hash;
             return newInstance;
         }
@@ -58,6 +63,7 @@ namespace GEngine.Game
             IsAnimated = true;
             IsActivated = true;
             DefaultPhysicsAttributes = new PhysicsAttributes();
+            DefaultInstanceVariables = new();
         }
 
         public virtual void OnCreate(Instance caller, SceneInstance scene)
@@ -125,6 +131,7 @@ namespace GEngine.Game
         public bool FlipY { get; set; }
         public Coord Offset { get; set; }
         private int _currentImageSpeed;
+        public Dictionary<string, object> InstanceVariables { get; set; }
 
         public Instance()
         {
@@ -134,6 +141,7 @@ namespace GEngine.Game
             Depth = 0;
             _imageIndex = 0;
             _currentImageSpeed = 0;
+            InstanceVariables = new();
         }
 
         public void AnimationStep()
@@ -142,7 +150,7 @@ namespace GEngine.Game
             {
                 _currentImageSpeed = 0;
                 if (Sprite == null) return;
-                if (ImageIndex >= Sprite.Count-1)
+                if (ImageIndex >= Sprite.Count - 1)
                 {
                     ImageIndex = 0;
                 } else
@@ -152,6 +160,23 @@ namespace GEngine.Game
             } else
             {
                 _currentImageSpeed++;
+            }
+        }
+        public object this[string variableName]
+        {
+            get
+            {
+                if (InstanceVariables.TryGetValue(variableName, out object ret)){
+                    return ret;
+                } else {
+                    return null;
+                }
+            }
+            set
+            {
+                if (InstanceVariables.ContainsKey(variableName))
+                    InstanceVariables.Remove(variableName);
+                InstanceVariables.Add(variableName, value);
             }
         }
 
