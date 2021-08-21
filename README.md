@@ -24,13 +24,12 @@ OpenGL backend is buggy, use direct3d or software mode instead.
 - [x] Physics System (Incomplete)
 - [x] Animations
 - [x] Object Texture Offsets
+- [ ] TCP Server/Client
 - [ ] CLI Dev Kit
 
 ## Known Issues
 - OpenGL & Textures with transparency.
-- Possible Memory Corruption on LoadAsTexture().
-- Certain graphics drivers are incompatible with VideoBackends.
-- Objects that are out of screen are still drawn.
+- Memory leak on Scene reinstancing.
 - Inaccurate FPS & TPS Counter.
 - Missing checks on adding GameObjects to scenes.
 - Initial RenderClearColor not being set on OpenGL backend.
