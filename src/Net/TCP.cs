@@ -42,7 +42,7 @@ namespace GEngine.Net
         {
             if (port == 0)
                 throw new EngineException("Port number cannot be 0.");
-            port = _port;
+            _port = port;
             _listener = new TcpListener(new IPEndPoint(IPAddress.Any, _port));
             _listening = false;
             _listenThread = new Thread(new ThreadStart(ListenThread));
@@ -53,6 +53,7 @@ namespace GEngine.Net
             // ignore if we are already listening
             if (_listening)
                 return;
+            _listener.Start();
             _listening = true;
             _listenThread?.Start();
         }
@@ -62,6 +63,7 @@ namespace GEngine.Net
             // ignore if we are not listening
             if (!_listening)
                 return;
+            _listener.Stop();
             _listening = false;
             _listenThread = new Thread(new ThreadStart(ListenThread));
         }
