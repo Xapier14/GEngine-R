@@ -366,6 +366,33 @@ namespace GEngine.Engine
         private static Instance[] Join(Instance[] arr1, Instance[] arr2)
         {
             Instance[] r = new Instance[arr1.Length + arr2.Length];
+            int a1 = 0, a2 = 0;
+            for (int i = 0; i < r.Length; ++i)
+            {
+                if (a1 < arr1.Length && a2 < arr2.Length)
+                {
+                    if (arr1[a1].Depth < arr2[a2].Depth)
+                    {
+                        // i1 is smaller
+                        r[i] = arr1[a1];
+                        a1++;
+                    } else
+                    {
+                        // i2 is smaller
+                        r[i] = arr2[a2];
+                        a2++;
+                    }
+                } else if (a1 == arr1.Length)
+                {
+                    r[i] = arr2[a2];
+                    a2++;
+                } else if (a2 == arr2.Length)
+                {
+                    r[i] = arr1[a1];
+                    a1++;
+                }
+            }
+            /*
             for (int i = 0; i < arr1.Length; ++i)
             {
                 r[i] = arr1[i];
@@ -374,6 +401,7 @@ namespace GEngine.Engine
             {
                 r[arr1.Length + i] = arr2[i];
             }
+            */
             return r;
         }
 
