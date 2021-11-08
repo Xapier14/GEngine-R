@@ -162,6 +162,7 @@ namespace GEngine.Game
                 _currentImageSpeed++;
             }
         }
+        
         public object this[string variableName]
         {
             get
@@ -178,6 +179,42 @@ namespace GEngine.Game
                     InstanceVariables.Remove(variableName);
                 InstanceVariables.Add(variableName, value);
             }
+        }
+
+        public T Get<T>(string variableName)
+        {
+            if (InstanceVariables.TryGetValue(variableName, out object ret))
+            {
+                return (T)ret;
+            }
+            else
+            {
+                return default;
+            }
+        }
+        public object Get(string variableName)
+        {
+            if (InstanceVariables.TryGetValue(variableName, out object ret))
+            {
+                return ret;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public void Set<T>(string variableName, T value)
+        {
+            if (InstanceVariables.ContainsKey(variableName))
+                InstanceVariables.Remove(variableName);
+            InstanceVariables.Add(variableName, value);
+        }
+        public void Set(string variableName, object value)
+        {
+            if (InstanceVariables.ContainsKey(variableName))
+                InstanceVariables.Remove(variableName);
+            InstanceVariables.Add(variableName, value);
         }
 
         public override string ToString()
