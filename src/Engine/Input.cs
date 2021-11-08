@@ -54,11 +54,15 @@ namespace GEngine.Engine
                 return _middleMB;
             }
         }
+
+        public double WindowScaleModifier { get; set; }
+
         public InputManager()
         {
             _keys = new Dictionary<SDL_Keycode, bool>();
             _statePressed = new Dictionary<SDL_Keycode, bool>();
             _stateReleased = new Dictionary<SDL_Keycode, bool>();
+            WindowScaleModifier = 1.0;
         }
         public void Init()
         {
@@ -80,19 +84,22 @@ namespace GEngine.Engine
         }
         public bool IsPressed(SDL_Keycode key)
         {
-            throw new NotImplementedException();
+            if (_statePressed.TryGetValue(key, out bool result))
+            {
+                return result;
+            }
+            return false;
         }
         public bool IsReleased(SDL_Keycode key)
         {
-            throw new NotImplementedException();
+            if (_stateReleased.TryGetValue(key, out bool result))
+            {
+                return result;
+            }
+            return false;
         }
-        public void PollEvent()
+        private void HandleEvents()
         {
-            // get window relative mouse location
-            SDL_GetMouseState(out int x, out int y);
-            _windowMouse.X = x;
-            _windowMouse.Y = y;
-
             while (SDL_PollEvent(out SDL_Event e) != 0)
             {
                 switch (e.type)
@@ -135,8 +142,10 @@ namespace GEngine.Engine
                     case SDL_EventType.SDL_KEYDOWN:
                         if (_keys.ContainsKey(e.key.keysym.sym))
                         {
-                            _keys[e.key.keysym.sym] = true;
-                        } else
+                            if (!_keys[e.key.keysym.sym])
+                                _keys[e.key.keysym.sym] = true;
+                        }
+                        else
                         {
                             _keys.Add(e.key.keysym.sym, true);
                         }
@@ -144,7 +153,8 @@ namespace GEngine.Engine
                     case SDL_EventType.SDL_KEYUP:
                         if (_keys.ContainsKey(e.key.keysym.sym))
                         {
-                            _keys[e.key.keysym.sym] = false;
+                            if (_keys[e.key.keysym.sym])
+                                _keys[e.key.keysym.sym] = false;
                         }
                         else
                         {
@@ -152,7 +162,8 @@ namespace GEngine.Engine
                         }
                         break;
                     case SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                        switch (e.button.button){
+                        switch (e.button.button)
+                        {
                             case (byte)SDL_BUTTON_LEFT:
                                 _leftMB = true;
                                 break;
@@ -186,6 +197,81 @@ namespace GEngine.Engine
                         break;
                 }
             }
+        }
+        private void EdgeDetectKeys()
+        {
+            foreach(var kp in _keys)
+            {
+                var key = kp.Key;
+                var state = kp.Value;
+
+                // if the key is down
+                if (state)
+                {
+                    /* KEY RELEASED */
+                    // if the key is up
+                    // and it is registered
+                    if (_stateReleased.ContainsKey(key))
+                    {
+                        // remove it
+                        _stateReleased.Remove(key);
+                    }
+
+                    /* KEY PRESSED */
+                    // if the key has not yet been registered
+                    if (!_statePressed.ContainsKey(key))
+                    {
+                        // register it
+                        _statePressed.Add(key, true);
+                    } else
+                    {
+                        // if the key is already registered, and is true
+                        if (_statePressed[key])
+                        {
+                            // set it to false
+                            _statePressed[key] = false;
+                        }
+                    }
+
+                } else
+                {
+                    /* KEY PRESSED */
+                    // if the key is up
+                    // and it is registered
+                    if (_statePressed.ContainsKey(key))
+                    {
+                        // remove it
+                        _statePressed.Remove(key);
+                    }
+
+                    /* KEY RELEASED */
+                    // if the key has not yet been registered
+                    if (!_stateReleased.ContainsKey(key))
+                    {
+                        // register it
+                        _stateReleased.Add(key, true);
+                    }
+                    else
+                    {
+                        // if the key is already registered, and is true
+                        if (_stateReleased[key])
+                        {
+                            // set it to false
+                            _stateReleased[key] = false;
+                        }
+                    }
+                }
+            }
+        }
+        public void PollEvent()
+        {
+            // get window relative mouse location
+            SDL_GetMouseState(out int x, out int y);
+            _windowMouse.X = (int)(x / WindowScaleModifier);
+            _windowMouse.Y = (int)(y / WindowScaleModifier);
+
+            HandleEvents();
+            EdgeDetectKeys();
         }
     }
 }

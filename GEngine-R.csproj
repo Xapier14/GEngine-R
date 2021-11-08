@@ -13,7 +13,10 @@
     <FileVersion>1.0.0.0</FileVersion>
     <RepositoryType>Public</RepositoryType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageId>GEngine-R</PackageId>
+    <Company>Lance Crisang</Company>
     <RepositoryUrl>https://github.com/Xapier14/GEngine-R</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
