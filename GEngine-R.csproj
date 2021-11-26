@@ -17,6 +17,7 @@
     <Company>Lance Crisang</Company>
     <RepositoryUrl>https://github.com/Xapier14/GEngine-R</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Configurations>Debug;Release;LinuxTest</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">

@@ -45,6 +45,20 @@ namespace GEngine.Engine
             }
             Console.WriteLine(SDL_GetError());
         }
+
+        public void SetMusicVolume(float volume)
+        {
+            Mix_VolumeMusic(Convert.ToInt32(volume * (float)MIX_MAX_VOLUME));
+        }
+        public void SetMusicVolume(int volume)
+        {
+            Mix_VolumeMusic(volume);
+        }
+
+        public int GetMusicVolume()
+        {
+            return Mix_VolumeMusic(-1);
+        }
         public void PauseMusic()
         {
             if (Mix_PlayingMusic() != 0)

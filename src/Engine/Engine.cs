@@ -426,7 +426,7 @@ namespace GEngine.Engine
                 case InputCallbackType.FocusGained:
                     if (_vBackend == VideoBackend.OpenGL || _vBackend == VideoBackend.OpenGL_ES || _vBackend == VideoBackend.OpenGL_ES2)
                     {
-                        _resource.RebuildTextures();
+                        //_resource.RebuildTextures();
                     }
                     break;
             }
@@ -569,6 +569,7 @@ namespace GEngine.Engine
                 _resource.Init(_SDL_Renderer);
                 _resource.EngineInit = false;
                 _initGraphics = true;
+                //_resource.RebuildTextures();
             }
         }
         private void LogicStep()
@@ -613,13 +614,15 @@ namespace GEngine.Engine
                 Debug.Log("GameEngine.LogicStep()", $"Logic step took {start-end-Properties.TargetLogictime}ms longer than target logic time.");
             }
         }
-        private void DrawStep()
+        public void DrawStep()
         {
             double start = GetPreciseMs();
             if (!DrawPause)
             {
                 // Clear
                 _graphics.RenderClear();
+                // rebuild if texture rebuild is raised
+                //_graphics.RebuildTexturesOnCall(_resource);
                 // If engine is set to rebuild textures
                 if (!_rebuilt)
                 {

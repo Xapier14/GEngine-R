@@ -7,7 +7,8 @@ A Rewrite of an old project of mine.
 ## Important Notes:
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R?ref=badge_shield)
 
-OpenGL backend is buggy, use direct3d or software mode instead.
+Use Direct3D or Software mode only as OpenGL will crash the engine.
+Using Metal is still untested.
 
 ## To-Do:
 - [x] Base Engine Loop

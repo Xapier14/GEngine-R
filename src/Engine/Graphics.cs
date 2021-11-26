@@ -14,6 +14,7 @@ namespace GEngine.Engine
         const bool FLAG_WARNNULLTEXTURE = false;
         public bool DrawCollisionBounds = true;
         private ColorRGBA _renderColor;
+        private bool _rebuildTextures = false;
         public bool DrawBorders { get; set; }
         public ColorRGBA BorderColor { get; set; }
         public ColorRGBA RenderClearColor
@@ -190,14 +191,15 @@ namespace GEngine.Engine
         }
         public void DrawScene(SceneInstance scene)
         {
-            InstanceCollection instances = scene.Instances;
+            var instances = scene.Instances.ToList();
             //instances.SortByDepth();
 
             //draw sprites
             foreach(Instance inst in instances)
             {
                 inst.BaseReference.OnDraw(inst, scene, this);
-                DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y, inst.FlipX, inst.FlipY);
+                // moved this line into GameObject.cs
+                //DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y, inst.FlipX, inst.FlipY);
                 if (scene.UsesPhysics && DrawCollisionBounds) DrawCollision(inst, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y);
             }
         }
@@ -242,8 +244,8 @@ namespace GEngine.Engine
             Coord scene = new Coord(sceneX, sceneY);
 
             Coord position = new Coord(origin.X - scene.X, origin.Y - scene.Y);
-            ColorRGBA def = GetRendererDrawColor();
-            SetRenderDrawColor(new ColorRGBA(255, 0, 0, 255));
+            //ColorRGBA def = GetRendererDrawColor();
+            //SetRenderDrawColor(new ColorRGBA(255, 0, 0, 255));
             switch (phyBody)
             {
                 case PhysicsBodyType.Box:
@@ -267,7 +269,22 @@ namespace GEngine.Engine
                     }
                     break;
             }
-            SetRenderDrawColor(def);
+            //SetRenderDrawColor(def);
+        }
+
+        public void RaiseTextureRebuild()
+        {
+            if (!_rebuildTextures)
+                _rebuildTextures = true;
+        }
+
+        public void RebuildTexturesOnCall(ResourceManager resources)
+        {
+            if (_rebuildTextures)
+            {
+                resources.RebuildTextures();
+                _rebuildTextures = false;
+            }
         }
 
         public static int SDL_RenderDrawCircle(IntPtr sdlRenderer, int x, int y, int radius)
@@ -340,7 +357,7 @@ namespace GEngine.Engine
             if (res != 0)
             {
                 //error
-                throw new EngineException("Error rendering texture '" + texture.ResourceName + "'.", "GraphicsEngine.DrawSprite()");
+                throw new EngineException($"Error rendering texture '{texture.ResourceName}'. ({SDL_GetError()})", "GraphicsEngine.DrawSprite()");
             }
             if (DrawBorders)
             {
