@@ -11,9 +11,11 @@ namespace GEngine.Game
     public class SceneProperties
     {
         public bool AnimateSprites { get; set; }
+        public Size ViewSize { get; set; }
         public SceneProperties(Size viewSize)
         {
             AnimateSprites = true;
+            ViewSize = viewSize; ;
         }
     }
     public abstract class Scene
@@ -75,8 +77,37 @@ namespace GEngine.Game
             {
                 caller.PhysicsWorld.UpdateCycle();
             }
+
+            var viewPos = caller.ViewPosition - caller.ViewOrigin;
+            var viewSize = caller.BaseReference.Properties.ViewSize;
+
+            int activated = 0, nonactivated = 0;
+
             foreach (Instance inst in caller.Instances.ToList())
             {
+                if (inst.IsOptimized)
+                {
+                    int x = inst.Position.X;
+                    int y = inst.Position.Y;
+                    int sW = inst.Sprite != null ? inst.Sprite.SpriteSize.W: 0;
+                    int sH = inst.Sprite != null ? inst.Sprite.SpriteSize.H : 0;
+
+
+                    if ((x >= viewPos.X - sW && x <= viewPos.X + viewSize.W + sW) ||
+                        (y >= viewPos.Y - sH  && y <= viewPos.Y + viewSize.H + sW))
+                    {
+                        inst.IsActivated = true;
+                        activated++;
+                    }
+                    else
+                    {
+                        inst.IsActivated = false;
+                        nonactivated++;
+                    }
+                }
+
+                //Debug.Log($"VIEW: {viewPos.X}, {viewPos.Y}; BOUND: {viewPos.X + viewSize.W}, {viewPos.Y + viewSize.H}");
+                //Debug.Log($"ACTIVATED: {activated}; NON-ACTIVATED: {nonactivated}");
                 if (inst.IsActivated) inst.BaseReference.Step(inst, caller);
             }
         }

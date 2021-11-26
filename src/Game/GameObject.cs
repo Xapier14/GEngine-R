@@ -13,6 +13,7 @@ namespace GEngine.Game
         public PhysicsAttributes DefaultPhysicsAttributes { get; set; }
         public string ObjectName { get; set; }
         public bool IsActivated { get; set; }
+        public bool IsOptimized { get; set; }
         public bool IsAnimated { get; set; }
         public int DefaultImageSpeed { get; set; }
         public int DefaultImageIndex { get; set; }
@@ -34,6 +35,7 @@ namespace GEngine.Game
                 ImageSpeed = DefaultImageSpeed,
                 ImageAngle = DefaultImageAngle,
                 IsActivated = IsActivated,
+                IsOptimized = IsOptimized,
                 IsAnimated = IsAnimated,
                 ReferenceType = Type,
                 ScaleX = DefaultScaleX,
@@ -76,6 +78,29 @@ namespace GEngine.Game
             //constraints
             if (caller.ImageAngle >= 360) caller.ImageAngle -= 360;
             if (caller.ImageAngle < 0) caller.ImageAngle += 360;
+            var viewPos = scene.ViewPosition - scene.ViewOrigin;
+            var viewSize = scene.BaseReference.SceneSize;
+            if (caller.IsOptimized)
+            {
+                int x = caller.Position.X;
+                int y = caller.Position.Y;
+                int sW = caller.Sprite != null ? caller.Sprite.SpriteSize.W : 0;
+                int sH = caller.Sprite != null ? caller.Sprite.SpriteSize.H : 0;
+
+                int left = x - sW;
+                int right = x + sW;
+                int top = y - sH;
+                int bottom = y + sH;
+
+                if (left >= viewPos.X && right <= viewPos.X + viewSize.W &&
+                    top >= viewPos.Y && bottom <= viewPos.Y + viewSize.H)
+                {
+                    caller.IsActivated = true;
+                } else
+                {
+                    caller.IsActivated = false;
+                }
+            }
         }
 
         public virtual void OnDestroy(Instance caller, SceneInstance scene)
@@ -123,6 +148,7 @@ namespace GEngine.Game
         public int Depth { get; set; }
         public double ImageAngle { get; set; }
         public bool IsActivated { get; set; }
+        public bool IsOptimized { get; set; }
         public bool IsAnimated { get; set; }
         public Guid Hash { get; private set; }
         public Type ReferenceType { get; set; }
