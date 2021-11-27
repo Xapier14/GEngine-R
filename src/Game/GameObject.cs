@@ -158,6 +158,14 @@ namespace GEngine.Game
         public bool FlipY { get; set; }
         public Coord Offset { get; set; }
         private int _currentImageSpeed;
+
+        public string ObjectName
+        {
+            get
+            {
+                return BaseReference.ObjectName;
+            }
+        }
         public Dictionary<string, object> InstanceVariables { get; set; }
 
         public Instance()

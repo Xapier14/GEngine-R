@@ -27,6 +27,8 @@ namespace GEngine.Game
         public Type ReferenceType { get; set; }
         public bool UsesPhysics { get; set; }
         public Coord WorldGravity { get; set; }
+        public Coord DefaultViewPosition { get; set; }
+        public Coord DefaultViewOrigin { get; set; }
 
         public Scene(Size sceneSize, Size viewSize)
         {
@@ -35,6 +37,8 @@ namespace GEngine.Game
             GameObjects = new GameObjectInfoCollection();
             UsesPhysics = false;
             WorldGravity = new Coord(0, 0);
+            DefaultViewOrigin = new Coord(0, 0);
+            DefaultViewPosition = new Coord(0, 0);
         }
 
         public SceneInstance CreateInstance()
@@ -67,8 +71,8 @@ namespace GEngine.Game
             }
 
             caller.Destroyed = false;
-            caller.ViewPosition = new Coord(0, 0);
-            caller.ViewOrigin = new Coord(0, 0);
+            caller.ViewPosition = new Coord(caller.BaseReference.DefaultViewPosition);
+            caller.ViewOrigin = new Coord(caller.BaseReference.DefaultViewOrigin);
         }
 
         public virtual void Step(SceneInstance caller)
@@ -205,6 +209,29 @@ namespace GEngine.Game
                 throw new EngineException("Instance not exists in SceneInstance.", "SceneInstance.SetInstancePosition()");
             instance.Position = position;
             PhysicsWorld?.SetObjectPosition(instance);
+        }
+
+        public int HasInstance(string objectName)
+        {
+            int ret = 0;
+
+            foreach (Instance instance in Instances)
+            {
+                if (instance.ReferenceType.Name == objectName)
+                {
+                    ret++;
+                }
+            }
+
+            return ret;
+        }
+
+        public Instance[] GetInstances(string objectName)
+        {
+            return Instances.Where((Instance instance) =>
+            {
+                return instance.ObjectName == objectName;
+            }).ToArray();
         }
     }
 }
