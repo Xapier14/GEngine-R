@@ -136,6 +136,10 @@ namespace GEngine.Game
         public PhysicsWorld PhysicsWorld { get; set; }
         private bool _initializedPhysics = false;
         public bool Destroyed { get; set; }
+        public Size ViewSize
+        {
+            get => Reference.Properties.ViewSize;
+        }
 
         public SceneInstance()
         {

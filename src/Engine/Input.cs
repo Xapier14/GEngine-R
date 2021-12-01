@@ -134,8 +134,6 @@ namespace GEngine.Engine
                         }
                         break;
                     case SDL_EventType.SDL_CONTROLLERDEVICEREMOVED:
-
-                        Debug.Log("CON_AXISUPDATE");
                         con = e.cdevice.which;
                         if (_gameControllers.ContainsKey(con))
                         {
@@ -147,7 +145,7 @@ namespace GEngine.Engine
                         }
                         break;
                     case SDL_EventType.SDL_CONTROLLERBUTTONDOWN or SDL_EventType.SDL_CONTROLLERBUTTONUP:
-                        Debug.Log("CON_UPDATE");
+                        //Debug.Log("CON_UPDATE");
                         con = e.cdevice.which;
                         SDL_GameControllerButton button = (SDL_GameControllerButton)e.cbutton.button;
                         bool pressed = e.cbutton.state == SDL_PRESSED;
@@ -201,6 +199,7 @@ namespace GEngine.Engine
                         }
                         break;
                     case SDL_EventType.SDL_CONTROLLERAXISMOTION:
+                        //Debug.Log("CON_AXISUPDATE");
                         int joystickId = e.caxis.which;
                         Gamepad? gpraw = null;
                         foreach (var kp in _joysticks)

@@ -272,7 +272,7 @@ namespace GEngine.Engine
             _vBackend = backend;
 
             _input.WindowEvent += InputHandler_WindowEvent;
-            _input.EngineEvent += _input_EngineEvent;
+            _input.EngineEvent += InputHandler_EngineEvent;
         }
 
         private void InformMessage(string msg)
@@ -395,7 +395,7 @@ namespace GEngine.Engine
             return ret;
         }
 
-        private void _input_EngineEvent(InputCallbackEventArg eventArg)
+        private void InputHandler_EngineEvent(InputCallbackEventArg eventArg)
         {
             switch (eventArg.CallbackType)
             {
