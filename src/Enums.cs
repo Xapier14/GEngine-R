@@ -62,6 +62,19 @@ namespace GEngine.Engine
         Scene,
         Viewport
     }
+
+    public enum TextHorizontalAlign
+    { 
+        Left,
+        Center,
+        Right
+    }
+    public enum TextVerticalAlign
+    {
+        Top,
+        Middle,
+        Bottom
+    }
 }
 namespace GEngine.Game
 {

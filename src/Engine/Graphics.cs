@@ -242,7 +242,7 @@ namespace GEngine.Engine
                 Debug.Log("GraphicsEngine.DrawPoint", $"Could not draw point. ({x}, {y})");
             }
         }
-        public void DrawText(FontResource font, string text, int x, int y, Size? fontSize = null)
+        public void DrawText(FontResource font, string text, int x, int y, Size? fontSize = null, TextHorizontalAlign hAlignment = TextHorizontalAlign.Left, TextVerticalAlign vAlignment = TextVerticalAlign.Top)
         {
             ColorRGBA color = GetRendererDrawColor();
             IntPtr surface = TTF_RenderText_Solid(font.DataPtr[0], text, new SDL_Color()
@@ -278,8 +278,20 @@ namespace GEngine.Engine
             // draw texture
             SDL_Rect box = new()
             {
-                x = x,
-                y = y,
+                x = hAlignment switch
+                {
+                    TextHorizontalAlign.Left => x,
+                    TextHorizontalAlign.Center => x-fontW/2,
+                    TextHorizontalAlign.Right => x-fontW,
+                    _ => x
+                },
+                y = vAlignment switch
+                {
+                    TextVerticalAlign.Top => y,
+                    TextVerticalAlign.Middle => y-fontH/2,
+                    TextVerticalAlign.Bottom => y-fontH,
+                    _ => y
+                },
                 w = fontW,
                 h = fontH
             };
