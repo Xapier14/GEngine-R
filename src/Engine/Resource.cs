@@ -10,6 +10,7 @@ using System.Text.Json;
 using static SDL2.SDL;
 using static SDL2.SDL_image;
 using static SDL2.SDL_mixer;
+using static SDL2.SDL_ttf;
 using System.Runtime.InteropServices;
 using System.Runtime.ExceptionServices;
 
@@ -18,7 +19,7 @@ namespace GEngine.Engine
     public class ResourceManager
     {
         private const bool FLAG_ALLOW_MISSING_METADATA = false; //hack, allows resources with missing metadata. requires explicit information on sprite sizes
-        private ResourceCollection _Audio, _Textures;
+        private ResourceCollection _Audio, _Textures, _Fonts;
         private IntPtr _SDL_Renderer;
         public bool EngineInit = false;
 
@@ -29,6 +30,7 @@ namespace GEngine.Engine
         {
             _Audio = new ResourceCollection();
             _Textures = new ResourceCollection();
+            _Fonts = new ResourceCollection();
             IMG_InitFlags imgFlags = IMG_InitFlags.IMG_INIT_JPG | IMG_InitFlags.IMG_INIT_PNG;
             //MIX_InitFlags mixFlags = MIX_InitFlags.MIX_INIT_MP3;
             if (IMG_Init(imgFlags) != (int)imgFlags)
@@ -57,6 +59,11 @@ namespace GEngine.Engine
                 te.Destroy();
             }
             _Textures.Clear();
+            foreach (FontResource fn in _Fonts)
+            {
+                fn.Destroy();
+            }
+            _Fonts.Clear();
         }
         public void SetRenderer(IntPtr sdlRenderer)
         {
@@ -67,6 +74,15 @@ namespace GEngine.Engine
             foreach (TextureResource res in _Textures)
             {
                 if (res.ResourceName == resourceName) return true;
+            }
+            return false;
+        }
+        public bool HasFont(string resourceName)
+        {
+            foreach (FontResource res in _Fonts)
+            {
+                if (res.ResourceName == resourceName)
+                    return true;
             }
             return false;
         }
@@ -287,6 +303,42 @@ namespace GEngine.Engine
             }
         }
 
+        public void LoadAsFont(string ttfFontFile, string resourceName, int pointSize = 16)
+        {
+            while (!EngineInit)
+                SDL_Delay(100);
+            if (_Audio.Contains(resourceName))
+                throw new ResourceException($"A resource with the same name '{resourceName}' already exists.", ttfFontFile);
+            if (!File.Exists(ttfFontFile) && !File.Exists(@"C:\Windows\Fonts\" + ttfFontFile))
+                throw new ResourceException($"Error loading resource '{resourceName}'. File not found.", ttfFontFile);
+            try
+            {
+                IntPtr font;
+                if (File.Exists(ttfFontFile))
+                    font = TTF_OpenFont(ttfFontFile, pointSize);
+                else if (File.Exists(@"C:\Windows\Fonts\" + ttfFontFile))
+                    font = TTF_OpenFont(@"C:\Windows\Fonts\" + ttfFontFile, pointSize);
+                else
+                    throw new EngineException();
+                if (font == IntPtr.Zero)
+                {
+                    // error
+                    throw new EngineException();
+                }
+                FontResource resource = new()
+                {
+                    DataPtr = new IntPtr[1] { font },
+                    PointSize = pointSize,
+                    ResourceName = resourceName
+                };
+                _Fonts.Add(resource);
+            }
+            catch
+            {
+                throw new ResourceException($"Error in loading font. {SDL_GetError()}", "ResourceManager.LoadAsFont()");
+            }
+        }
+
         public AudioResource GetAudioResource(string resourceName)
         {
             return (AudioResource)_Audio.Get(resourceName);
@@ -301,6 +353,10 @@ namespace GEngine.Engine
                 Debug.Log("ResourceManager.GetTextureResource()", ex.Message);
                 throw;
             }
+        }
+        public FontResource GetFontResource(string resourceName)
+        {
+            return (FontResource)_Fonts.Get(resourceName);
         }
     }
     public class ResourceBase
@@ -317,6 +373,11 @@ namespace GEngine.Engine
     {
         public const ResourceType Type = ResourceType.Audio;
         public AudioType AudioType { get; set; }
+    }
+    public class FontResource : ResourceBase
+    {
+        public const ResourceType Type = ResourceType.Font;
+        public int PointSize { get; set; }
     }
     public class TextureResource : ResourceBase
     {

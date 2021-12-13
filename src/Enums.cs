@@ -33,7 +33,8 @@ namespace GEngine.Engine
     public enum ResourceType
     {
         Audio,
-        Texture
+        Texture,
+        Font
     }
     public enum GameEngineEventType
     {

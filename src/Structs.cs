@@ -58,6 +58,14 @@ namespace GEngine
     }
     public struct ColorRGBA
     {
+
+        // colors
+        public static readonly ColorRGBA WHITE = new(255, 255, 255);
+        public static readonly ColorRGBA BLACK = new(255, 255, 255);
+        public static readonly ColorRGBA RED = new(255, 0, 0);
+        public static readonly ColorRGBA GREEN = new(0, 255, 0);
+        public static readonly ColorRGBA BLUE = new(0, 0, 255);
+
         public byte Red { get; set; }
         public byte Green { get; set; }
         public byte Blue { get; set; }
