@@ -40,6 +40,7 @@ Using Metal is still untested.
 * SDL2
 * SDL_Mixer
 * SDL_Image
+* SDL_TTF_
 * SDL2-CS.Core
 * Genbox.VelcroPhysics
 * .Net 5.0 ([x86](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-5.0.6-windows-x86-installer))
