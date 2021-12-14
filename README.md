@@ -7,8 +7,9 @@ A Rewrite of an old project of mine.
 ## Important Notes:
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FXapier14%2FGEngine-R?ref=badge_shield)
 
-Use Direct3D or Software mode only as OpenGL will crash the engine.
+Use Direct3D or Software mode only as OpenGL will crash the engine when loading textures.
 Using Metal is still untested.
+For games with no sprite loading, OpenGL *may or may not* work.
 
 ## To-Do:
 - [x] Base Engine Loop
@@ -25,7 +26,7 @@ Using Metal is still untested.
 - [x] Physics System (Incomplete)
 - [x] Animations
 - [x] Object Texture Offsets
-- [ ] TCP Server/Client
+- [x] TCP Server/Client (Untested)
 - [ ] CLI Dev Kit
 
 ## Known Issues
