@@ -21,6 +21,10 @@ jobs:
       run: git submodule update --init --recursive
     - name: Restore dependencies
       run: dotnet restore
+    - name: Restore VelcroPhysics
+      run: dotnet restore VelcroPhysics/src/VelcroPhysics/VelcroPhysics.csproj
+    - name: Restore SDL2-CS
+      run: dotnet restore SDL2-CS/SDL2-CS.Core.csproj
     - name: Build
       run: dotnet build --no-restore
     - name: Test
