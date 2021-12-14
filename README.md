@@ -11,6 +11,45 @@ Use Direct3D or Software mode only as OpenGL will crash the engine when loading 
 Using Metal is still untested.
 For games with no sprite loading, OpenGL *may or may not* work.
 
+## Getting Started
+1. Clone the project and initialize the submodules
+    ```
+    git clone --recurse-submodules https://github.com/Xapier14/GEngine-R.git
+    ```
+1. Create a new **.NET 5+** console project.
+1. Add the GEngine-R project to your solution file.
+1. Create a project reference with your game project to the GEngine-R project.
+1. Copy and paste the program boilerplate to your `program.cs`.
+    ```c#
+    using System;
+    using System.Threading;
+
+    using GEngine;
+    using GEngine.Engine;
+
+    namespace <your_namespace>
+    {
+        public class Program
+        {
+            private static GameEngine _game;
+            public static void Main(string[] args)
+            {
+                // create the engine
+                _game = new();
+                
+                // change engine properties here
+
+                // load resources
+                _game.ResourceLoaded = true
+                
+                // keep alive
+                while (_game.Running)
+                    Thread.Sleep(500);
+            }
+        }
+    }
+    ```
+1. Create & set your configuration to either x86 or x64 and use the appropriate native libraries.
 ## To-Do:
 - [x] Base Engine Loop
 - [x] Frame/Logic Timing
