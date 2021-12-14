@@ -37,8 +37,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VelcroPhysics\src\VelcroPhysics\VelcroPhysics.csproj" />
-    <ProjectReference Include="..\SDL2-CS\SDL2-CS.Core.csproj" />
+    <ProjectReference Include="VelcroPhysics\src\VelcroPhysics\VelcroPhysics.csproj" />
+    <ProjectReference Include="SDL2-CS\SDL2-CS.Core.csproj" />
   </ItemGroup>
 
 </Project>
