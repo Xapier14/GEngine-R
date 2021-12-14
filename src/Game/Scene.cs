@@ -217,7 +217,7 @@ namespace GEngine.Game
         public void SetInstancePosition(Instance instance, Coord position)
         {
             if (!Instances.Contains(instance))
-                throw new EngineException("Instance not exists in SceneInstance.", "SceneInstance.SetInstancePosition()");
+                throw new EngineException("Instance does not exist in SceneInstance.", "SceneInstance.SetInstancePosition()");
             instance.Position = position;
             PhysicsWorld?.SetObjectPosition(instance);
         }
