@@ -47,6 +47,12 @@ namespace GEngine.Engine
         Linear,
         Anisotropic
     }
+
+    public enum FontQuality
+    {
+        Fast,
+        Quality
+    }
     public enum InputCallbackType
     {
         WindowClose,

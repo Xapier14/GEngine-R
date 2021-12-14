@@ -22,7 +22,6 @@ namespace GEngine.Engine
         private ResourceCollection _Audio, _Textures, _Fonts;
         private IntPtr _SDL_Renderer;
         public bool EngineInit = false;
-
         public ResourceManager()
         {
         }

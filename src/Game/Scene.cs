@@ -57,7 +57,7 @@ namespace GEngine.Game
                 Instance inst = obj.GameObject.CreateInstance(out Guid guid);
                 inst.Position = new Coord(obj.Position.X, obj.Position.Y);
                 instance.Instances.Add(inst);
-                inst.BaseReference.OnCreate(inst, instance);
+                //inst.BaseReference.OnCreate(inst, instance);
             }
             instance.BaseReference.OnCreate(instance);
             return instance;
@@ -65,9 +65,10 @@ namespace GEngine.Game
 
         public virtual void OnCreate(SceneInstance caller)
         {
-            foreach (Instance inst in caller.Instances)
+            var list = caller.Instances.ToList();
+            foreach (Instance inst in list) 
             {
-                if (inst.IsActivated) inst.BaseReference.OnCreate(inst, caller);
+                inst.BaseReference.OnCreate(inst, caller);
             }
 
             caller.Destroyed = false;
@@ -147,6 +148,12 @@ namespace GEngine.Game
             ViewPosition = new Coord(0, 0);
             ViewOrigin = new Coord(0, 0);
             Instances = new InstanceCollection();
+        }
+
+        public void AddInstance(Instance instance)
+        {
+            Instances.Add(instance);
+            instance.BaseReference.OnCreate(instance, this);
         }
         public void AddArray(GameObject obj, Coord start, Coord offset, int repetitions)
         {

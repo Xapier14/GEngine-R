@@ -12,11 +12,29 @@ namespace GEngine.Engine
 {
     public class GraphicsEngine
     {
+        private static readonly FontQuality DEFAULT_FONTQUALITY = FontQuality.Quality;
         const bool FLAG_WARNNULLTEXTURE = false;
         public bool DrawCollisionBounds = true;
+        public bool UseSubpixelFont = true;
         private ColorRGBA _renderColor;
         private bool _rebuildTextures = false;
+        private FontQuality? _initialFontQuality;
         public bool DrawBorders { get; set; }
+        public FontQuality FontQuality
+        {
+            get => _textCache.FontQuality;
+            set
+            {
+                if (_textCache != null)
+                {
+                    _textCache.FontQuality = value;
+                }
+                else
+                {
+                    _initialFontQuality = value;
+                } 
+            }
+        }
         public ColorRGBA BorderColor { get; set; }
         public ColorRGBA RenderClearColor
         {
@@ -60,7 +78,7 @@ namespace GEngine.Engine
             {
                 Debug.Log("Graphics.Init()", "Error initializing TTF.");
             }
-            _textCache = new(this, 200);
+            _textCache = new(this, _initialFontQuality.HasValue ? _initialFontQuality.Value : DEFAULT_FONTQUALITY, 200);
         }
         public void SetVideoBackend(VideoBackend backend)
         {
@@ -223,6 +241,19 @@ namespace GEngine.Engine
                 Debug.Log("GraphicsEngine.DrawRectangle", $"Could not draw rectangle. ({x1}, {y1}, {x2}, {y2})");
             }
         }
+        public void DrawRectangleFilled(int x1, int y1, int x2, int y2)
+        {
+            SDL_Rect rect = new();
+            rect.x = x1;
+            rect.y = y1;
+            rect.w = Math.Abs(x2 - x1);
+            rect.h = Math.Abs(y2 - y1);
+
+            if (SDL_RenderFillRect(Renderer, ref rect) != 0)
+            {
+                Debug.Log("GraphicsEngine.DrawRectangleFilled", $"Could not draw rectangle. ({x1}, {y1}, {x2}, {y2})");
+            }
+        }
         public void DrawCircle(int x, int y, int radius)
         {
             if (SDL_RenderDrawCircle(Renderer, x, y ,radius) != 0)
@@ -253,7 +284,11 @@ namespace GEngine.Engine
         {
             ColorRGBA color = GetRendererDrawColor();
 
+            if (UseSubpixelFont)
+                TTF_SetFontHinting(font.DataPtr[0], TTF_HINTING_LIGHT_SUBPIXEL);
             var texture = _textCache.RetrieveTexture(font, text, color);
+            if (UseSubpixelFont)
+                TTF_SetFontHinting(font.DataPtr[0], TTF_HINTING_NORMAL);
 
             if (TTF_SizeText(font.DataPtr[0], text, out int fontW, out int fontH) != 0)
             {
