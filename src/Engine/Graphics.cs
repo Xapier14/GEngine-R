@@ -33,6 +33,7 @@ namespace GEngine.Engine
         public IntPtr Window { get; set; }
         public IntPtr Renderer { get; set; }
         private bool _init = false;
+        private TextCache _textCache;
 
         private VideoBackend _backend;
 
@@ -59,6 +60,7 @@ namespace GEngine.Engine
             {
                 Debug.Log("Graphics.Init()", "Error initializing TTF.");
             }
+            _textCache = new(this, 200);
         }
         public void SetVideoBackend(VideoBackend backend)
         {
@@ -242,25 +244,17 @@ namespace GEngine.Engine
                 Debug.Log("GraphicsEngine.DrawPoint", $"Could not draw point. ({x}, {y})");
             }
         }
+        public Size MeasureText(FontResource font, string text)
+        {
+            TTF_SizeText(font.DataPtr[0], text, out int w, out int h);
+            return new Size(w, h);
+        }
         public void DrawText(FontResource font, string text, int x, int y, Size? fontSize = null, TextHorizontalAlign hAlignment = TextHorizontalAlign.Left, TextVerticalAlign vAlignment = TextVerticalAlign.Top)
         {
             ColorRGBA color = GetRendererDrawColor();
-            IntPtr surface = TTF_RenderText_Solid(font.DataPtr[0], text, new SDL_Color()
-            {
-                r = color.Red,
-                g = color.Green,
-                b = color.Blue,
-                a = color.Alpha
-            });
-            if (surface == IntPtr.Zero)
-            {
-                throw new EngineException("Error creating surface.", "GraphicsEngine.DrawText()");
-            }
-            IntPtr texture = SDL_CreateTextureFromSurface(Renderer, surface);
-            if (texture == IntPtr.Zero)
-            {
-                throw new EngineException("Error creating texture from surface.", "GraphicsEngine.DrawText()");
-            }
+
+            var texture = _textCache.RetrieveTexture(font, text, color);
+
             if (TTF_SizeText(font.DataPtr[0], text, out int fontW, out int fontH) != 0)
             {
                 throw new EngineException("Error getting text size.", "GraphicsEngine.DrawText()");
@@ -273,7 +267,6 @@ namespace GEngine.Engine
                     fontH = fontSize.Value.H;
                 }
             }
-            SDL_FreeSurface(surface);
 
             // draw texture
             SDL_Rect box = new()
@@ -300,7 +293,7 @@ namespace GEngine.Engine
             {
                 Debug.Log("GraphicsEngine.DrawText()", $"Error drawing text texture.\n{SDL_GetError()}");
             }
-            SDL_DestroyTexture(texture);
+            //SDL_DestroyTexture(texture);
         }
         public void DrawCollision(Instance inst, int sceneX, int sceneY)
         {

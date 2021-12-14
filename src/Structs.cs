@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GEngine.Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -84,6 +85,10 @@ namespace GEngine
             Blue = b;
             Alpha = a;
         }
+
+        public static bool operator ==(ColorRGBA a, ColorRGBA b) => a.Red == b.Red && a.Blue == b.Blue &&
+                                                                    a.Green == b.Green && a.Alpha == b.Alpha;
+        public static bool operator !=(ColorRGBA a, ColorRGBA b) => !(a==b);
     }
     public struct Coord
     {
@@ -123,5 +128,12 @@ namespace GEngine
             W = w;
             H = h;
         }
+    }
+
+    public struct TextCacheInfo
+    {
+        public string Text { get; set; }
+        public FontResource Font { get; set; }
+        public ColorRGBA Color { get; set; }
     }
 }

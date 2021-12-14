@@ -705,8 +705,8 @@ namespace GEngine.Engine
                     {
                         _cur_frametime = ETtoMS(drawTimer.ElapsedTicks);
                         fpsAvg.AddPoint(1000.00 / (_cur_frametime + old_frametime));
-                        DrawStep();
                         drawTimer.Restart();
+                        DrawStep();
                     }
                     if (!Properties.EnableFramelimiter) flip = !flip;
                 }
