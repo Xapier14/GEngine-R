@@ -37,17 +37,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<ProjectReference Include="SDL2-CS\SDL2-CS.Core.csproj" />
+	<ProjectReference Include="VelcroPhysics\src\VelcroPhysics\VelcroPhysics.csproj" />
     <Compile Remove="SDL2-CS\**" />
     <Compile Remove="VelcroPhysics\**" />
     <EmbeddedResource Remove="SDL2-CS\**" />
     <EmbeddedResource Remove="VelcroPhysics\**" />
     <None Remove="SDL2-CS\**" />
     <None Remove="VelcroPhysics\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="SDL2-CS\SDL2-CS.Core.csproj" />
-    <ProjectReference Include="VelcroPhysics\src\VelcroPhysics\VelcroPhysics.csproj" />
   </ItemGroup>
 
 </Project>
