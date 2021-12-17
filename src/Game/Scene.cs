@@ -228,7 +228,7 @@ namespace GEngine.Game
 
             foreach (Instance instance in Instances)
             {
-                if (instance.ReferenceType.Name == objectName)
+                if (instance.BaseReference.ObjectName == objectName)
                 {
                     ret++;
                 }
