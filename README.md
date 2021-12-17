@@ -16,6 +16,7 @@ For games with no sprite loading, OpenGL *may or may not* work.
     ```
     git clone --recurse-submodules https://github.com/Xapier14/GEngine-R.git
     ```
+1. Run the script `build.bat` to build the project.
 1. Create a new **.NET 5+** console project.
 1. Add the GEngine-R project to your solution file.
 1. Create a project reference with your game project to the GEngine-R project.
