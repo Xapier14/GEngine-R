@@ -19,7 +19,7 @@ namespace GEngine.Engine
 {
     public class PhysicsAttributes
     {
-        public BodyType BodyType { get; set; }
+        public Game.BodyType BodyType { get; set; }
         public Size PhysicsBodySize { get; set; }
         public float Density { get; set; }
         public float Radius { get; set; }
@@ -30,8 +30,8 @@ namespace GEngine.Engine
         public PhysicsAttributes()
         {
             PhysicsBodyType = PhysicsBodyType.Box;
-            BodyType = BodyType.Static;
-            PhysicsBodySize = new Size();
+            BodyType = Game.BodyType.Static;
+            PhysicsBodySize = new Size(1,1);
             Density = 0f;
             Radius = 0f;
             LinearDampening = 0f;
@@ -49,7 +49,7 @@ namespace GEngine.Engine
             Friction = copy.Friction;
         }
 
-        public PhysicsAttributes(BodyType bodyType, int width, int height, float density)
+        public PhysicsAttributes(Game.BodyType bodyType, int width, int height, float density)
         {
             PhysicsBodyType = PhysicsBodyType.Box;
             BodyType = bodyType;
@@ -58,7 +58,7 @@ namespace GEngine.Engine
             LinearDampening = 0f;
             Friction = 0f;
         }
-        public PhysicsAttributes(BodyType bodyType, float radius, float density)
+        public PhysicsAttributes(Game.BodyType bodyType, float radius, float density)
         {
             PhysicsBodyType = PhysicsBodyType.Circle;
             BodyType = bodyType;
@@ -100,7 +100,12 @@ namespace GEngine.Engine
             if (ContainsInstance(inst))
                 throw new PhysicsException("Object already in world.", "PhysicsWorld.AddObject()");
             PhysicsBodyType phyType = inst.PhysicsAttributes.PhysicsBodyType;
-            BodyType bodyType = inst.PhysicsAttributes.BodyType;
+            Genbox.VelcroPhysics.Dynamics.BodyType bodyType = inst.PhysicsAttributes.BodyType switch
+            {
+                Game.BodyType.Kinematic => Genbox.VelcroPhysics.Dynamics.BodyType.Kinematic,
+                Game.BodyType.Dynamic => Genbox.VelcroPhysics.Dynamics.BodyType.Dynamic,
+                _ => Genbox.VelcroPhysics.Dynamics.BodyType.Static
+            };
             Size bodySize = inst.PhysicsAttributes.PhysicsBodySize;
             float bodyDensity = inst.PhysicsAttributes.Density;
             float bodyRotation = inst.PhysicsVariables.Direction;
