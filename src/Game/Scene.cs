@@ -186,6 +186,34 @@ namespace GEngine.Game
             }
         }
 
+        public void DestroyInstance(Instance instance)
+        {
+            for (int i = 0; i < Instances.Count; i++)
+                if (Instances[i] == instance)
+                {
+                    instance.BaseReference.OnDestroy(instance, this);
+                    Instances.Remove(instance);
+                }
+        }
+        public void DestroyInstance(Guid hash)
+        {
+            for (int i = 0; i < Instances.Count; i++)
+                if (Instances[i].Hash == hash)
+                {
+                    Instances[i].BaseReference.OnDestroy(Instances[i], this);
+                    Instances.Remove(Instances[i]);
+                }
+        }
+        public void DestroyInstance(string objectName)
+        {
+            for (int i = 0; i < Instances.Count; i++)
+                if (Instances[i].BaseReference.ObjectName == objectName)
+                {
+                    Instances[i].BaseReference.OnDestroy(Instances[i], this);
+                    Instances.Remove(Instances[i]);
+                }
+        }
+
         public dynamic Reference
         {
             get

@@ -216,7 +216,7 @@ namespace GEngine.Engine
         {
             get
             {
-                return this[i];
+                return _data.ElementAt(i);
             }
         }
 
@@ -224,7 +224,7 @@ namespace GEngine.Engine
         {
             get
             {
-                foreach (Instance inst in this)
+                foreach (Instance inst in _data)
                 {
                     if (inst.Hash == hash)
                         return inst;
@@ -238,7 +238,7 @@ namespace GEngine.Engine
             get
             {
                 List<Instance> instances = new List<Instance>();
-                foreach (Instance inst in this)
+                foreach (Instance inst in _data)
                 {
                     if ((inst.Reference as GameObject).ObjectName == objectName)
                         instances.Add(inst);
@@ -252,7 +252,7 @@ namespace GEngine.Engine
             get
             {
                 List<Instance> instances = new List<Instance>();
-                foreach (Instance inst in this)
+                foreach (Instance inst in _data)
                 {
                     if ((inst.Reference as GameObject) == reference)
                         instances.Add(inst);
