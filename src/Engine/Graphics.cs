@@ -13,6 +13,7 @@ namespace GEngine.Engine
     public class GraphicsEngine
     {
         private static readonly FontQuality DEFAULT_FONTQUALITY = FontQuality.Quality;
+        private static readonly int DEFAULT_MAX_TEXTCACHE = 1024;
         const bool FLAG_WARNNULLTEXTURE = false;
         public bool DrawCollisionBounds = true;
         public bool UseSubpixelFont = true;
@@ -78,7 +79,7 @@ namespace GEngine.Engine
             {
                 Debug.Log("Graphics.Init()", "Error initializing TTF.");
             }
-            _textCache = new(this, _initialFontQuality.HasValue ? _initialFontQuality.Value : DEFAULT_FONTQUALITY, 200);
+            _textCache = new(this, _initialFontQuality.HasValue ? _initialFontQuality.Value : DEFAULT_FONTQUALITY, DEFAULT_MAX_TEXTCACHE);
         }
         public void SetVideoBackend(VideoBackend backend)
         {
