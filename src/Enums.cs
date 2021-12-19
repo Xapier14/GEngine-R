@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Genbox.VelcroPhysics.Dynamics;
+
 namespace GEngine
 {
 
@@ -93,5 +95,11 @@ namespace GEngine.Game
     {
         Box,
         Circle
+    }
+    public enum BodyType
+    {
+        Static,
+        Kinematic,
+        Dynamic
     }
 }
