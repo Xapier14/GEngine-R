@@ -15,8 +15,8 @@ namespace GEngine.Engine
         private static readonly FontQuality DEFAULT_FONTQUALITY = FontQuality.Quality;
         private static readonly int DEFAULT_MAX_TEXTCACHE = 1024;
         const bool FLAG_WARNNULLTEXTURE = false;
-        public bool DrawCollisionBounds = true;
-        public bool UseSubpixelFont = true;
+        public bool DrawCollisionBounds = false;
+        public bool UseSubpixelFont = false; // verryyyy slowwww
         private ColorRGBA _renderColor;
         private bool _rebuildTextures = false;
         private FontQuality? _initialFontQuality;
@@ -287,7 +287,15 @@ namespace GEngine.Engine
 
             if (UseSubpixelFont)
                 TTF_SetFontHinting(font.DataPtr[0], TTF_HINTING_LIGHT_SUBPIXEL);
-            var texture = _textCache.RetrieveTexture(font, text, color);
+            IntPtr texture;
+            try
+            {
+                texture = _textCache.RetrieveTexture(font, text, color);
+            }
+            catch (Exception ex)
+            {
+                throw new EngineException($"Could not retrieve text from cache. ({ex.Message})", "GraphicsEngine.DrawText()");
+            }
             if (UseSubpixelFont)
                 TTF_SetFontHinting(font.DataPtr[0], TTF_HINTING_NORMAL);
 

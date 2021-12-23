@@ -41,6 +41,7 @@ namespace GEngine.Engine
         }
         public RenderScaleQuality RenderScaleQuality { get; set; }
         public bool TPSAnimations { get; set; }
+        public bool EnableDebug { get; set; }
 
         public EngineProperties()
         {
@@ -55,6 +56,7 @@ namespace GEngine.Engine
             HideConsoleWindow = true;
             Title = "GEngine | Re:";
             RenderScaleQuality = RenderScaleQuality.Nearest;
+            EnableDebug = false;
         }
     }
 
@@ -133,6 +135,7 @@ namespace GEngine.Engine
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         //Window Stuff
         private bool _allowClose = true, _handleClose = false;
+        private bool _showDebug = false;
         public Size WindowSize
         {
             get
@@ -597,8 +600,34 @@ namespace GEngine.Engine
                     //Console.WriteLine(test);
                 */
 
-                _scenes.SceneStep();
-                if (Properties.TPSAnimations) _scenes.AnimationStep();
+                if (_input.IsPressed(SDL_Keycode.SDLK_F8) && Properties.EnableDebug)
+                    _showDebug = !_showDebug;
+
+                try
+                {
+                    _scenes.SceneStep();
+                    if (Properties.TPSAnimations)
+                        _scenes.AnimationStep();
+                } catch (EngineException ex)
+                {
+                    string button = ShowMessageBox("Game error caught",
+                                                  $"Logic Step:\n" +
+                                                  $"{(ex.SourceFile != "" ? $"{ex.SourceFile}\n" : "")}{ex.Message}\n" +
+                                                  $"{ex.StackTrace}\n\n" +
+                                                  $"Code: {ex.HResult}",
+                                                  "Abort", "Continue");
+                    if (button != "Continue")
+                        Environment.Exit(ex.HResult);
+                } catch (Exception ex)
+                {
+                    ShowMessageBox("Engine error caught",
+                                  $"Logic Step:\n" +
+                                  $"{ex.Message}\n" +
+                                  $"{ex.StackTrace}\n\n" +
+                                  $"Code: {ex.HResult}",
+                                  "Abort");
+                    Environment.Exit(ex.HResult);
+                }
 
                 string s = SDL_GetError();
                 if (s != "" && !_StopThread && false)
@@ -653,6 +682,37 @@ namespace GEngine.Engine
                     //Debug.Log("GameEngine.DrawStep()", $"Reason: {ex.Message}");
                     //Debug.Log("SDL_ERROR-GE_DS - " + SDL_GetError());
                 }
+
+                // show debug
+                try
+                {
+                    if (_showDebug && Properties.EnableDebug)
+                    {
+                        int spacing = Properties.InternalResolution.H / 30;
+                        if (!_resource.HasFont("font_debugOverlay"))
+                        {
+                            _resource.LoadAsFont("Arial.ttf", "font_debugOverlay", spacing);
+                        }
+                        var drawColor = _graphics.GetRendererDrawColor();
+                        var textColor = new ColorRGBA(255, 0, 255, 200); //20, 200, 60, 180);
+                        _graphics.SetRenderDrawColor(textColor);
+                        var font = _resource.GetFontResource("font_debugOverlay");
+
+                        int leftMargin = Properties.InternalResolution.W / 80;
+                        int topMargin = Properties.InternalResolution.H / 60;
+                        SDL_GetVersion(out SDL_version ver);
+
+                        _graphics.DrawText(font, $"GEngine-R", leftMargin, topMargin);
+                        _graphics.DrawText(font, $"{Properties.Title}", leftMargin, topMargin + spacing * 1);
+                        _graphics.DrawText(font, $"FPS: {Math.Round(FPS, 2)}/{Math.Round(Properties.TargetFPS, 2)} ({Math.Round(CurrentFrametime, 2)}ms)", leftMargin, topMargin + spacing * 2);
+                        _graphics.DrawText(font, $"TPS: {Math.Round(TPS, 2)}/{Math.Round(Properties.TargetTPS, 2)} ({Math.Round(CurrentLogictime, 2)}ms)", leftMargin, topMargin + spacing * 3);
+                        _graphics.DrawText(font, $"SDL Version: {ver.major}.{ver.minor}.{ver.patch}", leftMargin, topMargin + spacing * 4);
+
+                        _graphics.SetRenderDrawColor(drawColor);
+                    }
+                } catch { }
+
+
                 // Render to Screen
                 SDL_RenderPresent(_SDL_Renderer);
                 // Advance animations for current scene
