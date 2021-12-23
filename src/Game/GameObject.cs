@@ -70,7 +70,7 @@ namespace GEngine.Game
 
         public virtual void OnCreate(Instance caller, SceneInstance scene)
         {
-
+            //Debug.Log($"CREATED INSTANCE: {caller.BaseReference.ObjectName} @ {scene.BaseReference.Name}");
         }
 
         public virtual void Step(Instance caller, SceneInstance scene)

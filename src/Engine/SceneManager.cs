@@ -100,7 +100,7 @@ namespace GEngine.Engine
         }
         public void SwitchToScene(string name, bool reinstance = true)
         {
-            if (!HasScene(name)) throw new EngineException($"Scene '{name}' not found.");
+            if (!HasScene(name)) throw new EngineException($"Scene '{name}' not found.", "SceneManager.SwitchToScene()");
             if (!_ActiveScenes.ContainsKey(name))
             {
                 //create new instance
