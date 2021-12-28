@@ -610,6 +610,8 @@ namespace GEngine.Engine
                         _scenes.AnimationStep();
                 } catch (EngineException ex)
                 {
+                    Debug.Log($"[ErrorHandler] Engine error occurred!\n" +
+                              $"           [*] Reason: {ex.Message}");
                     string button = ShowMessageBox("Game error caught",
                                                   $"Logic Step:\n" +
                                                   $"{(ex.SourceFile != "" ? $"{ex.SourceFile}\n" : "")}{ex.Message}\n" +
@@ -620,6 +622,8 @@ namespace GEngine.Engine
                         Environment.Exit(ex.HResult);
                 } catch (Exception ex)
                 {
+                    Debug.Log($"[ErrorHandler] Critical engine error occurred!\n" +
+                              $"           [*] Reason: {ex.Message}");
                     ShowMessageBox("Engine error caught",
                                   $"Logic Step:\n" +
                                   $"{ex.Message}\n" +
