@@ -52,10 +52,14 @@ namespace GEngine.Engine
         }
         public void SetMusicVolume(int volume)
         {
-            Mix_VolumeMusic(volume);
+            Mix_VolumeMusic(Convert.ToInt32(volume));
+        }
+        public double GetMusicVolume()
+        {
+            return (double)Mix_VolumeMusic(-1) / (double)MIX_MAX_VOLUME;
         }
 
-        public int GetMusicVolume()
+        public int GetMusicVolumeRaw()
         {
             return Mix_VolumeMusic(-1);
         }
@@ -97,6 +101,23 @@ namespace GEngine.Engine
                 Debug.Log("AudioEngine.PlayEffectTimed()","Error playing effect, could either be caused by no free channels or a fatal error.");
             }
         }
+
+        public void SetEffectVolume(string audioResource, double volume = 1)
+        {
+            var res = _resources.GetAudioResource(audioResource);
+            if (res.AudioType != AudioType.Effect)
+                throw new EngineException($"Audio '{audioResource}' is not an effect.", "AudioEngine.PlayEffect()");
+            Mix_VolumeChunk(res.DataPtr[0], Convert.ToInt32((double)MIX_MAX_VOLUME * volume));
+        }
+
+        public double GetEffectVolume(string audioResource)
+        {
+            var res = _resources.GetAudioResource(audioResource);
+            if (res.AudioType != AudioType.Effect)
+                throw new EngineException($"Audio '{audioResource}' is not an effect.", "AudioEngine.PlayEffect()");
+            return (double)MIX_MAX_VOLUME / (double)Mix_VolumeChunk(res.DataPtr[0], -1);
+        }
+
         public void StopChannel(int audioChannel = 0)
         {
 #pragma warning disable CA1806 // Do not ignore method results
