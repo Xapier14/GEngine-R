@@ -129,7 +129,7 @@ namespace GEngine.Game
     public class SceneInstance
     {
         public Scene BaseReference { get; set; }
-        public InstanceCollection Instances { get; set; }
+        public InstanceCollection Instances { get; internal set; }
         public Type ReferenceType { get; set; }
         public Coord ViewPosition = new Coord(0,0);
         public Coord ViewOrigin = new Coord(0, 0);
