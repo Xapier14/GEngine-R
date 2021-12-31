@@ -138,6 +138,9 @@ namespace GEngine.Engine
                 Debug.Log("Graphics.CreateWindowAndRenderer()", "Error creating SDL renderer.");
                 throw new EngineException("Error creating SDL renderer.", "Graphics.CreateWindowAndRenderer()");
             }
+            if (SDL_SetRenderDrawBlendMode(re, SDL_BlendMode.SDL_BLENDMODE_BLEND) != 0)
+                Debug.Log("Graphics.CreateWindowAndRenderer()", "Could not set blend mode for renderer!");
+
             window = wi;
             renderer = re;
             Window = wi;
