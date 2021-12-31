@@ -86,6 +86,16 @@ namespace GEngine.Engine
         {
             return _Scenes.ContainsKey(name);
         }
+
+        public bool HasScene(Type sceneType)
+        {
+            foreach(Scene scene in _Scenes.Values)
+            {
+                if (scene.GetType() == sceneType)
+                    return true;
+            }
+            return false;
+        }
         public void SceneStep()
         {
             if (_CurrentScene != null && !_CurrentScene.Destroyed)
