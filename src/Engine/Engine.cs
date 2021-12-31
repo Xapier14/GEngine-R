@@ -710,12 +710,12 @@ namespace GEngine.Engine
 
                         string[] lines = { $"GEngine-R",
                                            $"{Properties.Title}",
-                        $"FPS: {Math.Round(FPS, 2)}/{Math.Round(Properties.TargetFPS, 2)} ({Math.Round(CurrentFrametime, 2)}ms){(FPS < Properties.TargetFPS ? " [!]" : string.Empty)}",
-                        $"TPS: {Math.Round(TPS, 2)}/{Math.Round(Properties.TargetTPS, 2)} ({Math.Round(CurrentLogictime, 2)}ms){(TPS < Properties.TargetTPS ? " [!]" : string.Empty)}",
-                        $"Video Backend: {(_vBackend == VideoBackend.Auto ? "Auto (Hardware Accelerated)" : BackendToString(_vBackend))}",
-                        $"SDL Version: {ver.major}.{ver.minor}.{ver.patch}",
-                        $"Current Scene: {(_scenes.CurrentScene != string.Empty ? _scenes.CurrentScene : "none")}",
-                        $"View Position: {(_scenes.HasInstance(_scenes.CurrentScene) ? _scenes.GetInstance(_scenes.CurrentScene).ViewPosition : "none")}"
+                                           $"FPS: {Math.Round(FPS, 2)}/{Math.Round(Properties.TargetFPS, 2)} ({Math.Round(CurrentFrametime, 2)}ms){(FPS < Properties.TargetFPS ? " [!]" : string.Empty)}",
+                                           $"TPS: {Math.Round(TPS, 2)}/{Math.Round(Properties.TargetTPS, 2)} ({Math.Round(CurrentLogictime, 2)}ms){(TPS < Properties.TargetTPS ? " [!]" : string.Empty)}",
+                                           $"Video Backend: {(_vBackend == VideoBackend.Auto ? "Auto (Hardware Accelerated)" : BackendToString(_vBackend))}",
+                                           $"SDL Version: {ver.major}.{ver.minor}.{ver.patch}",
+                                           $"Current Scene: {(_scenes.CurrentScene != string.Empty ? _scenes.CurrentScene : "none")}",
+                                           $"View Position: {(_scenes.HasInstance(_scenes.CurrentScene) ? _scenes.GetInstance(_scenes.CurrentScene).ViewPosition : "none")}"
                         };
                         int maxWidth = 0;
                         int textHeight = _graphics.MeasureText(font, "|").H;
