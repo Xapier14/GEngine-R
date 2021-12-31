@@ -117,6 +117,11 @@ namespace GEngine
         public static Coord operator -(Coord a, int b) => new(a.X - b, a.Y - b);
         public static Coord operator *(Coord a, int b) => new(a.X * b, a.Y * b);
         public static Coord operator /(Coord a, int b) => new(a.X / b, a.Y / b);
+
+        public override string ToString()
+        {
+            return $"{X}, {Y}";
+        }
     }
     public struct Size
     {
