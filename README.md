@@ -68,14 +68,17 @@ For games with no sprite loading, OpenGL *may or may not* work.
 - [x] Object Texture Offsets
 - [x] TCP Server/Client (Untested)
 - [ ] CLI Dev Kit
+- [ ] Visual Studio Item Templates (GameObject & Scene)
+- [ ] Visual Studio Project Template
 
 ## Known Issues
 - OpenGL & Textures with transparency.
 - Memory leak on Scene reinstancing.
-- Inaccurate FPS & TPS Counter.
+- ~~Inaccurate FPS & TPS Counter.~~
 - Missing checks on adding GameObjects to scenes.
 - Initial RenderClearColor not being set on OpenGL backend.
 - Only WAV files are supported for audio.
+- Missing dependency check on launch
 
 ## Dependencies
 * SDL2
