@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Reflection;
 using GEngine.Game;
+using GEngine.Engine;
 
 namespace GEngine
 {
@@ -38,18 +39,60 @@ namespace GEngine
         }
         public static void LoadAllScenes()
         {
+            Debug.Log($"[AssetLoader] Loading scene objects...");
             var scenes = AppDomain.CurrentDomain.GetAssemblies()
                                                 .SelectMany(assemby => assemby.GetTypes())
                                                 .Where(type => type.IsSubclassOf(typeof(Scene)));
             int loaded = 0, ignored = 0, failed = 0;
             foreach (var scene in scenes)
             {
+                var attributes = scene.GetCustomAttributes().Where(x => { return x.GetType() == typeof(LoaderAttribute); });
+                //Debug.Log("LoaderDebug", $"{scene.Name} has {attributes.Count()} loader attributes.");
+                LoaderAttribute attrib = (LoaderAttribute)attributes.FirstOrDefault();
+                ClassConstructorType constructorType = ClassConstructorType.Automatic;
+                LoaderType loader = LoaderType.Automatic;
+
+                if (attrib != null)
+                {
+                    constructorType = attrib.ConstructorType;
+                    loader = attrib.GetLoaderType();
+                }
+
+                if (loader == LoaderType.Ignore || GEngine.Scenes.HasScene(scene))
+                {
+                    ignored++;
+                    continue;
+                }
+
                 try
                 {
-                    var defConstructor = scene.GetConstructor(new Type[] { });
-                    var sizeConstructor = scene.GetConstructor(new Type[] { typeof(int), typeof(int) });
-                    var size2Constructor = scene.GetConstructor(new Type[] { typeof(Size) });
-                    var size3Constructor = scene.GetConstructor(new Type[] { typeof(Size), typeof(Size) });
+                    ConstructorInfo? defConstructor = null;
+                    ConstructorInfo? sizeConstructor = null;
+                    ConstructorInfo? size2Constructor = null;
+                    ConstructorInfo? size3Constructor = null;
+
+                    switch (constructorType)
+                    {
+                        case ClassConstructorType.Automatic:
+                            defConstructor = scene.GetConstructor(new Type[] { });
+                            sizeConstructor = scene.GetConstructor(new Type[] { typeof(int), typeof(int) });
+                            size2Constructor = scene.GetConstructor(new Type[] { typeof(Size) });
+                            size3Constructor = scene.GetConstructor(new Type[] { typeof(Size), typeof(Size) });
+                            break;
+                        case ClassConstructorType.Default:
+                            defConstructor = scene.GetConstructor(new Type[] { });
+                            break;
+                        case ClassConstructorType.Type1:
+                            sizeConstructor = scene.GetConstructor(new Type[] { typeof(int), typeof(int) });
+                            break;
+                        case ClassConstructorType.Type2:
+                            size2Constructor = scene.GetConstructor(new Type[] { typeof(Size) });
+                            break;
+                        case ClassConstructorType.Type3:
+                            size3Constructor = scene.GetConstructor(new Type[] { typeof(Size), typeof(Size) });
+                            break;
+                    }
+
                     Scene sceneObject;
 
                     if (defConstructor != null) // ctr()

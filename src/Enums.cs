@@ -83,6 +83,21 @@ namespace GEngine.Engine
         Middle,
         Bottom
     }
+
+    public enum LoaderType
+    { 
+        Ignore,
+        Automatic
+    }
+
+    public enum ClassConstructorType
+    { 
+        Automatic,
+        Default,
+        Type1,
+        Type2,
+        Type3
+    }
 }
 namespace GEngine.Game
 {
