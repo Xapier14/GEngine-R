@@ -272,6 +272,7 @@ namespace GEngine.Engine
             _graphics = new GraphicsEngine(backend);
             _input = new InputManager();
             _scenes = new SceneManager();
+
             _vBackend = backend;
 
             _input.WindowEvent += InputHandler_WindowEvent;
@@ -699,19 +700,37 @@ namespace GEngine.Engine
                         }
                         var drawColor = _graphics.GetRendererDrawColor();
                         var textColor = new ColorRGBA(255, 0, 255, 200); //20, 200, 60, 180);
-                        _graphics.SetRenderDrawColor(textColor);
+                        var backColor = new ColorRGBA(50, 50, 50, 80); //20, 200, 60, 180);
+                        int boxPadding = spacing/2;
                         var font = _resource.GetFontResource("font_debugOverlay");
 
-                        int leftMargin = Properties.InternalResolution.W / 80;
-                        int topMargin = Properties.InternalResolution.H / 60;
+                        int leftMargin = Properties.InternalResolution.W / 50;
+                        int topMargin = Properties.InternalResolution.H / 40;
                         SDL_GetVersion(out SDL_version ver);
 
-                        _graphics.DrawText(font, $"GEngine-R", leftMargin, topMargin);
-                        _graphics.DrawText(font, $"{Properties.Title}", leftMargin, topMargin + spacing * 1);
-                        _graphics.DrawText(font, $"FPS: {Math.Round(FPS, 2)}/{Math.Round(Properties.TargetFPS, 2)} ({Math.Round(CurrentFrametime, 2)}ms)", leftMargin, topMargin + spacing * 2);
-                        _graphics.DrawText(font, $"TPS: {Math.Round(TPS, 2)}/{Math.Round(Properties.TargetTPS, 2)} ({Math.Round(CurrentLogictime, 2)}ms)", leftMargin, topMargin + spacing * 3);
-                        _graphics.DrawText(font, $"SDL Version: {ver.major}.{ver.minor}.{ver.patch}", leftMargin, topMargin + spacing * 4);
+                        string[] lines = { $"GEngine-R",
+                                           $"{Properties.Title}",
+                        $"FPS: {Math.Round(FPS, 2)}/{Math.Round(Properties.TargetFPS, 2)} ({Math.Round(CurrentFrametime, 2)}ms){(FPS < Properties.TargetFPS ? " [!]" : string.Empty)}",
+                        $"TPS: {Math.Round(TPS, 2)}/{Math.Round(Properties.TargetTPS, 2)} ({Math.Round(CurrentLogictime, 2)}ms){(TPS < Properties.TargetTPS ? " [!]" : string.Empty)}",
+                        $"Video Backend: {(_vBackend == VideoBackend.Auto ? "Auto (Hardware Accelerated)" : BackendToString(_vBackend))}",
+                        $"SDL Version: {ver.major}.{ver.minor}.{ver.patch}",
+                        $"Current Scene: {(_scenes.CurrentScene != string.Empty ? _scenes.CurrentScene : "none")}",
+                        $"View Position: {(_scenes.HasInstance(_scenes.CurrentScene) ? _scenes.GetInstance(_scenes.CurrentScene).ViewPosition : "none")}"
+                        };
+                        int maxWidth = 0;
+                        int textHeight = _graphics.MeasureText(font, "|").H;
+                        for (int i = 0; i < lines.Length; ++i)
+                        {
+                            var textSize = _graphics.MeasureText(font, lines[i]);
+                            if (maxWidth < textSize.W)
+                                maxWidth = textSize.W;
+                        }
+                        _graphics.SetRenderDrawColor(backColor);
+                        _graphics.DrawRectangleFilled(leftMargin - boxPadding, topMargin - boxPadding, leftMargin + maxWidth + boxPadding, topMargin + (textHeight * (lines.Length - 1)) + boxPadding);
 
+                        _graphics.SetRenderDrawColor(textColor);
+                        for (int i = 0; i < lines.Length; ++i)
+                            _graphics.DrawText(font, lines[i], leftMargin, topMargin + spacing * i);
                         _graphics.SetRenderDrawColor(drawColor);
                     }
                 } catch { }
