@@ -39,9 +39,29 @@ For games with no sprite loading, OpenGL *may or may not* work.
                 _game = new();
                 
                 // change engine properties here
+                _game.Properties.Title = "GAME_TITLE";
+                _game.Properties.EnableFramelimiter = true;
+                _game.Properties.TargetFPS = 60;
+                _game.Properties.TargetTPS = 128;
+                _game.Properties.WindowResolution = new(800, 600);
+                // _game.Properties.InternalResolution = new(400, 300);
+                _game.Properties.HideConsoleWindow = false;
+                _game.Properties.EnableDebug = true;
+                _game.Properties.RenderScaleQuality = RenderScaleQuality.Linear;
+
+                // handle window close
+                _game.AllowClose = true;
+                _game.HandleClose = false;
+                _game.OnWindowClose += (eventArgs) =>
+                {
+                    Environment.Exit(0);
+                };
+
+                // start game
+                _game.Start();
 
                 // load resources
-                _game.ResourceLoaded = true
+                _game.ResourceLoaded = true;
                 
                 // keep alive
                 while (_game.Running)
