@@ -257,6 +257,7 @@ namespace GEngine.Engine
         public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto, float baseUnit = 8f)
         {
             SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "1");
+            SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
             ConvertUnits.SetDisplayUnitToSimUnitRatio(baseUnit);
             ResourcesLoaded = false;
             Properties = new EngineProperties();
