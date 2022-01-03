@@ -229,6 +229,7 @@ namespace GEngine.Engine
                     try
                     {
                         texture = SDL_CreateTextureFromSurface(_SDL_Renderer, surface);
+                        SDL_RenderPresent(_SDL_Renderer);
                     } catch (Exception e)
                     {
                         Debug.Log("ResourceManager.LoadAsTexture()", $"Error creating texture data {file}#{resourceName}. {e.Message}");
