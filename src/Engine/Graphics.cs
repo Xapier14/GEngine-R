@@ -52,6 +52,7 @@ namespace GEngine.Engine
         public IntPtr Window { get; set; }
         public IntPtr Renderer { get; set; }
         private bool _init = false;
+        private bool _resizable = false;
         private TextCache _textCache;
 
         private VideoBackend _backend;
@@ -80,6 +81,12 @@ namespace GEngine.Engine
                 Debug.Log("Graphics.Init()", "Error initializing TTF.");
             }
             _textCache = new(this, _initialFontQuality.HasValue ? _initialFontQuality.Value : DEFAULT_FONTQUALITY, DEFAULT_MAX_TEXTCACHE);
+        }
+        internal void SetResize(bool resizable)
+        {
+            if (Window != IntPtr.Zero)
+                return;
+            _resizable = resizable;
         }
         public void SetVideoBackend(VideoBackend backend)
         {
@@ -122,6 +129,8 @@ namespace GEngine.Engine
                 throw new EngineException("Error creating SDL window & renderer.", "Graphics.CreateWindowAndRenderer()");
             }
             */
+            if (_resizable)
+                flag |= (int)SDL_WindowFlags.SDL_WINDOW_RESIZABLE;
             SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "0");
             wi = SDL_CreateWindow(windowTitle, x, y, w, h, (SDL_WindowFlags)flag);
             re = SDL_CreateRenderer(wi, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
@@ -220,17 +229,10 @@ namespace GEngine.Engine
         }
         public void DrawScene(SceneInstance scene)
         {
-            var instances = scene.Instances.ToList();
             //instances.SortByDepth();
 
             //draw sprites
-            foreach(Instance inst in instances)
-            {
-                inst.BaseReference.OnDraw(inst, scene, this);
-                // moved this line into GameObject.cs
-                //DrawSprite(inst.Sprite, inst.Position, inst.ImageAngle, inst.ScaleX, inst.ScaleY, inst.ImageIndex, inst.Offset.X, inst.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y, inst.FlipX, inst.FlipY);
-                if (scene.UsesPhysics && DrawCollisionBounds) DrawCollision(inst, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y);
-            }
+            scene.BaseReference.OnDraw(scene, this);
         }
         public void DrawRectangle(int x1, int y1, int x2, int y2)
         {
@@ -341,6 +343,19 @@ namespace GEngine.Engine
                 Debug.Log("GraphicsEngine.DrawText()", $"Error drawing text texture.\n{SDL_GetError()}");
             }
             //SDL_DestroyTexture(texture);
+        }
+
+        public void SetInternalResolution(int w, int h, bool letterbox = true)
+        {
+            SDL_SetHint(SDL_HINT_RENDER_LOGICAL_SIZE_MODE, letterbox ? "0" : "1");
+            if (w < 0 || h < 0)
+                return;
+            SDL_RenderSetLogicalSize(Renderer, w, h);
+        }
+        public Size GetInternalResolution()
+        {
+            SDL_RenderGetLogicalSize(Renderer, out int w, out int h);
+            return new(w, h);
         }
         public void DrawCollision(Instance inst, int sceneX, int sceneY)
         {

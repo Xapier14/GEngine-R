@@ -41,6 +41,7 @@ namespace GEngine.Engine
     public enum GameEngineEventType
     {
         WindowClose,
+        WindowResize,
         Information
     }
     public enum RenderScaleQuality
@@ -62,7 +63,8 @@ namespace GEngine.Engine
         FocusGained,
         FocusLost,
         WindowExposed,
-        WindowShown
+        WindowShown,
+        WindowSizeChanged
     }
     public enum MouseRelation
     {

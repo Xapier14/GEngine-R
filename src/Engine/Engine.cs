@@ -24,6 +24,7 @@ namespace GEngine.Engine
         public double FPSOffset { get; set; }
         public bool EnableFramelimiter { get; set; }
         public bool HideConsoleWindow { get; set; }
+        public bool AllowResize { get; set; }
         public string Title { get; set; }
         public double TargetFrametime
         {
@@ -57,6 +58,7 @@ namespace GEngine.Engine
             Title = "GEngine | Re:";
             RenderScaleQuality = RenderScaleQuality.Nearest;
             EnableDebug = false;
+            AllowResize = false;
         }
     }
 
@@ -64,6 +66,7 @@ namespace GEngine.Engine
     {
         public GameEngineEventType EventType { get; set; }
         public string Message { get; set; }
+        public object Data { get; set; }
     }
 
     //[SuppressUnmanagedCodeSecurity]
@@ -132,9 +135,9 @@ namespace GEngine.Engine
         private bool _initLogic = false, _initGraphics = false;
         //private byte test = 0;
         //private bool rev = false;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+
         //Window Stuff
-        private bool _allowClose = true, _handleClose = false;
+        private bool _allowClose = true, _handleClose = false, _handleResize = false;
         private bool _showDebug = false;
         public Size WindowSize
         {
@@ -164,6 +167,18 @@ namespace GEngine.Engine
             set
             {
                 _handleClose = value;
+            }
+        }
+
+        public bool HandleResize
+        {
+            get
+            {
+                return _handleResize;
+            }
+            set
+            {
+                _handleResize = value;
             }
         }
 
@@ -246,6 +261,7 @@ namespace GEngine.Engine
         //Events
         public delegate void GameEngineEventHandler(GameEngineEventArgs eventArgs);
         public event GameEngineEventHandler OnWindowClose;
+        public event GameEngineEventHandler OnWindowResize;
         public event GameEngineEventHandler OnInfoMsg;
 
         [DllImport("kernel32.dll")]
@@ -434,6 +450,21 @@ namespace GEngine.Engine
                         //_resource.RebuildTextures();
                     }
                     break;
+                case InputCallbackType.WindowSizeChanged:
+                    if (_handleResize)
+                    {
+                        Size newSize = (Size)eventArg.Data;
+                        _graphics.SetInternalResolution(newSize.W, newSize.H);
+                    }
+                    else
+                    {
+                        OnWindowResize?.Invoke(new GameEngineEventArgs()
+                        {
+                            EventType = GameEngineEventType.WindowResize,
+                            Data = eventArg.Data
+                        });
+                    }
+                    break;
             }
         }
 
@@ -563,6 +594,7 @@ namespace GEngine.Engine
             if (!_initGraphics)
             {
                 _graphics.Init();
+                _graphics.SetResize(Properties.AllowResize);
                 _graphics.CreateWindowAndRenderer(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Properties.WindowResolution.W, Properties.WindowResolution.H, out _SDL_Window, out _SDL_Renderer);
                 //_graphics.CreateWindow(Properties.Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
                 //_graphics.CreateRenderer();
@@ -694,7 +726,9 @@ namespace GEngine.Engine
                 {
                     if (_showDebug && Properties.EnableDebug)
                     {
-                        int spacing = Properties.InternalResolution.H / 30;
+                        Size internalRes = Properties.InternalResolution;//_graphics.GetInternalResolution();
+
+                        int spacing = internalRes.H / 30;
                         if (!_resource.HasFont("font_debugOverlay"))
                         {
                             _resource.LoadAsFont("Arial.ttf", "font_debugOverlay", spacing);
@@ -705,8 +739,8 @@ namespace GEngine.Engine
                         int boxPadding = spacing/2;
                         var font = _resource.GetFontResource("font_debugOverlay");
 
-                        int leftMargin = Properties.InternalResolution.W / 50;
-                        int topMargin = Properties.InternalResolution.H / 40;
+                        int leftMargin = internalRes.W / 50;
+                        int topMargin = internalRes.H / 40;
                         SDL_GetVersion(out SDL_version ver);
 
                         string[] lines = { $"GEngine-R",

@@ -125,6 +125,17 @@ namespace GEngine.Game
             }
             caller.Instances.Clear();
         }
+
+        public virtual void OnDraw(SceneInstance caller, GraphicsEngine graphics)
+        {
+            var instances = caller.Instances.ToList();
+            foreach (Instance inst in instances)
+            {
+                inst.BaseReference.OnDraw(inst, caller, graphics);
+                if (caller.UsesPhysics && graphics.DrawCollisionBounds)
+                    graphics.DrawCollision(inst, caller.ViewPosition.X - caller.ViewOrigin.X, caller.ViewPosition.Y - caller.ViewOrigin.Y);
+            }
+        }
     }
     public class SceneInstance
     {

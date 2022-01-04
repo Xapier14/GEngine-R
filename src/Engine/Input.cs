@@ -10,6 +10,7 @@ namespace GEngine.Engine
     public class InputCallbackEventArg : EventArgs
     {
         public InputCallbackType CallbackType { get; set; }
+        public object Data { get; set; }
     }
     public class InputManager
     {
@@ -268,6 +269,13 @@ namespace GEngine.Engine
                                 WindowEvent?.Invoke(new InputCallbackEventArg()
                                 {
                                     CallbackType = InputCallbackType.WindowShown
+                                });
+                                break;
+                            case SDL_WindowEventID.SDL_WINDOWEVENT_SIZE_CHANGED:
+                                WindowEvent?.Invoke(new InputCallbackEventArg()
+                                {
+                                    CallbackType = InputCallbackType.WindowSizeChanged,
+                                    Data = new Size(e.window.data1, e.window.data2)
                                 });
                                 break;
                         }

@@ -62,7 +62,7 @@ namespace GEngine
 
         // colors
         public static readonly ColorRGBA WHITE = new(255, 255, 255);
-        public static readonly ColorRGBA BLACK = new(255, 255, 255);
+        public static readonly ColorRGBA BLACK = new(0, 0, 0);
         public static readonly ColorRGBA RED = new(255, 0, 0);
         public static readonly ColorRGBA GREEN = new(0, 255, 0);
         public static readonly ColorRGBA BLUE = new(0, 0, 255);
@@ -132,6 +132,11 @@ namespace GEngine
         {
             W = w;
             H = h;
+        }
+
+        public override string ToString()
+        {
+            return $"{W}x{H}";
         }
     }
 
