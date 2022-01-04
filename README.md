@@ -48,20 +48,17 @@ For games with no sprite loading, OpenGL *may or may not* work.
                 _game.Properties.HideConsoleWindow = false;
                 _game.Properties.EnableDebug = true;
                 _game.Properties.RenderScaleQuality = RenderScaleQuality.Linear;
+                _game.Properties.AllowResize = false;
 
                 // handle window close
                 _game.AllowClose = true;
-                _game.HandleClose = false;
-                _game.OnWindowClose += (eventArgs) =>
-                {
-                    Environment.Exit(0);
-                };
+                _game.HandleClose = true;
 
                 // start game
                 _game.Start();
 
                 // load resources
-                _game.ResourceLoaded = true;
+                _game.ResourcesLoaded = true;
                 
                 // keep alive
                 while (_game.Running)
@@ -90,6 +87,7 @@ For games with no sprite loading, OpenGL *may or may not* work.
 - [ ] CLI Dev Kit
 - [ ] Visual Studio Item Templates (GameObject & Scene)
 - [ ] Visual Studio Project Template
+- [ ] Dynamic FPS & TPS Offset adjustment
 
 ## Known Issues
 - OpenGL & Textures with transparency.
