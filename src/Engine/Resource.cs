@@ -215,7 +215,7 @@ namespace GEngine.Engine
                     //IntPtr rwops = SDL_RWFromMem(ptrArray, buffer.Length);
                     IntPtr surface = IMG_Load(fn);
                     //IntPtr surface = IMG_Load_RW(rwops, 0);
-                    SDL_Surface sd = *(SDL_Surface*)surface;
+                    //SDL_Surface sd = *(SDL_Surface*)surface;
                     File.Delete(fn);
                     string sE1 = SDL_GetError();
                     if (surface == IntPtr.Zero)// || rwops == IntPtr.Zero)
