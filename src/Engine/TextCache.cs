@@ -25,6 +25,9 @@ namespace GEngine.Engine
             }
         }
 
+        public int Cached => _cache.Count;
+        public int MaxCached => _maxCached;
+
         public TextCache(GraphicsEngine graphics, FontQuality defaultQuality, int maxCached = 100)
         {
             _maxCached = maxCached;
