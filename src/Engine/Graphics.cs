@@ -55,6 +55,8 @@ namespace GEngine.Engine
         private bool _resizable = false;
         private TextCache _textCache;
 
+        public TextCache TextCache => _textCache;
+
         private VideoBackend _backend;
 
         public GraphicsEngine(VideoBackend backend)
@@ -448,7 +450,7 @@ namespace GEngine.Engine
         {
             if (texture == null)
             {
-                if (FLAG_WARNNULLTEXTURE) Debug.Log("GraphicsEngine.DrawSprite", "Sprite is missing, cannot draw instance.");
+                Debug.Log("GraphicsEngine.DrawSprite", "Sprite is missing, cannot draw instance.");
                 return;
             }
             SDL_Rect dst = new SDL_Rect();

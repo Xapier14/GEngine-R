@@ -66,6 +66,7 @@ namespace GEngine
         public static readonly ColorRGBA RED = new(255, 0, 0);
         public static readonly ColorRGBA GREEN = new(0, 255, 0);
         public static readonly ColorRGBA BLUE = new(0, 0, 255);
+        public static readonly ColorRGBA TRANSPARENT = new(0, 0, 0, 0);
 
         public byte Red { get; set; }
         public byte Green { get; set; }
@@ -122,9 +123,17 @@ namespace GEngine
         {
             return $"{X}, {Y}";
         }
+
+        public void GetFrom(Coord coord)
+        {
+            X = coord.X;
+            Y = coord.Y;
+        }
     }
     public struct Size
     {
+        public static Size Empty = new(0, 0);
+
         public int W { get; set; }
         public int H { get; set; }
 
