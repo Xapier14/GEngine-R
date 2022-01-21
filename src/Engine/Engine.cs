@@ -90,6 +90,7 @@ namespace GEngine.Engine
         private InputManager _input;
         private SceneManager _scenes;
         private ResourceManager _resource;
+        private AutoOffset _offsets;
 
         public AudioEngine AudioEngine
         {
@@ -587,6 +588,7 @@ namespace GEngine.Engine
                 _audio.Init();
                 _input.Init();
                 _initLogic = true;
+                _offsets = new(this);
             }
         }
         private void InitGraphics()
@@ -674,6 +676,7 @@ namespace GEngine.Engine
                     ForceStop();
                     throw new EngineException("Unexpected SDL Error occured, engine halted.", "GameEngine.LogicStep()");
                 }
+                _offsets.AdjustOffsets();
             }
             double end = GetPreciseMs();
             if (start - end > Properties.TargetLogictime)
