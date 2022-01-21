@@ -110,8 +110,8 @@ namespace GEngine.Game
 
         public virtual void OnDraw(Instance caller, SceneInstance scene, GraphicsEngine graphics)
         {
-
-            graphics.DrawSprite(caller.Sprite, caller.Position, caller.ImageAngle, caller.ScaleX, caller.ScaleY, caller.ImageIndex, caller.Offset.X, caller.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y, caller.FlipX, caller.FlipY);
+            if (caller.Sprite != null)
+                graphics.DrawSprite(caller.Sprite, caller.Position, caller.ImageAngle, caller.ScaleX, caller.ScaleY, caller.ImageIndex, caller.Offset.X, caller.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y, caller.FlipX, caller.FlipY);
         }
         public Type Type { get; set; }
     }

@@ -11,16 +11,15 @@ namespace GEngine.Engine
         private GameEngine _engine;
         private double _baseTPS, _baseFPS; // base offsets
         private double _deadzone;
+        private double _tpsHalfRange = 0.5;
+        private double _fpsHalfRange = 0.8;
 
         // adjustment range
         private double[] _range =
         {
-            0.10,
-            0.20,
-            0.30,
-            0.50,
-            1.00,
-            1.50
+            0.01,
+            0.03,
+            0.05
         };
 
         private int _curAdjustFps, _curAdjustTps;
@@ -40,6 +39,9 @@ namespace GEngine.Engine
             double tps = _engine.CurrentLogictime;
             double fps = _engine.CurrentFrametime;
 
+            double curTpsOffset = _engine.Properties.TPSOffset;
+            double curFpsOffset = _engine.Properties.FPSOffset;
+
             double targetTps = 1000.0 / _engine.Properties.TargetTPS;
             double targetFps = 1000.0 / _engine.Properties.TargetFPS;
 
@@ -49,7 +51,7 @@ namespace GEngine.Engine
             if (Math.Abs(tpsDeviation) > _deadzone)
             {
                 // adjust tps
-                if (tpsDeviation > 0)
+                if (tpsDeviation > 0 && curTpsOffset > _baseTPS - _tpsHalfRange)
                 {
                     // reset if adjustment was negative
                     if (_curAdjustTps < 0)
@@ -61,7 +63,7 @@ namespace GEngine.Engine
                         _curAdjustTps++;
                     }
                 }
-                else if (tpsDeviation < 0)
+                else if (tpsDeviation < 0 && curTpsOffset < _baseTPS + _tpsHalfRange)
                 {
                     // reset if adjustment was positive
                     if (_curAdjustTps > 0)
@@ -72,10 +74,13 @@ namespace GEngine.Engine
                     {
                         _curAdjustTps--;
                     }
+                } else
+                {
+                    _curAdjustTps = 0;
                 }
 
                 // apply adjustments
-                _engine.Properties.TPSOffset += _curAdjustTps == 0 ? 0 :
+                _engine.Properties.TPSOffset -= _curAdjustTps == 0 ? 0 :
                     _curAdjustTps > 0 ? _range[Math.Abs(_curAdjustTps) - 1] :
                     -_range[Math.Abs(_curAdjustTps) - 1];
             }
@@ -83,7 +88,7 @@ namespace GEngine.Engine
             if (Math.Abs(fpsDeviation) > _deadzone)
             {
                 // adjust fps
-                if (fpsDeviation > 0)
+                if (fpsDeviation > 0 && curFpsOffset > _baseFPS - _fpsHalfRange)
                 {
                     // reset if adjustment was negative
                     if (_curAdjustFps < 0)
@@ -95,7 +100,7 @@ namespace GEngine.Engine
                         _curAdjustFps++;
                     }
                 }
-                else if (fpsDeviation < 0)
+                else if (fpsDeviation < 0 && curFpsOffset < _baseFPS + _fpsHalfRange)
                 {
                     // reset if adjustment was positive
                     if (_curAdjustFps > 0)
@@ -107,9 +112,14 @@ namespace GEngine.Engine
                         _curAdjustFps--;
                     }
                 }
+                else
+                {
+                    _curAdjustFps = 0;
+                }
+
 
                 // apply adjustments
-                _engine.Properties.FPSOffset += _curAdjustFps == 0 ? 0 :
+                _engine.Properties.FPSOffset -= _curAdjustFps == 0 ? 0 :
                     _curAdjustFps > 0 ? _range[Math.Abs(_curAdjustFps) - 1] :
                     -_range[Math.Abs(_curAdjustFps) - 1];
             }
