@@ -24,7 +24,7 @@ namespace GEngine.Engine
 
         private int _curAdjustFps, _curAdjustTps;
 
-        public AutoOffset(GameEngine gameEngine, double deadzone = 0.1)
+        public AutoOffset(GameEngine gameEngine, double deadzone = 0.01)
         {
             _engine = gameEngine;
             _baseTPS = gameEngine.Properties.TPSOffset;
@@ -74,9 +74,6 @@ namespace GEngine.Engine
                     {
                         _curAdjustTps--;
                     }
-                } else
-                {
-                    _curAdjustTps = 0;
                 }
 
                 // apply adjustments
@@ -111,10 +108,6 @@ namespace GEngine.Engine
                     {
                         _curAdjustFps--;
                     }
-                }
-                else
-                {
-                    _curAdjustFps = 0;
                 }
 
 

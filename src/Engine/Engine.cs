@@ -43,6 +43,7 @@ namespace GEngine.Engine
         public RenderScaleQuality RenderScaleQuality { get; set; }
         public bool TPSAnimations { get; set; }
         public bool EnableDebug { get; set; }
+        public bool AutoOffset { get; set; }
 
         public EngineProperties()
         {
@@ -59,6 +60,7 @@ namespace GEngine.Engine
             RenderScaleQuality = RenderScaleQuality.Nearest;
             EnableDebug = false;
             AllowResize = false;
+            AutoOffset = true;
         }
     }
 
@@ -676,7 +678,8 @@ namespace GEngine.Engine
                     ForceStop();
                     throw new EngineException("Unexpected SDL Error occured, engine halted.", "GameEngine.LogicStep()");
                 }
-                _offsets.AdjustOffsets();
+                if (Properties.AutoOffset)
+                    _offsets.AdjustOffsets();
             }
             double end = GetPreciseMs();
             if (start - end > Properties.TargetLogictime)
