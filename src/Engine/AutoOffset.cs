@@ -14,12 +14,18 @@ namespace GEngine.Engine
         private double _tpsHalfRange = 0.5;
         private double _fpsHalfRange = 0.8;
 
+        public int FpsLevel { get => _curAdjustFps; }
+        public int TpsLevel { get => _curAdjustTps; }
+
         // adjustment range
         private double[] _range =
         {
-            0.01,
-            0.03,
-            0.05
+            0.010,
+            0.015,
+            0.020,
+            0.025,
+            0.030,
+            0.050
         };
 
         private int _curAdjustFps, _curAdjustTps;
@@ -74,6 +80,9 @@ namespace GEngine.Engine
                     {
                         _curAdjustTps--;
                     }
+                } else
+                {
+                    _curAdjustTps = 0;
                 }
 
                 // apply adjustments
@@ -109,6 +118,10 @@ namespace GEngine.Engine
                         _curAdjustFps--;
                     }
                 }
+                else
+                {
+                    _curAdjustFps = 0;
+                } 
 
 
                 // apply adjustments
