@@ -753,12 +753,13 @@ namespace GEngine.Engine
                                            $"{Properties.Title}",
                                            $"FPS: {Math.Round(FPS, 2)}/{Math.Round(Properties.TargetFPS, 2)} ({Math.Round(CurrentFrametime, 2)}ms){(FPS < Properties.TargetFPS ? " [!]" : string.Empty)}",
                                            $"TPS: {Math.Round(TPS, 2)}/{Math.Round(Properties.TargetTPS, 2)} ({Math.Round(CurrentLogictime, 2)}ms){(TPS < Properties.TargetTPS ? " [!]" : string.Empty)}",
-                                           $"Offsets: D={Math.Round(Properties.FPSOffset, 3)}ms, L={Math.Round(Properties.TPSOffset, 3)}ms",
-                                           $"Video Backend: {(_vBackend == VideoBackend.Auto ? "Auto (Hardware Accelerated)" : BackendToString(_vBackend))}",
+                                           $"Offsets: D={Math.Round(Properties.FPSOffset, 3)}ms ({_offsets.FpsLevel}), L={Math.Round(Properties.TPSOffset, 3)}ms ({_offsets.TpsLevel})",
+                                           $"Video Backend: {(_vBackend == VideoBackend.Auto ? "Auto" : BackendToString(_vBackend))}",
                                            $"SDL Version: {ver.major}.{ver.minor}.{ver.patch}",
                                            $"Current Scene: {(_scenes.CurrentScene != string.Empty ? _scenes.CurrentScene : "none")}",
                                            $"View Position: {(_scenes.HasInstance(_scenes.CurrentScene) ? _scenes.GetInstance(_scenes.CurrentScene).ViewPosition : "none")}",
-                                           $"Text Cache: {_graphics.TextCache.Cached}/{_graphics.TextCache.MaxCached}"
+                                           $"Text Cache: {_graphics.TextCache.Cached}/{_graphics.TextCache.MaxCached}",
+                                           $"Internal Resolution: {_graphics.GetInternalResolution()}"
                         };
                         int maxWidth = 0;
                         int textHeight = _graphics.MeasureText(font, "|").H;
