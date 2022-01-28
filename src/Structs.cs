@@ -142,6 +142,11 @@ namespace GEngine
             W = w;
             H = h;
         }
+        public Size(Size copy)
+        {
+            W = copy.W;
+            H = copy.H;
+        }
 
         public override string ToString()
         {
