@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using GEngine.Engine;
 
+using static GEngine.GEngine;
+
 namespace GEngine.Game
 {
     public abstract class GameObject
@@ -24,6 +26,7 @@ namespace GEngine.Game
         public bool DefaultFlipY { get; set; }
         public Coord DefaultOffset { get; set; }
         public Dictionary<string, object> DefaultInstanceVariables { get; set; }
+        public ColorRGBA DefaultColorModulation { get; set; }
 
         public Instance CreateInstance(out Guid hash)
         {
@@ -43,7 +46,8 @@ namespace GEngine.Game
                 FlipX = DefaultFlipX,
                 FlipY = DefaultFlipY,
                 Offset = new Coord(DefaultOffset.X, DefaultOffset.Y),
-                PhysicsAttributes = new PhysicsAttributes(DefaultPhysicsAttributes)
+                PhysicsAttributes = new PhysicsAttributes(DefaultPhysicsAttributes),
+                ColorModulation = DefaultColorModulation
             };
             foreach (var pair in DefaultInstanceVariables)
             {
@@ -66,6 +70,7 @@ namespace GEngine.Game
             IsActivated = true;
             DefaultPhysicsAttributes = new PhysicsAttributes();
             DefaultInstanceVariables = new();
+            DefaultColorModulation = ColorRGBA.WHITE;
         }
 
         public virtual void OnCreate(Instance caller, SceneInstance scene)
@@ -111,7 +116,11 @@ namespace GEngine.Game
         public virtual void OnDraw(Instance caller, SceneInstance scene, GraphicsEngine graphics)
         {
             if (caller.Sprite != null)
+            {
+                if (caller.Sprite.ColorModulation != caller.ColorModulation)
+                    Resources.SetTextureColorModulation(caller.Sprite, caller.ColorModulation);
                 graphics.DrawSprite(caller.Sprite, caller.Position, caller.ImageAngle, caller.ScaleX, caller.ScaleY, caller.ImageIndex, caller.Offset.X, caller.Offset.Y, scene.ViewPosition.X - scene.ViewOrigin.X, scene.ViewPosition.Y - scene.ViewOrigin.Y, caller.FlipX, caller.FlipY);
+            }
         }
         public Type Type { get; set; }
     }
@@ -157,6 +166,8 @@ namespace GEngine.Game
         public bool FlipX { get; set; }
         public bool FlipY { get; set; }
         public Coord Offset { get; set; }
+        public ColorRGBA ColorModulation { get; set; }
+
         private int _currentImageSpeed;
 
         public string ObjectName
@@ -177,6 +188,7 @@ namespace GEngine.Game
             _imageIndex = 0;
             _currentImageSpeed = 0;
             InstanceVariables = new();
+            ColorModulation = ColorRGBA.WHITE;
         }
 
         public void AnimationStep()
