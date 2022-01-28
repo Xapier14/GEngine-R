@@ -16,6 +16,7 @@ namespace GEngine.Engine
     {
         private Dictionary<SDL_Keycode, bool> _keys, _statePressed, _stateReleased;
         private bool _leftMB = false, _rightMB = false, _middleMB = false;
+        private bool _leftMBLast = false, _rightMBLast = false, _middleMBLast = false;
         private Dictionary<int, IntPtr> _gameControllers;
         private Dictionary<int, int> _joysticks;
         private Dictionary<int, Gamepad> _gamepads;
@@ -58,6 +59,50 @@ namespace GEngine.Engine
                 return _middleMB;
             }
         }
+
+        public bool MouseLeftButtonDownPressed
+        {
+            get
+            {
+                return _leftMB && !_leftMBLast;
+            }
+        }
+        public bool MouseLeftButtonDownReleased
+        {
+            get
+            {
+                return !_leftMB && _leftMBLast;
+            }
+        }
+        public bool MouseRightButtonDownPressed
+        {
+            get
+            {
+                return _rightMB && !_rightMBLast;
+            }
+        }
+        public bool MouseRightButtonDownReleased
+        {
+            get
+            {
+                return !_rightMB && _rightMBLast;
+            }
+        }
+        public bool MouseMiddleButtonDownPressed
+        {
+            get
+            {
+                return _middleMB && !_middleMBLast;
+            }
+        }
+        public bool MouseMiddleButtonDownReleased
+        {
+            get
+            {
+                return !_middleMB && _middleMBLast;
+            }
+        }
+
 
         public double WindowScaleModifier { get; set; }
 
@@ -119,8 +164,14 @@ namespace GEngine.Engine
         }
         private void HandleEvents()
         {
+            _leftMBLast = _leftMB;
+            _rightMBLast = _rightMB;
+            _middleMBLast = _middleMB;
             while (SDL_PollEvent(out SDL_Event e) != 0)
             {
+                _leftMBLast = _leftMB;
+                _rightMBLast = _rightMB;
+                _middleMBLast = _middleMB;
                 int con = -1;
                 switch (e.type)
                 {
