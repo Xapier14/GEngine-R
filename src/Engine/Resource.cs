@@ -127,6 +127,18 @@ namespace GEngine.Engine
             }
         }
 
+        public void SetTextureColorModulation(TextureResource texture, ColorRGBA colorMod)
+        {
+            foreach(IntPtr texturePtr in texture.Textures)
+            {
+                if (SDL_SetTextureColorMod(texturePtr, colorMod.Red, colorMod.Green, colorMod.Blue) != 0)
+                {
+                    Debug.Log("ResourceManager.SetTextureColorModulation()", $"Could not change texture color mod for \"{texture.ResourceName}\", texture: {texturePtr}.");
+                }
+            }
+            texture.ColorModulation = colorMod;
+        }
+
         unsafe public void LoadAsTexture(string fileLocation, string resourceName)
         {
             while (!EngineInit) SDL_Delay(100);
@@ -261,7 +273,8 @@ namespace GEngine.Engine
                 SpriteSize = spriteSize,
                 DataPtr = surfaces.ToArray(),
                 Textures = textures.ToArray(),
-                ResourceName = resourceName
+                ResourceName = resourceName,
+                ColorModulation = ColorRGBA.WHITE
             };
             _Textures.Add(res);
             //Debug.Log("ResourceManager.LoadAsTexture()", $"Successfully added texture {resourceName} to resources.");
@@ -377,7 +390,7 @@ namespace GEngine.Engine
     public class FontResource : ResourceBase
     {
         public const ResourceType Type = ResourceType.Font;
-        public int PointSize { get; set; }
+        public int PointSize { get; internal set; }
     }
     public class TextureResource : ResourceBase
     {
@@ -387,6 +400,7 @@ namespace GEngine.Engine
         public Size SpriteSize { get; set; }
         public Size SheetSize { get; set; }
         public int Count { get => Textures.Length; }
+        public ColorRGBA ColorModulation { get; internal set; }
 
         public override void Destroy()
         {
