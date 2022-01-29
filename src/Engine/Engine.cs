@@ -200,6 +200,7 @@ namespace GEngine.Engine
         private double _cur_frametime = 0, _cur_logictime = 0, _cur_totaltime = 0;
         private const uint _timeMargin = 3;
         private double _fps = 0, _tps = 0;
+        private Process _currentProcess;
         public double CurrentFrametime
         {
             get
@@ -294,6 +295,7 @@ namespace GEngine.Engine
             _scenes = new SceneManager();
 
             _vBackend = backend;
+            _currentProcess = Process.GetCurrentProcess();
 
             _input.WindowEvent += InputHandler_WindowEvent;
             _input.EngineEvent += InputHandler_EngineEvent;
@@ -680,6 +682,7 @@ namespace GEngine.Engine
                 }
                 if (Properties.AutoOffset)
                     _offsets.AdjustOffsets();
+                _currentProcess.Refresh();
             }
             double end = GetPreciseMs();
             if (start - end > Properties.TargetLogictime)
@@ -759,7 +762,8 @@ namespace GEngine.Engine
                                            $"Current Scene: {(_scenes.CurrentScene != string.Empty ? _scenes.CurrentScene : "none")}",
                                            $"View Position: {(_scenes.HasInstance(_scenes.CurrentScene) ? _scenes.GetInstance(_scenes.CurrentScene).ViewPosition : "none")}",
                                            $"Text Cache: {_graphics.TextCache.Cached}/{_graphics.TextCache.MaxCached}",
-                                           $"Internal Resolution: {_graphics.GetInternalResolution()}"
+                                           $"Internal Resolution: {_graphics.GetInternalResolution()}",
+                                           $"Memory Usage: {Math.Round(_currentProcess.PrivateMemorySize64 / 1000000.00, 2)} MB"
                         };
                         int maxWidth = 0;
                         int textHeight = _graphics.MeasureText(font, "|").H;
