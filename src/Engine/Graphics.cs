@@ -13,7 +13,7 @@ namespace GEngine.Engine
     public class GraphicsEngine
     {
         private static readonly FontQuality DEFAULT_FONTQUALITY = FontQuality.Quality;
-        private static readonly int DEFAULT_MAX_TEXTCACHE = 1024;
+        private static readonly int DEFAULT_MAX_TEXTCACHE = 512;
         const bool FLAG_WARNNULLTEXTURE = false;
         public bool DrawCollisionBounds = false;
         public bool UseSubpixelFont = false; // verryyyy slowwww
