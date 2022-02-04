@@ -12,11 +12,6 @@ namespace GEngine
 }
 namespace GEngine.Engine
 {
-    public enum EngineMode
-    {
-        Synchronous,
-        Asynchronous
-    }
     public enum VideoBackend
     {
         Direct3D,

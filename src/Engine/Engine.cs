@@ -11,6 +11,7 @@ using GEngine.Game;
 using System.Diagnostics;
 using System.Security;
 using Genbox.VelcroPhysics.Utilities;
+using System.Reflection;
 
 namespace GEngine.Engine
 {
@@ -75,16 +76,19 @@ namespace GEngine.Engine
     public class GameEngine
     {
         //Engine Props
-        public EngineMode Mode { get; set; }
         public EngineProperties Properties { get; set; }
         private VideoBackend _vBackend { get; set; }
         public bool ResourcesLoaded { get; set; }
+        public delegate void EngineDelegate (GameEngine engine);
+#nullable enable
+        public EngineDelegate? LoadResources;
+#nullable restore
 
         //Threads
-        private Thread _SyncThread, _AsyncThread_L, _AsyncThread_D;
+        private Thread _SyncThread;
         private bool _Started = false;
         private bool _StopThread = false, _ForcedThread = false;
-        private bool _Aborted_S = false, _Aborted_AL = false, _Aborted_AG = false;
+        private bool _Aborted = false;
 
         //Sub-Modules
         private AudioEngine _audio;
@@ -274,7 +278,7 @@ namespace GEngine.Engine
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        public GameEngine(EngineMode mode = EngineMode.Synchronous, VideoBackend backend = VideoBackend.Auto, float baseUnit = 8f)
+        public GameEngine(VideoBackend backend = VideoBackend.Auto, float baseUnit = 8f)
         {
             SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "1");
             SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
@@ -296,6 +300,7 @@ namespace GEngine.Engine
 
             _vBackend = backend;
             _currentProcess = Process.GetCurrentProcess();
+            LoadResources = null;
 
             _input.WindowEvent += InputHandler_WindowEvent;
             _input.EngineEvent += InputHandler_EngineEvent;
@@ -526,22 +531,10 @@ namespace GEngine.Engine
             ResourcesLoaded = false;
             _SDL_Renderer = IntPtr.Zero;
             _SDL_Window = IntPtr.Zero;
-            switch (Mode)
-            {
-                case EngineMode.Synchronous:
-                    _Started = true;
-                    _SyncThread = new Thread(new ThreadStart(Sync_Loop));
-                    _SyncThread.Name = "Synchronous Game Thread " + _SyncThread.GetHashCode().ToString();
-                    _SyncThread.Start();
-                    break;
-                case EngineMode.Asynchronous:
-                    _Started = true;
-
-                    break;
-                default:
-                    //unknown mode
-                    throw new EngineException("Unknown engine mode.", "GameEngine.Start()");
-            }
+            _Started = true;
+            _SyncThread = new Thread(new ThreadStart(Sync_Loop));
+            _SyncThread.Name = "Synchronous Game Thread " + _SyncThread.GetHashCode().ToString();
+            _SyncThread.Start();
             while (_SDL_Renderer == IntPtr.Zero || _SDL_Window == IntPtr.Zero) Thread.Sleep(10);
             _resource.SetRenderer(_graphics.Renderer);
         }
@@ -551,18 +544,10 @@ namespace GEngine.Engine
             _StopThread = true;
             Thread.Sleep(10);
             if (!_ForcedThread)
-                switch (Mode)
-                {
-                    case EngineMode.Synchronous:
-                        while (!_Aborted_S) Thread.Sleep(10);
-                        break;
-                    case EngineMode.Asynchronous:
-                        while (!_Aborted_AL || !_Aborted_AG) Thread.Sleep(10);
-                        break;
-                    default:
-                        //unknown mode
-                        throw new EngineException("Unknown engine mode.", "GameEngine.Stop()");
-                }
+            {
+                while (!_Aborted)
+                    Thread.Sleep(10);
+            }
             FreeResources();
             SDL_Quit();
             Debug.Log("GameEngine.Stop()", "Engine stopped.");
@@ -795,6 +780,8 @@ namespace GEngine.Engine
                 Debug.Log("GameEngine.DrawStep()", $"Draw step took {start - end - Properties.TargetFrametime}ms longer than target frame time.");
             }
         }
+
+        [STAThread]
         private void Sync_Loop()
         {
             //Init
@@ -810,6 +797,9 @@ namespace GEngine.Engine
             SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, ParseRenderScale(Properties.RenderScaleQuality));
 
             _resource.EngineInit = true;
+
+            LoadResources?.Invoke(this);
+
             while (!ResourcesLoaded)
             {
                 SDL_Delay(1000);
@@ -846,28 +836,10 @@ namespace GEngine.Engine
                 _fps = fpsAvg.GetAverage();
                 _tps = tpsAvg.GetAverage();
             } while (!_StopThread);
-            _Aborted_S = true;
+            _Aborted = true;
             _SyncThread = null;
             _initLogic = false;
             _initGraphics = false;
-        }
-        private void Async_LogicLoop()
-        {
-            //Init
-            InitLogic();
-            do
-            {
-                LogicStep();
-            } while (!_StopThread);
-        }
-        private void Async_DrawLoop()
-        {
-            //Init
-            InitGraphics();
-            do
-            {
-                DrawStep();
-            } while (!_StopThread);
         }
         private static double TicksToMs(long nano)
         {
