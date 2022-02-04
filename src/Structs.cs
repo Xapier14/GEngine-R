@@ -148,6 +148,16 @@ namespace GEngine
             H = copy.H;
         }
 
+        public static Size operator +(Size a, Size b) => new(a.W + b.W, a.H + b.H);
+        public static Size operator -(Size a, Size b) => new(a.W - b.W, a.H - b.H);
+        public static Size operator *(Size a, Size b) => new(a.W * b.W, a.H * b.H);
+        public static Size operator /(Size a, Size b) => new(a.W / b.W, a.H / b.H);
+
+        public static Size operator +(Size a, int b) => new(a.W + b, a.H + b);
+        public static Size operator -(Size a, int b) => new(a.W - b, a.H - b);
+        public static Size operator *(Size a, int b) => new(a.W * b, a.H * b);
+        public static Size operator /(Size a, int b) => new(a.W / b, a.H / b);
+
         public override string ToString()
         {
             return $"{W}x{H}";
