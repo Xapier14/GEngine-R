@@ -290,6 +290,8 @@ namespace GEngine.Engine
                         }
                         break;
                     case SDL_EventType.SDL_WINDOWEVENT:
+                        if (SDL_GetWindowID(GEngine.Graphics.Window) != e.window.windowID)
+                            break;
                         switch (e.window.windowEvent)
                         {
                             case SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE:
