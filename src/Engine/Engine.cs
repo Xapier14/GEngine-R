@@ -532,11 +532,10 @@ namespace GEngine.Engine
             _SDL_Renderer = IntPtr.Zero;
             _SDL_Window = IntPtr.Zero;
             _Started = true;
-            _SyncThread = new Thread(new ThreadStart(Sync_Loop));
-            _SyncThread.Name = "Synchronous Game Thread " + _SyncThread.GetHashCode().ToString();
-            _SyncThread.Start();
-            while (_SDL_Renderer == IntPtr.Zero || _SDL_Window == IntPtr.Zero) Thread.Sleep(10);
-            _resource.SetRenderer(_graphics.Renderer);
+            Sync_Loop();
+            //_SyncThread = new Thread(new ThreadStart(Sync_Loop));
+            //_SyncThread.Name = "Synchronous Game Thread " + _SyncThread.GetHashCode().ToString();
+            //_SyncThread.Start();
         }
 
         public void Stop()
@@ -593,10 +592,11 @@ namespace GEngine.Engine
                 //_SDL_Renderer = _graphics.Renderer;
                 //_SDL_Window = _graphics.Window;
                 SDL_RenderSetLogicalSize(_SDL_Renderer, Properties.InternalResolution.W, Properties.InternalResolution.H);
-                _graphics.RenderClearColor = new ColorRGBA(120, 180, 230);
+                _graphics.RenderClearColor = new ColorRGBA(0,0,0);
                 _resource.Init(_SDL_Renderer);
                 _resource.EngineInit = false;
                 _initGraphics = true;
+                _resource.SetRenderer(_SDL_Renderer);
                 //_resource.RebuildTextures();
             }
         }
